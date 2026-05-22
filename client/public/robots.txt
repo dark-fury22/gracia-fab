@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /admin
+Disallow: /checkout
+Disallow: /cart
+Disallow: /my-orders
+
+Sitemap: https://graciafab.com/sitemap.xml
