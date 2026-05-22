@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import "./TrendingDeals.css";
+import config from "../config";
 
 function TrendingDeals() {
   const [products, setProducts] = useState([]);
@@ -10,7 +11,7 @@ function TrendingDeals() {
   const [addedId, setAddedId] = useState(null);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/products/featured")
+    fetch("${import.meta.env.VITE_API_URL || 'http://localhost:5000'}")
       .then((r) => r.json())
       .then((data) => {
         setProducts(data.slice(0, 3));

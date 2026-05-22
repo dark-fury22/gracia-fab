@@ -5,6 +5,7 @@ import Footer from "../components/Footer";
 import "../styles/Recommend.css";
 import { useAuth } from "../context/AuthContext";
 import SEO from "../components/SEO";
+import config from "../config";
 
 const steps = ["About Your Skin", "About Your Hair", "Your Goals"];
 
@@ -41,7 +42,7 @@ function Recommend() {
     setLoading(true);
     setError("");
     try {
-      const response = await fetch("http://localhost:5000/api/recommend", {
+      const response = await fetch("${config.API_URL}/api/recommend", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -303,7 +304,7 @@ function Recommend() {
                 try {
                   const token = localStorage.getItem("token");
                   await fetch(
-                    "http://localhost:5000/api/wishlist/recommendations/save",
+                    "${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/wishlist/recommendations/save",
                     {
                       method: "POST",
                       headers: {

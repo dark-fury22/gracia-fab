@@ -35,7 +35,7 @@ function SocialLogin() {
         const userInfo = await userInfoRes.json();
 
         // Send to backend
-        const res = await fetch("http://localhost:5000/api/auth/google", {
+        const res = await fetch("${config.API_URL}/api/auth/google", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -72,7 +72,7 @@ function SocialLogin() {
             // Get user info from Facebook
             window.FB.api("/me", { fields: "name,email" }, async (userData) => {
               const res = await fetch(
-                "http://localhost:5000/api/auth/facebook",
+                "${import.meta.env.VITE_API_URL || 'http://localhost:5000'}",
                 {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },

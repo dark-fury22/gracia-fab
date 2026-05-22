@@ -4,6 +4,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useCart } from "../context/CartContext";
 import "../styles/Products.css";
+import config from "../config";
 
 function ProductDetail({ onCartOpen }) {
   const { id } = useParams();
@@ -17,7 +18,7 @@ function ProductDetail({ onCartOpen }) {
     const fetchProduct = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5000/api/products/${id}`,
+          `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/products/${id}`,
         );
         const data = await response.json();
         setProduct(data);

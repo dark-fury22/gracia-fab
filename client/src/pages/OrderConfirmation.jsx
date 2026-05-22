@@ -4,6 +4,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "../styles/Orders.css";
 import SEO from "../components/SEO";
+import config from "../config";
 
 function OrderConfirmation() {
   const { id } = useParams();
@@ -14,7 +15,7 @@ function OrderConfirmation() {
     const fetchOrder = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch(`http://localhost:5000/api/orders/${id}`, {
+        const response = await fetch(`${config.API_URL}/api/orders/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await response.json();
