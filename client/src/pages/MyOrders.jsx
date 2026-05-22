@@ -5,7 +5,7 @@ import Footer from "../components/Footer";
 import { useAuth } from "../context/AuthContext";
 import "../styles/Orders.css";
 import SEO from "../components/SEO";
-import config from "../config";
+import API_URL from "../config";
 
 function MyOrders() {
   const { user } = useAuth();
@@ -21,10 +21,9 @@ function MyOrders() {
   const fetchOrders = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(
-        "${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/orders/myorders",
-        { headers: { Authorization: `Bearer ${token}` } },
-      );
+      const response = await fetch(`${API_URL}/api/orders/myorders`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       const data = await response.json();
       setOrders(data);
     } catch (err) {

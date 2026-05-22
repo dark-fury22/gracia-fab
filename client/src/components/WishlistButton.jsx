@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import config from "../config";
+import API_URL from "../config";
 
 function WishlistButton({ productId }) {
   const { user } = useAuth();
@@ -16,7 +16,7 @@ function WishlistButton({ productId }) {
   const checkWishlist = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("${config.API_URL}/api/wishlist", {
+      const response = await fetch(`${API_URL}/api/wishlist`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await response.json();
@@ -37,13 +37,10 @@ function WishlistButton({ productId }) {
       const token = localStorage.getItem("token");
       const method = isWishlisted ? "DELETE" : "POST";
 
-      await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/wishlist/${productId}`,
-        {
-          method,
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
+      await fetch(`${API_URL}/api/wishlist/${productId}`, {
+        method,
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       setIsWishlisted(!isWishlisted);
     } catch (err) {

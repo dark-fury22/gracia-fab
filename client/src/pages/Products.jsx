@@ -3,7 +3,7 @@ import ProductCard from "../components/ProductCard";
 import "../styles/Products.css";
 import SEO from "../components/SEO";
 import "../styles/Products.css";
-import config from "../config";
+import API_URL from "../config";
 
 const categories = ["all", "skincare", "haircare", "wig", "bridal"];
 const sortOptions = [
@@ -28,8 +28,7 @@ function Products() {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      let url =
-        "${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/products?";
+      let url = `${API_URL}/api/products?`;
       if (activeCategory !== "all") url += `category=${activeCategory}&`;
       if (search) url += `search=${search}`;
 

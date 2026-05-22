@@ -4,7 +4,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useCart } from "../context/CartContext";
 import "../styles/Products.css";
-import config from "../config";
+import API_URL from "../config";
 
 function ProductDetail({ onCartOpen }) {
   const { id } = useParams();
@@ -19,9 +19,7 @@ function ProductDetail({ onCartOpen }) {
       try {
         setLoading(true);
 
-        const response = await fetch(
-          `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/products/${id}`,
-        );
+        const response = await fetch(`${API_URL}/api/products/${id}`);
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);

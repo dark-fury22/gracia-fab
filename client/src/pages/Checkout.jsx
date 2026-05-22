@@ -6,7 +6,7 @@ import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import SEO from "../components/SEO";
 import "../styles/Checkout.css";
-import config from "../config";
+import API_URL from "../config";
 
 function Checkout({ onCartOpen }) {
   const { cartItems, cartTotal, clearCart } = useCart();
@@ -72,7 +72,7 @@ function Checkout({ onCartOpen }) {
         totalPrice,
       };
 
-      const response = await fetch("${config.API_URL}/api/orders", {
+      const response = await fetch(`${API_URL}/api/orders`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -147,17 +147,14 @@ function Checkout({ onCartOpen }) {
       setError("");
       const token = localStorage.getItem("token");
 
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/orders/${orderId}/pay`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ reference }),
+      const response = await fetch(`${API_URL}/api/orders/${orderId}/pay`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-      );
+        body: JSON.stringify({ reference }),
+      });
 
       const data = await response.json();
 

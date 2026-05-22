@@ -5,6 +5,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "../styles/Admin.css";
 import SEO from "../components/SEO";
+import API_URL from "../config";
 
 const tabs = [
   { id: "overview", label: "📊 Overview" },
@@ -66,7 +67,7 @@ function AdminDashboard() {
   const fetchStats = async () => {
     try {
       setLoading(true);
-      const res = await fetch("${config.API_URL}/api/admin/stats", {
+      const res = await fetch(`${API_URL}/api/admin/stats`, {
         headers: getHeaders(),
       });
       const data = await res.json();
@@ -81,7 +82,7 @@ function AdminDashboard() {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const res = await fetch("${config.API_URL}/api/admin/products", {
+      const res = await fetch(`${API_URL}/api/admin/products`, {
         headers: getHeaders(),
       });
       const data = await res.json();
@@ -96,7 +97,7 @@ function AdminDashboard() {
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      const res = await fetch("${config.API_URL}/api/admin/orders", {
+      const res = await fetch(`${API_URL}/api/admin/orders`, {
         headers: getHeaders(),
       });
       const data = await res.json();
@@ -111,7 +112,7 @@ function AdminDashboard() {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const res = await fetch("${config.API_URL}/api/admin/users", {
+      const res = await fetch(`${API_URL}/api/admin/users`, {
         headers: getHeaders(),
       });
       const data = await res.json();
@@ -140,7 +141,7 @@ function AdminDashboard() {
     try {
       const url = editProduct
         ? `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/admin/products/${editProduct._id}`
-        : "${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/products";
+        : `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/admin/products`;
 
       const method = editProduct ? "PUT" : "POST";
 
@@ -172,13 +173,10 @@ function AdminDashboard() {
   const handleDeleteProduct = async (id) => {
     if (!window.confirm("Delete this product?")) return;
     try {
-      await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/admin/products/${id}`,
-        {
-          method: "DELETE",
-          headers: getHeaders(),
-        },
-      );
+      await fetch(`${API_URL}/api/admin/products/${id}`, {
+        method: "DELETE",
+        headers: getHeaders(),
+      });
       fetchProducts();
     } catch (err) {
       console.error(err);
@@ -187,14 +185,11 @@ function AdminDashboard() {
 
   const handleUpdateStatus = async (orderId, status) => {
     try {
-      await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/admin/orders/${orderId}`,
-        {
-          method: "PUT",
-          headers: getHeaders(),
-          body: JSON.stringify({ status }),
-        },
-      );
+      await fetch(`${API_URL}/api/admin/orders/${orderId}`, {
+        method: "PUT",
+        headers: getHeaders(),
+        body: JSON.stringify({ status }),
+      });
       fetchOrders();
     } catch (err) {
       console.error(err);

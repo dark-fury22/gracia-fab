@@ -5,7 +5,7 @@ import Footer from "../components/Footer";
 import "../styles/Recommend.css";
 import { useAuth } from "../context/AuthContext";
 import SEO from "../components/SEO";
-import config from "../config";
+import API_URL from "../config";
 
 const steps = ["About Your Skin", "About Your Hair", "Your Goals"];
 
@@ -42,7 +42,7 @@ function Recommend() {
     setLoading(true);
     setError("");
     try {
-      const response = await fetch("${config.API_URL}/api/recommend", {
+      const response = await fetch(`${API_URL}/api/recommend`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
