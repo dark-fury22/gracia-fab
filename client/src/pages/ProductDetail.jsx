@@ -17,17 +17,28 @@ function ProductDetail({ onCartOpen }) {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
+        setLoading(true);
+
         const response = await fetch(
           `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/products/${id}`,
         );
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
         const data = await response.json();
+        console.log("PRODUCT:", data);
+
         setProduct(data);
       } catch (err) {
-        console.error(err);
+        console.error("PRODUCT FETCH ERROR:", err);
+        setProduct(null);
       } finally {
         setLoading(false);
       }
     };
+
     fetchProduct();
   }, [id]);
 
@@ -57,7 +68,7 @@ function ProductDetail({ onCartOpen }) {
         <div className="detail-grid">
           <div className="detail-image-wrapper">
             <img
-              src={product.image}
+              src={product?.image}
               alt={product.name}
               className="detail-image"
             />
@@ -67,7 +78,7 @@ function ProductDetail({ onCartOpen }) {
             <h1>{product.name}</h1>
             <p className="detail-brand">by {product.brand}</p>
             <div className="detail-rating">
-              {"⭐".repeat(Math.round(product.rating))}
+              {"⭐".repeat(Math.round(product?.rating))}
               <span> ({product.numReviews} reviews)</span>
             </div>
             <p className="detail-price">
@@ -75,12 +86,12 @@ function ProductDetail({ onCartOpen }) {
                 style: "currency",
                 currency: "NGN",
                 minimumFractionDigits: 0,
-              }).format(product.price)}
+              }).format(product?.price)}
             </p>
             <p className="detail-desc">{product.description}</p>
-            {product.tags.length > 0 && (
+            {product?.tags?.length > 0 && (
               <div className="detail-tags">
-                {product.tags.map((tag, i) => (
+                {product?.tags?.map((tag, i) => (
                   <span key={i} className="tag">
                     #{tag}
                   </span>

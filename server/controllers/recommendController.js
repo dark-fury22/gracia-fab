@@ -40,10 +40,10 @@ const scoreProduct = (product, userProfile) => {
   }
 
   if (budget) {
-    if (budget.includes('under 10000') && product.price < 10000) score += 20
-    if (budget.includes('10000 to 50000') && product.price >= 10000 && product.price <= 50000) score += 20
-    if (budget.includes('50000 to 100000') && product.price > 50000 && product.price <= 100000) score += 20
-    if (budget.includes('above 100000') && product.price > 100000) score += 20
+    if (budget.includes('under 10000') && product?.price < 10000) score += 20
+    if (budget.includes('10000 to 50000') && product?.price >= 10000 && product?.price <= 50000) score += 20
+    if (budget.includes('50000 to 100000') && product?.price > 50000 && product?.price <= 100000) score += 20
+    if (budget.includes('above 100000') && product?.price > 100000) score += 20
   }
 
   if (occasion?.includes('wedding') || occasion?.includes('bridal')) {
@@ -51,7 +51,7 @@ const scoreProduct = (product, userProfile) => {
   }
 
   if (product.isFeatured) score += 10
-  if (product.rating >= 4.5) score += 10
+  if (product?.rating >= 4.5) score += 10
   return score
 }
 

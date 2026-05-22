@@ -64,7 +64,7 @@ function TrendingDeals() {
                 {/* Circular image */}
                 <div className="deal-img-wrapper">
                   <img
-                    src={product.image}
+                    src={product?.image}
                     alt={product.name}
                     className="deal-img"
                     onError={(e) => {
@@ -84,7 +84,7 @@ function TrendingDeals() {
                   </p>
                   <div className="deal-bottom">
                     <span className="deal-price">
-                      {formatPrice(product.price)}
+                      {formatPrice(product?.price)}
                     </span>
                     <button
                       className="deal-cart-btn"

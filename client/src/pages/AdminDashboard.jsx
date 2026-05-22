@@ -206,8 +206,8 @@ function AdminDashboard() {
     setProductForm({
       name: product.name,
       description: product.description,
-      price: product.price,
-      image: product.image,
+      price: product?.price,
+      image: product?.image,
       category: product.category,
       brand: product.brand,
       countInStock: product.countInStock,
@@ -554,7 +554,7 @@ function AdminDashboard() {
                     <tr key={product._id}>
                       <td>
                         <img
-                          src={product.image}
+                          src={product?.image}
                           alt={product.name}
                           className="admin-product-img"
                         />
@@ -568,7 +568,7 @@ function AdminDashboard() {
                           {product.category}
                         </span>
                       </td>
-                      <td>{formatPrice(product.price)}</td>
+                      <td>{formatPrice(product?.price)}</td>
                       <td>{product.countInStock}</td>
                       <td>{product.isFeatured ? "⭐ Yes" : "—"}</td>
                       <td>

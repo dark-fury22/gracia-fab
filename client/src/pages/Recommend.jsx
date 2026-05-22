@@ -282,7 +282,7 @@ function Recommend() {
                     </div>
                     <div className="result-footer">
                       <span className="result-price">
-                        {rec.product && formatPrice(rec.product.price)}
+                        {rec.product && formatPrice(rec.product?.price)}
                       </span>
                       <Link
                         to={`/products/${rec.product?._id}`}

@@ -18,7 +18,7 @@ function ProductCard({ product }) {
       <Link to={`/products/${product._id}`}>
         <div className="product-image-wrapper">
           <img
-            src={product.image}
+            src={product?.image}
             alt={product.name}
             className="product-image"
             onError={(e) => {
@@ -40,7 +40,7 @@ function ProductCard({ product }) {
           <h3 className="product-name">{product.name}</h3>
         </Link>
         <div className="product-bottom">
-          <span className="product-price">{formatPrice(product.price)}</span>
+          <span className="product-price">{formatPrice(product?.price)}</span>
           <button
             className="btn-add-to-cart"
             onClick={() => addToCart(product)}

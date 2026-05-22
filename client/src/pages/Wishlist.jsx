@@ -119,7 +119,7 @@ function Wishlist() {
                 <div key={product._id} className="wishlist-card">
                   <div className="wishlist-img-wrapper">
                     <img
-                      src={product.image}
+                      src={product?.image}
                       alt={product.name}
                       className="wishlist-img"
                     />
@@ -137,7 +137,7 @@ function Wishlist() {
                     <h3>{product.name}</h3>
                     <p className="wishlist-brand">{product.brand}</p>
                     <p className="wishlist-price">
-                      {formatPrice(product.price)}
+                      {formatPrice(product?.price)}
                     </p>
                     <div className="wishlist-actions">
                       <button
@@ -204,14 +204,14 @@ function Wishlist() {
                     {rec.products?.map((product, i) => (
                       <div key={i} className="saved-rec-product">
                         <img
-                          src={product.image}
+                          src={product?.image}
                           alt={product.name}
                           className="saved-rec-img"
                         />
                         <div className="saved-rec-info">
                           <p className="saved-rec-name">{product.name}</p>
                           <p className="saved-rec-price">
-                            {formatPrice(product.price)}
+                            {formatPrice(product?.price)}
                           </p>
                         </div>
                         <Link
