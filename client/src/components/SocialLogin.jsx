@@ -1,13 +1,8 @@
 import { useGoogleLogin } from "@react-oauth/google";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
 import "./SocialLogin.css";
 
 function SocialLogin() {
-  const navigate = useNavigate();
-  const { login: authLogin } = useAuth();
-
-  const saveUserAndRedirect = (data) => {
+  const saveAndRedirect = (data) => {
     localStorage.setItem("token", data.token);
     localStorage.setItem(
       "user",
@@ -21,11 +16,9 @@ function SocialLogin() {
     window.location.href = "/";
   };
 
-  // ── Google Login ──
   const handleGoogleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       try {
-        // Get user info from Google
         const userInfoRes = await fetch(
           "https://www.googleapis.com/oauth2/v3/userinfo",
           {
@@ -34,78 +27,29 @@ function SocialLogin() {
         );
         const userInfo = await userInfoRes.json();
 
-        // Send to backend
-        const res = await fetch("${config.API_URL}/api/auth/google", {
+        const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+        const res = await fetch(`${API_URL}/api/auth/google`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            credential: tokenResponse.access_token,
-            ...userInfo,
-          }),
+          body: JSON.stringify(userInfo),
         });
         const data = await res.json();
-
         if (!res.ok) throw new Error(data.message);
-        saveUserAndRedirect(data);
+        saveAndRedirect(data);
       } catch (err) {
-        console.error("Google login error:", err);
-        alert("Google login failed. Please try again.");
+        console.error("Google login failed:", err);
+        alert("Google login failed: " + err.message);
       }
     },
-    onError: (err) => {
-      console.error("Google OAuth error:", err);
-    },
+    onError: (err) => console.error("Google OAuth error:", err),
   });
-
-  // ── Facebook Login ──
-  const handleFacebookLogin = () => {
-    const appId = import.meta.env.VITE_FACEBOOK_APP_ID;
-    if (!appId || appId === "your_facebook_app_id_here") {
-      alert("Facebook login not configured yet.");
-      return;
-    }
-
-    window.FB.login(
-      async (response) => {
-        if (response.status === "connected") {
-          try {
-            // Get user info from Facebook
-            window.FB.api("/me", { fields: "name,email" }, async (userData) => {
-              const res = await fetch(
-                "${import.meta.env.VITE_API_URL || 'http://localhost:5000'}",
-                {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    accessToken: response.authResponse.accessToken,
-                    userID: response.authResponse.userID,
-                    name: userData.name,
-                    email: userData.email,
-                  }),
-                },
-              );
-              const data = await res.json();
-              if (!res.ok) throw new Error(data.message);
-              saveUserAndRedirect(data);
-            });
-          } catch (err) {
-            console.error("Facebook login error:", err);
-            alert("Facebook login failed.");
-          }
-        }
-      },
-      { scope: "email,public_profile" },
-    );
-  };
 
   return (
     <div className="social-login">
       <div className="social-divider">
         <span>or continue with</span>
       </div>
-
       <div className="social-buttons">
-        {/* Google */}
         <button
           type="button"
           className="social-btn social-google"
@@ -130,18 +74,6 @@ function SocialLogin() {
             />
           </svg>
           Continue with Google
-        </button>
-
-        {/* Facebook */}
-        <button
-          type="button"
-          className="social-btn social-facebook"
-          onClick={handleFacebookLogin}
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="#1877F2">
-            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-          </svg>
-          Continue with Facebook
         </button>
       </div>
     </div>
