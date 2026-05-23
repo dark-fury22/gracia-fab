@@ -243,3 +243,12 @@
   text-decoration: none;
 }
 
+.logo-mobile { display: none; }
+.logo-desktop { display: flex; }
+
+@media (max-width: 768px) {
+  .logo-mobile { display: flex; }
+  .logo-desktop { display: none; }
+  .navbar { height: 56px; padding: 0 1rem; }
+  .navbar-logo-link { flex: 0; }
+}

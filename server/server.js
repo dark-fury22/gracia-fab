@@ -10,6 +10,7 @@ import wishlistRoutes from './routes/wishlistRoutes.js'
 import adminRoutes from './routes/adminRoutes.js'
 import sitemapRoutes from './routes/sitemapRoutes.js'
 import { createRequire } from 'module'
+import contactRoutes from './routes/contactRoutes.js'
 
 dotenv.config()
 connectDB()
@@ -37,6 +38,7 @@ app.use('/api/orders', orderRoutes)
 app.use('/api/wishlist', wishlistRoutes)
 app.use('/api/admin', adminRoutes)
 app.use('/sitemap.xml', sitemapRoutes)
+app.use('/api/contact', contactRoutes)
 
 app.get('/', (req, res) => {
   res.json({ message: '💄 BeautyAI API is running!' })

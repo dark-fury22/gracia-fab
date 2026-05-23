@@ -31,7 +31,14 @@ function Navbar({ onCartOpen }) {
 
         {/* Center logo */}
         <Link to="/" className="navbar-logo-link">
-          <GraciaLogo size="lg" />
+          {/* Show small icon only on mobile */}
+          <span className="logo-mobile">
+            <GraciaLogo size="xs" showText={false} />
+          </span>
+          {/* Show full logo on desktop */}
+          <span className="logo-desktop">
+            <GraciaLogo size="sm" />
+          </span>
         </Link>
 
         {/* Right */}

@@ -1,4 +1,5 @@
 import "./ContactTeaser.css";
+import { Link } from "react-router-dom";
 
 function ContactTeaser() {
   return (
@@ -65,7 +66,9 @@ function ContactTeaser() {
               className="contact-input contact-textarea"
               rows={3}
             />
-            <button className="contact-submit">Let's connect 💌</button>
+            <Link to="/contact" className="contact-teaser-btn">
+              Let's connect 💌
+            </Link>
           </div>
         </div>
       </div>

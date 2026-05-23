@@ -1,17 +1,58 @@
+import { useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import "../styles/Contact.css";
 import SEO from "../components/SEO";
+import API_URL from "../config";
+import "../styles/Contact.css";
 
 function Contact({ onCartOpen }) {
-  <SEO
-    title="Contact Us"
-    description="Get in touch with Gracia Fab. We're here to help with product questions, orders and personalized beauty advice."
-    keywords="contact Gracia Fab, beauty support Nigeria, customer service"
-    url="/contact"
-  />;
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    subject: "",
+    message: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
+
+    if (!formData.name || !formData.email || !formData.message) {
+      return setError("Please fill in your name, email and message.");
+    }
+
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_URL}/api/contact`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      const data = await response.json();
+
+      if (!response.ok) throw new Error(data.message);
+
+      setSuccess(data.message);
+      setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
+    } catch (err) {
+      setError(err.message || "Failed to send message. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
+      <SEO title="Contact Us" url="/contact" />
       <Navbar onCartOpen={onCartOpen} />
       <div className="contact-page">
         {/* Header */}
@@ -26,7 +67,7 @@ function Contact({ onCartOpen }) {
             <p>
               At Gracia Fab, we love hearing from our customers. Whether you
               have questions about our products, need help with your order, or
-              simply want personalized beauty recommendations.
+              want personalized beauty advice.
             </p>
           </div>
         </section>
@@ -36,38 +77,79 @@ function Contact({ onCartOpen }) {
           <div className="contact-main-inner">
             {/* Form */}
             <div className="contact-form-card">
-              <h2>Send Us a Message</h2>
-              <div className="contact-form-grid">
-                <div className="contact-field">
-                  <label>Name</label>
-                  <input type="text" placeholder="Your full name" />
+              <h2>Send Us a Message 💌</h2>
+
+              {success && <div className="contact-success">✅ {success}</div>}
+              {error && <div className="contact-error">⚠️ {error}</div>}
+
+              <form onSubmit={handleSubmit}>
+                <div className="contact-form-grid">
+                  <div className="contact-field">
+                    <label>Name *</label>
+                    <input
+                      type="text"
+                      name="name"
+                      placeholder="Your full name"
+                      value={formData.name}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="contact-field">
+                    <label>Email *</label>
+                    <input
+                      type="email"
+                      name="email"
+                      placeholder="your@email.com"
+                      value={formData.email}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="contact-field contact-full">
+                    <label>Phone</label>
+                    <input
+                      type="tel"
+                      name="phone"
+                      placeholder="e.g. 08012345678"
+                      value={formData.phone}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="contact-field contact-full">
+                    <label>Subject</label>
+                    <select
+                      name="subject"
+                      value={formData.subject}
+                      onChange={handleChange}
+                    >
+                      <option value="">Choose a subject</option>
+                      <option>Product Inquiry</option>
+                      <option>Order Support</option>
+                      <option>Returns & Refunds</option>
+                      <option>Beauty Consultation</option>
+                      <option>Partnership</option>
+                      <option>Other</option>
+                    </select>
+                  </div>
+                  <div className="contact-field contact-full">
+                    <label>Message *</label>
+                    <textarea
+                      name="message"
+                      rows={5}
+                      placeholder="Tell us how we can help..."
+                      value={formData.message}
+                      onChange={handleChange}
+                    />
+                  </div>
                 </div>
-                <div className="contact-field">
-                  <label>Email</label>
-                  <input type="email" placeholder="your@email.com" />
-                </div>
-                <div className="contact-field contact-full">
-                  <label>Phone</label>
-                  <input type="tel" placeholder="e.g. 08012345678" />
-                </div>
-                <div className="contact-field contact-full">
-                  <label>Subject</label>
-                  <select>
-                    <option value="">Choose a subject</option>
-                    <option>Product Inquiry</option>
-                    <option>Order Support</option>
-                    <option>Returns & Refunds</option>
-                    <option>Beauty Consultation</option>
-                    <option>Partnership</option>
-                    <option>Other</option>
-                  </select>
-                </div>
-                <div className="contact-field contact-full">
-                  <label>Message</label>
-                  <textarea rows={5} placeholder="Tell us how we can help..." />
-                </div>
-              </div>
-              <button className="contact-submit-btn">Send Message 💌</button>
+
+                <button
+                  type="submit"
+                  className="contact-submit-btn"
+                  disabled={loading}
+                >
+                  {loading ? "Sending..." : "Send Message 💌"}
+                </button>
+              </form>
             </div>
 
             {/* Info cards */}
@@ -75,73 +157,21 @@ function Contact({ onCartOpen }) {
               <div className="contact-info-card">
                 <span className="contact-info-icon">📧</span>
                 <h3>Email Us</h3>
-                <p>
-                  Have a question or need assistance? Email us at
-                  hello@graciafab.com and get immediate support.
-                </p>
+                <p>hello@graciafab.com — we reply within 24 hours.</p>
               </div>
               <div className="contact-info-card">
                 <span className="contact-info-icon">🏪</span>
                 <h3>Visit Our Store</h3>
                 <p>
-                  Prefer to speak with us in person? Stop by the Gracia Fab
-                  boutique in Lagos, Nigeria to get immediate support.
+                  Stop by our boutique in Lagos, Nigeria for in-person
+                  consultations.
                 </p>
               </div>
               <div className="contact-info-card">
                 <span className="contact-info-icon">📞</span>
                 <h3>Call Support</h3>
                 <p>
-                  If you need quick support, give us a call and speak directly
-                  with our beauty specialists.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* We're Here to Help */}
-        <section className="contact-help">
-          <div className="contact-help-inner">
-            <div className="contact-help-header">
-              <h2>We're Here to Help</h2>
-              <p>
-                Your beauty journey matters to us. If you need support, want to
-                collaborate, or have feedback to share, our customer care team
-                is ready to respond.
-              </p>
-            </div>
-            <div className="contact-help-grid">
-              <div className="contact-help-card contact-help-feature">
-                <img
-                  src="https://i.pinimg.com/736x/cb/39/d4/cb39d4d73a49e29996ddb619845cd5d9.jpg"
-                  alt="Customer Support"
-                />
-              </div>
-              <div className="contact-help-card">
-                <h3>Customer Support</h3>
-                <p>
-                  At Gracia Fab, your satisfaction is our top priority. Whether
-                  you need assistance, product details, or order help, we're
-                  here to guide you.
-                </p>
-                <p>
-                  If you need questions about your order, shipping, or returns,
-                  don't hesitate — reach out. We provide prompt and helpful
-                  assistance. No concern is too small.
-                </p>
-              </div>
-              <div className="contact-help-card">
-                <h3>Connect With Us</h3>
-                <p>
-                  We love building meaningful connections with our community.
-                  Share your experiences, find more about what inspires you and
-                  explore our beauty world together.
-                </p>
-                <p>
-                  Reach us through email, phone, or social media. No matter how
-                  you choose to connect, we'll make sure you're heard and that
-                  every interaction reflects our love for beauty and glow.
+                  Our beauty specialists are available Mon–Sat, 9am–6pm WAT.
                 </p>
               </div>
             </div>
