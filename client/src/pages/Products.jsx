@@ -4,6 +4,8 @@ import "../styles/Products.css";
 import SEO from "../components/SEO";
 import "../styles/Products.css";
 import API_URL from "../config";
+import { useToast } from "../components/Toast";
+import ProductCard, { ProductCardSkeleton } from "../components/ProductCard";
 
 const categories = ["all", "skincare", "haircare", "wig", "bridal"];
 const sortOptions = [
@@ -20,6 +22,7 @@ function Products() {
   const [activeCategory, setActiveCategory] = useState("all");
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("");
+  const { addToast } = useToast();
 
   useEffect(() => {
     fetchProducts();
@@ -148,19 +151,15 @@ function Products() {
 
         {/* Grid */}
         {loading ? (
-          <div className="products-loading">
-            <p>Loading products...</p>
-          </div>
-        ) : error ? (
-          <div className="products-error">⚠️ {error}</div>
-        ) : getSortedProducts().length === 0 ? (
-          <div className="products-empty">
-            <p>No products found. Try a different filter.</p>
+          <div className="products-grid">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <ProductCardSkeleton key={i} />
+            ))}
           </div>
         ) : (
           <div className="products-grid">
-            {getSortedProducts().map((product) => (
-              <ProductCard key={product._id} product={product} />
+            {products.map((p) => (
+              <ProductCard key={p._id} product={p} />
             ))}
           </div>
         )}

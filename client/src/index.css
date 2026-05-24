@@ -769,3 +769,70 @@ input, select, textarea { font-family: var(--font-body); }
   .about-team-grid { grid-template-columns: repeat(2, 1fr); }
   .contact-form-grid { grid-template-columns: 1fr; }
 }
+
+/* ═══════════════════════════════════════
+   TABLET SPECIFIC FIXES
+═══════════════════════════════════════ */
+
+/* iPad Air (820x1180) */
+@media (min-width: 768px) and (max-width: 820px) {
+  .hero-inner { grid-template-columns: 1fr 1fr; }
+  .hero-visual { display: flex; }
+  .hero-model-img { height: 420px; }
+  .hero { min-height: 80vh; }
+  .features-grid { grid-template-columns: repeat(2, 1fr); }
+  .about-hero-inner { grid-template-columns: 1fr 1fr; gap: 2rem; }
+  .about-story-inner { grid-template-columns: 1fr 1fr; }
+  .dashboard-layout { grid-template-columns: 180px 1fr; }
+  .dashboard-sidebar {
+    flex-direction: column !important;
+    position: sticky;
+    top: 80px;
+  }
+  .footer-top { grid-template-columns: 1.5fr 1fr 1fr; }
+}
+
+/* Surface Pro 7 (912x1368) */
+@media (min-width: 820px) and (max-width: 940px) {
+  .hero-inner { grid-template-columns: 1fr 1fr; gap: 2rem; }
+  .hero-visual { display: flex; }
+  .hero-model-img { height: 440px; }
+  .features-grid { grid-template-columns: repeat(2, 1fr); }
+  .products-page { grid-template-columns: 190px 1fr; padding: 1.5rem; }
+  .products-sidebar { display: block; }
+  .products-grid { grid-template-columns: repeat(2, 1fr); }
+  .dashboard-layout { grid-template-columns: 190px 1fr; }
+  .dashboard-sidebar {
+    flex-direction: column !important;
+    flex-wrap: nowrap !important;
+    position: sticky;
+    top: 80px;
+  }
+  .about-hero-inner { grid-template-columns: 1fr 1fr; }
+  .footer-top { grid-template-columns: 1.5fr 1fr 1fr; }
+}
+
+/* Asus ZenBook Fold (853x1280) */
+@media (min-width: 820px) and (max-width: 870px) {
+  .hero-inner { grid-template-columns: 1fr 1.2fr; }
+  .hero-visual { display: flex; }
+  .features-grid { grid-template-columns: repeat(2, 1fr); }
+  .products-grid { grid-template-columns: repeat(2, 1fr); }
+  .products-page { grid-template-columns: 180px 1fr; }
+  .products-sidebar { display: block; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Nest Hub Max (1280x800) landscape */
+@media (min-width: 1200px) and (max-height: 820px) {
+  .hero { min-height: 90vh; padding: 2.5rem 3rem; }
+  .hero-model-img { height: 460px; }
+}
+
+/* General tablet landscape */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+  .hero { min-height: auto; padding: 2.5rem 2rem; }
+  .hero-inner { grid-template-columns: 1fr 1.2fr; }
+  .hero-visual { display: flex; }
+  .hero-model-img { height: clamp(300px, 40vh, 420px); }
+}

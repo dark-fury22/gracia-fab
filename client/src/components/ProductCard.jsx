@@ -2,9 +2,11 @@ import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import WishlistButton from "./WishlistButton";
 import "./ProductCard.css";
+import { useToast } from "../components/Toast";
 
 function ProductCard({ product }) {
   const { addToCart } = useCart();
+  const { addToast } = useToast();
 
   const formatPrice = (price) =>
     new Intl.NumberFormat("en-NG", {
@@ -43,11 +45,28 @@ function ProductCard({ product }) {
           <span className="product-price">{formatPrice(product?.price)}</span>
           <button
             className="btn-add-to-cart"
-            onClick={() => addToCart(product)}
+            onClick={() => {
+              addToCart(product);
+              addToast(`Added ${product.name} to cart 🛒`, "success");
+            }}
           >
             Add to cart
           </button>
         </div>
+      </div>
+    </div>
+  );
+}
+
+export function ProductCardSkeleton() {
+  return (
+    <div className="product-card-skeleton">
+      <div className="skeleton skeleton-img" />
+      <div className="skeleton-body">
+        <div className="skeleton skeleton-line short" />
+        <div className="skeleton skeleton-line" />
+        <div className="skeleton skeleton-line medium" />
+        <div className="skeleton skeleton-price" />
       </div>
     </div>
   );

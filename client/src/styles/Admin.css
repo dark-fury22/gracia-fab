@@ -408,3 +408,128 @@
   .admin-header { flex-direction: column; gap: 0.5rem; }
   .admin-header h1 { font-size: 1.4rem; }
 }
+
+/* ═══════════════════════════════
+   ADMIN — COMPLETE MOBILE FIX
+═══════════════════════════════ */
+
+/* Admin tabs — scrollable on mobile */
+.admin-tabs {
+  display: flex;
+  border-bottom: 1.5px solid var(--border-soft);
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  gap: 0;
+  flex-wrap: nowrap;
+}
+
+.admin-tabs::-webkit-scrollbar { display: none; }
+
+.admin-tab {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+@media (max-width: 1024px) {
+  .stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 820px) {
+  .admin-page { padding: 1rem; overflow-x: hidden; }
+
+  .admin-header {
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .admin-header h1 { font-size: 1.4rem; }
+
+  .admin-tabs {
+    margin-bottom: 1.5rem;
+  }
+
+  .admin-tab {
+    padding: 0.7rem 0.85rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+  }
+
+  /* Stats in 2x2 grid */
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+  }
+
+  .stat-card {
+    padding: 1rem;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
+    min-width: 0;
+  }
+
+  .stat-icon {
+    width: 38px;
+    height: 38px;
+    font-size: 1rem;
+  }
+
+  .stat-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.06em;
+  }
+
+  .stat-value {
+    font-size: 1.1rem;
+    word-break: break-word;
+  }
+
+  /* Admin table horizontal scroll */
+  .admin-table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+    border-radius: var(--radius-lg);
+    font-size: 0.78rem;
+  }
+
+  .admin-table td,
+  .admin-table th {
+    padding: 0.7rem 0.85rem;
+    font-size: 0.72rem;
+  }
+
+  .admin-section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .admin-form-grid { grid-template-columns: 1fr; }
+  .admin-form-card { padding: 1.2rem; }
+  .admin-form-actions { flex-direction: column; }
+  .btn-admin-save,
+  .btn-admin-cancel { width: 100%; text-align: center; }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.6rem;
+  }
+
+  .stat-card { padding: 0.85rem; }
+  .stat-value { font-size: 1rem; }
+  .stat-icon { width: 32px; height: 32px; font-size: 0.9rem; }
+
+  .admin-tab {
+    padding: 0.6rem 0.7rem;
+    font-size: 0.62rem;
+  }
+}

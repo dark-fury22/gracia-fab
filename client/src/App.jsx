@@ -22,6 +22,7 @@ import MyOrders from "./pages/MyOrders";
 import Dashboard from "./pages/Dashboard";
 import Wishlist from "./pages/Wishlist";
 import AdminDashboard from "./pages/AdminDashboard";
+import BackToTop from "./components/BackToTop";
 
 // ── Protected route — redirects to login if not authenticated ──
 function ProtectedRoute({ children }) {
@@ -202,6 +203,7 @@ function App() {
         {/* ── Catch all ── */}
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
+      <BackToTop />
     </Router>
   );
 }

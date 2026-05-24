@@ -237,18 +237,18 @@
 }
 
 .navbar-logo-link {
-  flex: 1;
   display: flex;
-  justify-content: center;
+  align-items: center;
   text-decoration: none;
+  flex-shrink: 0;
 }
 
 .logo-mobile { display: none; }
 .logo-desktop { display: flex; }
 
 @media (max-width: 768px) {
-  .logo-mobile { display: flex; }
-  .logo-desktop { display: none; }
+  .logo-mobile { display: flex !important; }
+  .logo-desktop { display: none !important; }
   .navbar { height: 56px; padding: 0 1rem; }
   .navbar-logo-link { flex: 0; }
 }

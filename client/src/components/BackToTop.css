@@ -1,0 +1,29 @@
+.back-to-top {
+  position: fixed;
+  bottom: 5rem;
+  right: 1.5rem;
+  width: 44px;
+  height: 44px;
+  background: var(--accent);
+  border: none;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+  z-index: 998;
+  box-shadow: var(--shadow-md);
+  transition: all 0.25s ease;
+  animation: fadeIn 0.3s ease both;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+[data-theme="light"] .back-to-top { color: #ffffff; }
+[data-theme="dark"] .back-to-top { color: #000000; }
+
+.back-to-top:hover {
+  background: var(--accent-hover);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}

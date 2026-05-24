@@ -1,207 +1,127 @@
-import { useState } from "react";
-import { useTheme } from "../context/ThemeContext";
-
-// GraciaLogo.jsx
-// Place this file in: client/src/components/GraciaLogo.jsx
+import { useContext } from "react";
+import { ThemeContext } from "../context/ThemeContext";
 
 function GraciaLogo({ size = "md", showText = true }) {
-  const { theme } = useTheme();
+  const { theme } = useContext(ThemeContext);
+
   const sizes = {
-    xs: { w: 32, h: 32, textSize: 0 },
-    sm: { w: 38, h: 38, textSize: 11 },
-    md: { w: 52, h: 52, textSize: 13 },
-    lg: { w: 72, h: 72, textSize: 17 },
-    xl: { w: 100, h: 100, textSize: 22 },
+    xs: { icon: 32, text: 0 },
+    sm: { icon: 38, text: 11 },
+    md: { icon: 48, text: 13 },
+    lg: { icon: 64, text: 17 },
   };
 
-  const { w, h } = sizes[size] || sizes.md;
-
-  // Theme-aware colors
-  const stroke = theme === "dark" ? "#FCA311" : "#FE938C";
-  const stroke2 = theme === "dark" ? "#E59310" : "#C49792";
-  const textPrimary = theme === "dark" ? "#FFFFFF" : "#2C1810";
-  const textAccent = theme === "dark" ? "#FCA311" : "#FE938C";
-  const strokeWidth = size === "xs" ? 5 : 6.5;
-  const [isHovered, setIsHovered] = useState(false);
+  const s = sizes[size] || sizes.md;
+  const accent = theme === "dark" ? "#FCA311" : "#FE938C";
+  const alt = theme === "dark" ? "#E59310" : "#C49792";
+  const text1 = theme === "dark" ? "#FFFFFF" : "#2C1810";
 
   return (
     <div
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
       style={{
         display: "inline-flex",
         alignItems: "center",
-        gap: 10,
-        transition: "all 0.3s ease",
-        transform: isHovered ? "scale(1.03)" : "scale(1)",
-        filter: isHovered ? `drop-shadow(0 0 8px ${stroke}55)` : "none",
-        cursor: "pointer",
+        gap: 8,
+        flexShrink: 0,
+        textDecoration: "none",
       }}
     >
-      {/* ── Icon ── */}
+      {/* SVG Icon */}
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 200 210"
-        width={w}
-        height={h}
+        width={s.icon}
+        height={s.icon}
         fill="none"
-        aria-label="Gracia Fab logo icon"
+        style={{ flexShrink: 0, display: "block" }}
       >
-        {/* ── Crescent arc (C-shape, opening to the right) ── */}
-        {/* Center ≈ (88,105), radius 82 */}
+        {/* Crescent arc */}
         <path
           d="M 148,42 A 82,82 0 1,0 148,168"
-          stroke={stroke}
-          strokeWidth={strokeWidth}
+          stroke={accent}
+          strokeWidth="6.5"
           fill="none"
           strokeLinecap="round"
         />
-
-        {/* ── Leaves / botanical elements at top of head ── */}
-        {/* Main leaf 1 — upper right, large */}
+        {/* Leaf 1 */}
         <path
           d="M 120,42 C 126,24 148,26 144,46 C 140,62 122,60 120,42 Z"
-          stroke={stroke}
+          stroke={accent}
           strokeWidth="2.2"
           fill="none"
-          strokeLinejoin="round"
         />
-        {/* Leaf 1 vein */}
-        <path
-          d="M 120,42 C 130,40 140,44 144,46"
-          stroke={stroke}
-          strokeWidth="1"
-          fill="none"
-          opacity="0.5"
-        />
-
-        {/* Leaf 2 — pointing upper right */}
+        {/* Leaf 2 */}
         <path
           d="M 130,36 C 138,18 160,22 154,42 C 150,58 132,54 130,36 Z"
-          stroke={stroke}
+          stroke={accent}
           strokeWidth="2"
           fill="none"
-          strokeLinejoin="round"
         />
-        {/* Leaf 2 vein */}
-        <path
-          d="M 130,36 C 142,34 150,40 154,42"
-          stroke={stroke}
-          strokeWidth="1"
-          fill="none"
-          opacity="0.45"
-        />
-
-        {/* Leaf 3 — small, top */}
+        {/* Leaf 3 */}
         <path
           d="M 118,34 C 122,20 136,22 134,36 C 132,48 120,46 118,34 Z"
-          stroke={stroke2}
+          stroke={alt}
           strokeWidth="1.8"
           fill="none"
-          strokeLinejoin="round"
           opacity="0.85"
         />
-
-        {/* Leaf 4 — small, right side */}
+        {/* Leaf 4 */}
         <path
           d="M 144,44 C 154,32 168,38 164,54 C 160,66 146,62 144,44 Z"
-          stroke={stroke2}
+          stroke={alt}
           strokeWidth="1.8"
           fill="none"
-          strokeLinejoin="round"
           opacity="0.75"
         />
-
-        {/* ── Face profile (front contour only, facing right) ── */}
-        {/* Forehead → nose bridge → nose → lips → chin → neck */}
+        {/* Face profile */}
         <path
-          d={`
-            M 114,46
-            C 126,42 136,54 141,68
-            C 145,78 149,85 150,92
-            C 151,98 148,104 145,110
-            C 144,114 143,118 144,122
-            C 145,128 140,135 133,140
-            C 126,145 118,150 112,158
-          `}
-          stroke={stroke}
+          d="M 114,46 C 126,42 136,54 141,68 C 145,78 149,85 150,92 C 151,98 148,104 145,110 C 144,114 143,118 144,122 C 145,128 140,135 133,140 C 126,145 118,150 112,158"
+          stroke={accent}
           strokeWidth="3"
           fill="none"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
-
-        {/* ── Hair — main flow (from back of head, flowing down-right) ── */}
+        {/* Hair main */}
         <path
-          d={`
-            M 114,46
-            C 100,42 84,50 76,64
-            C 70,76 68,92 70,108
-            C 72,124 80,140 90,152
-            C 96,160 103,166 108,172
-          `}
-          stroke={stroke}
+          d="M 114,46 C 100,42 84,50 76,64 C 70,76 68,92 70,108 C 72,124 80,140 90,152 C 96,160 103,166 108,172"
+          stroke={accent}
           strokeWidth="3"
           fill="none"
           strokeLinecap="round"
-          strokeLinejoin="round"
         />
-
-        {/* Hair strand 2 */}
+        {/* Hair 2 */}
         <path
-          d={`
-            M 78,67
-            C 72,84 70,102 72,118
-            C 74,132 82,146 92,156
-          `}
-          stroke={stroke}
+          d="M 78,67 C 72,84 70,102 72,118 C 74,132 82,146 92,156"
+          stroke={accent}
           strokeWidth="2.2"
           fill="none"
           strokeLinecap="round"
           opacity="0.8"
         />
-
-        {/* Hair strand 3 */}
+        {/* Hair 3 */}
         <path
-          d={`
-            M 72,92
-            C 70,108 72,124 78,138
-            C 83,148 92,156 98,164
-          `}
-          stroke={stroke2}
+          d="M 72,92 C 70,108 72,124 78,138 C 83,148 92,156 98,164"
+          stroke={alt}
           strokeWidth="1.8"
           fill="none"
           strokeLinecap="round"
           opacity="0.65"
         />
-
-        {/* Hair strand 4 — innermost */}
-        <path
-          d={`
-            M 76,110
-            C 76,124 80,138 88,150
-            C 93,158 100,164 104,170
-          `}
-          stroke={stroke2}
-          strokeWidth="1.4"
-          fill="none"
-          strokeLinecap="round"
-          opacity="0.5"
-        />
       </svg>
 
-      {/* ── Wordmark ── */}
-      {showText && (
+      {/* Wordmark */}
+      {showText && s.text > 0 && (
         <div
-          style={{ display: "flex", flexDirection: "column", lineHeight: 1 }}
+          style={{ display: "flex", flexDirection: "column", lineHeight: 1.1 }}
         >
           <span
             style={{
               fontFamily: "'Playfair Display', Georgia, serif",
               fontStyle: "italic",
               fontWeight: 700,
-              fontSize: sizes[size]?.textSize || 13,
-              color: textPrimary,
+              fontSize: s.text,
+              color: text1,
               letterSpacing: "0.02em",
             }}
           >
@@ -209,12 +129,11 @@ function GraciaLogo({ size = "md", showText = true }) {
           </span>
           <span
             style={{
-              fontFamily: "'DM Sans', system-ui, sans-serif",
-              fontWeight: 600,
-              fontSize: (sizes[size]?.textSize || 13) * 0.72,
-              color: textAccent,
+              fontFamily: "'DM Sans', sans-serif",
+              fontWeight: 700,
+              fontSize: s.text * 0.72,
+              color: accent,
               letterSpacing: "0.28em",
-              marginTop: 1,
             }}
           >
             FAB
