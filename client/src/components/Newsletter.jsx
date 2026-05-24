@@ -1,34 +1,36 @@
 import { useState } from "react";
+import API_URL from "../config";
 import "./Newsletter.css";
 
 function Newsletter() {
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState(""); // 'success' | 'error' | ''
   const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState(""); // 'success' | 'error' | ''
+  const [message, setMessage] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email || !email.includes("@")) {
       setStatus("error");
+      setMessage("Please enter a valid email address.");
       return;
     }
 
     try {
       setLoading(true);
-      // Store in localStorage as simple subscriber list
-      const subscribers = JSON.parse(
-        localStorage.getItem("gf_subscribers") || "[]",
-      );
-      if (subscribers.includes(email)) {
-        setStatus("already");
-        return;
-      }
-      subscribers.push(email);
-      localStorage.setItem("gf_subscribers", JSON.stringify(subscribers));
-      setEmail("");
+      const res = await fetch(`${API_URL}/api/contact/subscribe`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
       setStatus("success");
-    } catch {
+      setMessage(data.message);
+      setEmail("");
+    } catch (err) {
       setStatus("error");
+      setMessage(err.message || "Subscription failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -45,41 +47,36 @@ function Newsletter() {
           </p>
         </div>
 
-        {status === "success" ? (
-          <div className="newsletter-success">
-            ✅ You're subscribed! Welcome to the Gracia Fab family 🌸
-          </div>
-        ) : status === "already" ? (
-          <div className="newsletter-success">
-            💛 You're already subscribed! Check your inbox for our latest
-            updates.
-          </div>
-        ) : (
-          <form className="newsletter-form" onSubmit={handleSubmit}>
-            <div className="newsletter-input-wrap">
-              <input
-                type="email"
-                className="newsletter-input"
-                placeholder="Your email"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  setStatus("");
-                }}
-              />
-              <button
-                type="submit"
-                className="newsletter-btn"
-                disabled={loading}
-              >
-                {loading ? "..." : "Submit ✦"}
-              </button>
-            </div>
-            {status === "error" && (
-              <p className="newsletter-error">Please enter a valid email.</p>
-            )}
-          </form>
-        )}
+        <div className="newsletter-form-wrap">
+          {status === "success" ? (
+            <div className="newsletter-success">✅ {message}</div>
+          ) : (
+            <form className="newsletter-form" onSubmit={handleSubmit}>
+              <div className="newsletter-input-wrap">
+                <input
+                  type="email"
+                  className="newsletter-input"
+                  placeholder="Your email"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (status) setStatus("");
+                  }}
+                />
+                <button
+                  type="submit"
+                  className="newsletter-btn"
+                  disabled={loading}
+                >
+                  {loading ? "..." : "Submit ✦"}
+                </button>
+              </div>
+              {status === "error" && (
+                <p className="newsletter-error">⚠️ {message}</p>
+              )}
+            </form>
+          )}
+        </div>
       </div>
     </section>
   );

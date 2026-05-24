@@ -1,25 +1,65 @@
+import { useState } from "react";
+import API_URL from "../config";
 import "./ContactTeaser.css";
-import { Link } from "react-router-dom";
 
 function ContactTeaser() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    subject: "",
+    message: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState("");
+  const [error, setError] = useState("");
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setStatus("");
+
+    if (!formData.name || !formData.email || !formData.message) {
+      setError("Please fill in name, email and message.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const res = await fetch(`${API_URL}/api/contact`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
+      setStatus(data.message);
+      setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
+    } catch (err) {
+      setError(err.message || "Failed to send. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <section className="contact-teaser">
       <div className="contact-inner">
         {/* Left */}
         <div className="contact-left">
-          <h2>
-            Need Assistance?
-            <br />
-            We're Here to Help!
-          </h2>
+          <h2>We're Here to Help! 🌟</h2>
           <p>
-            Our friendly team is excited to makeup your questions with our
-            beauty expert answers.
+            Our friendly team is excited to answer your questions with beauty
+            expert advice. Reach out anytime.
           </p>
           <div className="contact-team">
             <div className="contact-avatars">
               <img
-                src="https://res.cloudinary.com/dyzkjerez/image/upload/v1778840697/597857690_1158227046476150_6996214699199997289_n.jpg_wwxrey.jpg"
+                src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=40&h=40&fit=crop&crop=face"
                 alt="team"
               />
               <img
@@ -27,7 +67,7 @@ function ContactTeaser() {
                 alt="team"
               />
               <img
-                src="https://images.unsplash.com/photo-1502685104226-ee32379fefbe?w=40&h=40&fit=crop&crop=face"
+                src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=40&h=40&fit=crop&crop=face"
                 alt="team"
               />
             </div>
@@ -35,41 +75,72 @@ function ContactTeaser() {
           </div>
         </div>
 
-        {/* Right — Quick form */}
+        {/* Right — Form */}
         <div className="contact-right">
           <h3>Let's get in touch.</h3>
-          <div className="contact-form">
-            <input
-              type="text"
-              placeholder="Your name"
-              className="contact-input"
-            />
-            <input
-              type="email"
-              placeholder="Your email"
-              className="contact-input"
-            />
-            <input
-              type="tel"
-              placeholder="Phone no."
-              className="contact-input"
-            />
-            <select className="contact-input">
-              <option value="">Reason for contact</option>
-              <option>Product Inquiry</option>
-              <option>Order Support</option>
-              <option>Returns</option>
-              <option>Other</option>
-            </select>
-            <textarea
-              placeholder="Message"
-              className="contact-input contact-textarea"
-              rows={3}
-            />
-            <Link to="/contact" className="contact-teaser-btn">
-              Let's connect 💌
-            </Link>
-          </div>
+
+          {status ? (
+            <div className="contact-teaser-success">✅ {status}</div>
+          ) : (
+            <form className="contact-form" onSubmit={handleSubmit}>
+              {error && <div className="contact-teaser-error">⚠️ {error}</div>}
+
+              <input
+                className="contact-input"
+                type="text"
+                name="name"
+                placeholder="Your name"
+                value={formData.name}
+                onChange={handleChange}
+              />
+              <input
+                className="contact-input"
+                type="email"
+                name="email"
+                placeholder="Your email"
+                value={formData.email}
+                onChange={handleChange}
+              />
+              <input
+                className="contact-input"
+                type="tel"
+                name="phone"
+                placeholder="Phone no."
+                value={formData.phone}
+                onChange={handleChange}
+              />
+              <select
+                className="contact-input"
+                name="subject"
+                value={formData.subject}
+                onChange={handleChange}
+              >
+                <option value="">Reason for contact</option>
+                <option>Product Inquiry</option>
+                <option>Order Support</option>
+                <option>Beauty Consultation</option>
+                <option>Returns & Refunds</option>
+                <option>Partnership</option>
+                <option>Other</option>
+              </select>
+              <textarea
+                className="contact-input contact-textarea"
+                name="message"
+                placeholder="Message"
+                rows={3}
+                value={formData.message}
+                onChange={handleChange}
+              />
+
+              <button
+                type="submit"
+                className="contact-submit"
+                disabled={loading}
+              >
+                {loading ? "Sending..." : "Let's connect 💌"}
+              </button>
+            </form>
+          )}
         </div>
       </div>
     </section>

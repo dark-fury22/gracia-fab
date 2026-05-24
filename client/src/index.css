@@ -5,6 +5,9 @@
   padding: 0;
   box-sizing: border-box;
 }
+* {
+  min-width: 0;
+}
 
 /* ═══════════════════════════════════════
    LIGHT THEME — Coral/Peach/Mauve
@@ -164,6 +167,10 @@ body,
 
 /* Prevent transition on everything else that causes flicker */
 img, svg, video { transition: none !important; }
+img {
+  max-width: 100%;
+  height: auto;
+}
 
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: var(--bg-2); }
@@ -298,22 +305,12 @@ input, select, textarea { font-family: var(--font-body); }
 /* ═══════════════════════════════════════
    RESPONSIVE BREAKPOINTS
 ═══════════════════════════════════════ */
-@media (max-width: 1024px) {
-  .hero-inner { grid-template-columns: 1fr 1.3fr 1fr; }
-  .features-grid { grid-template-columns: repeat(2,1fr); }
-  .products-page { grid-template-columns: 200px 1fr; }
-  .products-grid { grid-template-columns: repeat(2,1fr); }
-  .footer-top { grid-template-columns: 1.5fr 1fr 1fr 1fr; }
-  .stats-grid { grid-template-columns: repeat(2,1fr); }
-  .checkout-layout { grid-template-columns: 1fr 320px; }
-}
 
 @media (max-width: 768px) {
   .navbar { padding: 0 1.2rem; height: 60px; }
   .navbar-left { display: none !important; }
   .hide-mobile { display: none !important; }
   .hero-images-left, .hero-images-right { display: none; }
-  .hero-inner { grid-template-columns: 1fr; }
   .hero { padding: 3.5rem 1.5rem 4rem; min-height: 70vh; }
   .hero-center h1 { font-size: clamp(2.2rem, 8vw, 3rem); }
   .features { padding: 3rem 1.5rem; }
@@ -333,7 +330,6 @@ input, select, textarea { font-family: var(--font-body); }
   .dashboard-layout { grid-template-columns: 1fr; }
   .dashboard-sidebar { flex-direction: row; flex-wrap: wrap; position: static; }
   .sidebar-tab { flex: none; }
-  .wishlist-grid { grid-template-columns: repeat(2,1fr); }
   .results-grid { grid-template-columns: 1fr; }
   .step-buttons { flex-direction: column-reverse; }
   .btn-next, .btn-submit, .btn-back-step { width: 100%; }
@@ -347,7 +343,7 @@ input, select, textarea { font-family: var(--font-body); }
   .confirmation-card { padding: 2rem 1.2rem; }
   .confirmation-actions { flex-direction: column; }
   .mobile-categories {
-    display: flex !important;
+    display: flex;
     overflow-x: auto;
     gap: 0.5rem;
     padding: 0.5rem 0;
@@ -360,14 +356,6 @@ input, select, textarea { font-family: var(--font-body); }
   .detail-page { padding: 1.5rem; }
 }
 
-@media (max-width: 480px) {
-  .hero-center h1 { font-size: 2rem; }
-  .features-grid { grid-template-columns: 1fr; }
-  .products-grid { grid-template-columns: 1fr; }
-  .wishlist-grid { grid-template-columns: 1fr; }
-  .stats-grid { grid-template-columns: 1fr; }
-  .step span { display: none; }
-}
 
 /* ═══════════════════════════════════════════════
    COMPREHENSIVE RESPONSIVE — ALL DEVICES
@@ -415,7 +403,7 @@ input, select, textarea { font-family: var(--font-body); }
   .products-page { grid-template-columns: 1fr; }
   .products-sidebar { display: none; }
   .products-main { padding-left: 0; }
-  .mobile-categories { display: flex !important; overflow-x: auto; gap: 0.5rem; padding: 0.5rem 0; margin-bottom: 1rem; scrollbar-width: none; }
+  .mobile-categories { display: flex; overflow-x: auto; gap: 0.5rem; padding: 0.5rem 0; margin-bottom: 1rem; scrollbar-width: none; }
   .mobile-categories::-webkit-scrollbar { display: none; }
   .detail-grid { grid-template-columns: 1fr; gap: 2rem; }
   .checkout-layout { grid-template-columns: 1fr; }
@@ -458,14 +446,14 @@ input, select, textarea { font-family: var(--font-body); }
   .launch-inner { grid-template-columns: 1fr; }
   .launch-visual { display: none; }
 
-  .footer-top { grid-template-columns: 1fr 1fr; }
+  
   .footer-bottom { flex-direction: column; text-align: center; gap: 0.75rem; }
 
   .stats-grid { grid-template-columns: repeat(2, 1fr); }
-  .admin-table { display: block; overflow-x: auto; white-space: nowrap; }
+  .admin-table { display: block; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
   .admin-tabs { overflow-x: auto; scrollbar-width: none; }
   .admin-tabs::-webkit-scrollbar { display: none; }
-  .admin-form-grid { grid-template-columns: 1fr; }
+  
 
   .wishlist-grid { grid-template-columns: repeat(2, 1fr); }
   .results-grid { grid-template-columns: repeat(2, 1fr); }
@@ -513,7 +501,7 @@ input, select, textarea { font-family: var(--font-body); }
 
   /* Products */
   .products-page { padding: 1rem; }
-  .products-grid { grid-template-columns: repeat(2, 1fr); gap: 0.65rem; }
+  .products-grid { grid-template-columns: 1fr;}
   .products-top-bar { flex-direction: column; gap: 0.75rem; }
   .products-top-right { flex-direction: column; gap: 0.5rem; width: 100%; }
   .products-search, .products-sort { width: 100%; }
@@ -640,6 +628,12 @@ input, select, textarea { font-family: var(--font-body); }
   .launch-banner { padding: 2.5rem 1rem; }
 }
 
+@media (min-width: 481px) {
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 /* ── iPhone SE & very small phones (375px) ── */
 @media (max-width: 375px) {
   .navbar { height: 54px; }
@@ -659,7 +653,7 @@ input, select, textarea { font-family: var(--font-body); }
   .wishlist-grid { grid-template-columns: repeat(3, 1fr); }
   .trending-grid { grid-template-columns: repeat(2, 1fr); }
   .hero-visual { display: flex; }
-  .hero-model-img { height: 400px; }
+  .hero-model-img { height: clamp(300px, 50vw, 400px); }
   .hero-inner { grid-template-columns: 1fr 1fr; }
 }
 
@@ -731,4 +725,47 @@ input, select, textarea { font-family: var(--font-body); }
 @media print {
   .navbar, .footer, .cart-btn, .hamburger { display: none; }
   body { background: white; color: black; }
+}
+/* ── Galaxy Z Fold 5 & ultra-narrow (344px) ── */
+@media (max-width: 360px) {
+  .navbar { padding: 0 0.75rem; height: 54px; }
+  .hero { padding: 2rem 0.85rem 2.5rem; }
+  .hero-title, .hero-center h1 { font-size: 1.7rem; }
+  .hero-live-pill { font-size: 0.58rem; padding: 4px 8px; }
+  .products-grid { grid-template-columns: 1fr; }
+  .wishlist-grid { grid-template-columns: 1fr; }
+  .results-grid { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: 1fr; }
+  .about-stats-inner { grid-template-columns: 1fr; }
+  .footer-top { padding: 1.5rem 0.85rem; }
+  .admin-page { padding: 0.85rem; }
+  .dashboard-page { padding: 0.85rem; }
+  .recommend-card { padding: 1.2rem 0.85rem; }
+  .checkout-form-section { padding: 1.2rem 0.85rem; }
+  .dashboard-sidebar { gap: 0.3rem; padding: 0.5rem; }
+  .sidebar-tab { padding: 0.4rem 0.65rem; font-size: 0.68rem; white-space: nowrap;}
+  .auth-topbar-links a { padding: 0.25rem 0.4rem; font-size: 0.65rem; }
+  .auth-topbar-links { gap: 0.15rem; }
+  .stat-card { flex-direction: row; }
+  .cart-item { gap: 0.5rem; }
+  .cart-item-image { width: 50px; height: 58px; }
+  .order-id { font-size: 0.78rem; }
+  .dashboard-order-id { font-size: 0.75rem; }
+}
+
+/* ── Surface Duo specific (540px) ── */
+@media (max-width: 560px) {
+  .hero-inner { grid-template-columns: 1fr; }
+  .hero-visual { 
+    display: flex; 
+    justify-content: center; 
+    padding: 0;
+  }
+  .hero-img-blob { max-width: 260px; }
+  .hero-model-img { height: 280px; }
+  .hero-ring-1 { width: 270px; height: 270px; }
+  .hero-ring-2 { width: 220px; height: 220px; }
+  .checkout-layout { grid-template-columns: 1fr; }
+  .about-team-grid { grid-template-columns: repeat(2, 1fr); }
+  .contact-form-grid { grid-template-columns: 1fr; }
 }
