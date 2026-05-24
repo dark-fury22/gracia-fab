@@ -15,6 +15,10 @@ export function ThemeProvider({ children }) {
     localStorage.setItem("graciaFabTheme", theme);
   }, [theme]);
 
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === "light" ? "dark" : "light"));
+  };
+
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
       {children}
