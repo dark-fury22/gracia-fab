@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import ProductCard from "../components/ProductCard";
 import "../styles/Products.css";
 import SEO from "../components/SEO";
 import "../styles/Products.css";

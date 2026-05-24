@@ -305,9 +305,7 @@
 ═══════════════════════════════ */
 
 /* Default: 3 cols on desktop */
-.products-grid {
-  grid-template-columns: repeat(3, 1fr);
-}
+
 
 /* iPad Air / ZenBook (820-1024px): 2 cols */
 @media (max-width: 1024px) {
