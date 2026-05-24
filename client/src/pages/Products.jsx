@@ -157,7 +157,7 @@ function Products() {
           </div>
         ) : (
           <div className="products-grid">
-            {products.map((p) => (
+            {getSortedProducts().map((p) => (
               <ProductCard key={p._id} product={p} />
             ))}
           </div>
