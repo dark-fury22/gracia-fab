@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import ThemeContext from "../context/ThemeContext";
+import { ThemeContext } from "../context/ThemeContext";
 
 function GraciaLogo({ size = "md", showText = true }) {
   const { theme } = useContext(ThemeContext);
