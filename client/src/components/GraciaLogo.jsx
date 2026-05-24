@@ -1,9 +1,7 @@
-import { useContext } from "react";
-import { ThemeContext } from "../context/ThemeContext";
+import { useTheme } from "../context/ThemeContext";
 
 function GraciaLogo({ size = "md", showText = true }) {
-  const { theme } = useContext(ThemeContext);
-
+  const { theme } = useTheme();
   const sizes = {
     xs: { icon: 32, text: 0 },
     sm: { icon: 38, text: 11 },
