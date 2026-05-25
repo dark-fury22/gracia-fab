@@ -25,7 +25,6 @@ import AdminDashboard from "./pages/AdminDashboard";
 import BackToTop from "./components/BackToTop";
 import InstallPrompt from "./components/InstallPrompt";
 import BeautyLanding from "./pages/BeautyLanding";
-import reviewRoutes from "./routes/reviewRoutes.js";
 
 // ── Protected route — redirects to login if not authenticated ──
 function ProtectedRoute({ children }) {
