@@ -149,6 +149,7 @@ function ReviewSection({ productId }) {
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
+      console.log("Review Product ID:", productId);
       const res = await fetch(`${API_URL}/api/reviews/${productId}`, {
         method: "POST",
         headers: {

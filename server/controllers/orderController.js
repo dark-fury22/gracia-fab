@@ -107,8 +107,6 @@ export const createOrder = async (req, res) => {
 
       deliveryAddress,
 
-      itemsPrice,
-
       deliveryPrice,
 
       totalPrice,
