@@ -1,0 +1,57 @@
+.install-prompt {
+  position: fixed;
+  bottom: 1.2rem;
+  left: 1rem;
+  right: 1rem;
+  z-index: 2000;
+  animation: fadeUp 0.4s var(--ease-spring) both;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.install-prompt-content {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 1rem 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: var(--shadow-lg);
+}
+
+.install-icon { font-size: 1.8rem; flex-shrink: 0; }
+
+.install-text { flex: 1; min-width: 0; }
+.install-text strong { font-size: 0.85rem; color: var(--text); display: block; margin-bottom: 0.2rem; }
+.install-text p { font-size: 0.72rem; color: var(--text-muted); margin: 0; }
+
+.install-actions { display: flex; flex-direction: column; gap: 0.4rem; flex-shrink: 0; }
+
+.install-btn {
+  background: var(--accent);
+  border: none;
+  border-radius: 20px;
+  padding: 0.45rem 1rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--duration) var(--ease);
+  white-space: nowrap;
+}
+
+[data-theme="light"] .install-btn { color: #fff; }
+[data-theme="dark"] .install-btn { color: #000; }
+.install-btn:hover { background: var(--accent-hover); }
+
+.install-dismiss {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  cursor: pointer;
+  text-align: center;
+  transition: color var(--duration) var(--ease);
+}
+
+.install-dismiss:hover { color: var(--text); }

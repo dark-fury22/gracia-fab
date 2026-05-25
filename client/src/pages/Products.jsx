@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import "../styles/Products.css";
 import SEO from "../components/SEO";
-import "../styles/Products.css";
 import API_URL from "../config";
 import { useToast } from "../components/Toast";
 import ProductCard, { ProductCardSkeleton } from "../components/ProductCard";
+import SmartSearch from "../components/SmartSearch";
+import { useMemo } from "react";
 
 const categories = ["all", "skincare", "haircare", "wig", "bridal"];
 const sortOptions = [
@@ -22,10 +23,15 @@ function Products() {
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("");
   const { addToast } = useToast();
+  const [showSmartSearch, setShowSmartSearch] = useState(false);
+  const [smartResults, setSmartResults] = useState(null);
+  const [smartQuery, setSmartQuery] = useState("");
+  const [skinFilters, setSkinFilters] = useState([]);
+  const [hairFilters, setHairFilters] = useState([]);
 
   useEffect(() => {
     fetchProducts();
-  }, [activeCategory, search]);
+  }, [activeCategory, search, sort]);
 
   const fetchProducts = async () => {
     try {
@@ -35,8 +41,14 @@ function Products() {
       if (search) url += `search=${search}`;
 
       const response = await fetch(url);
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch products");
+      }
+
       const data = await response.json();
-      setProducts(data);
+
+      setProducts(Array.isArray(data) ? data : []);
     } catch (err) {
       setError("Failed to load products");
     } finally {
@@ -44,13 +56,31 @@ function Products() {
     }
   };
 
-  const getSortedProducts = () => {
+  const sortedProducts = useMemo(() => {
+    if (!products.length) return [];
     const sorted = [...products];
+
     if (sort === "price_asc") return sorted.sort((a, b) => a.price - b.price);
     if (sort === "price_desc") return sorted.sort((a, b) => b.price - a.price);
     if (sort === "rating") return sorted.sort((a, b) => b.rating - a.rating);
+
     return sorted;
-  };
+  }, [products, sort]);
+
+  const filteredProducts = useMemo(() => {
+    return sortedProducts.filter((p) => {
+      const skinMatch =
+        skinFilters.length === 0 ||
+        skinFilters.some((f) => p.skinType?.includes(f));
+
+      const hairMatch =
+        hairFilters.length === 0 ||
+        hairFilters.some((f) => p.hairType?.includes(f));
+
+      return skinMatch && hairMatch;
+    });
+  }, [sortedProducts, skinFilters, hairFilters]);
+  const displayedProducts = smartResults ? smartResults : filteredProducts;
 
   const categoryLabels = {
     all: "All Products",
@@ -58,6 +88,12 @@ function Products() {
     haircare: "Haircare",
     wig: "Wigs & Hairstyles",
     bridal: "Bridal",
+  };
+
+  const toggleFilter = (value, setState) => {
+    setState((prev) =>
+      prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value],
+    );
   };
 
   return (
@@ -83,7 +119,11 @@ function Products() {
           <h3>Skin Type</h3>
           {["Oily", "Dry", "Combination", "Normal", "Sensitive"].map((type) => (
             <label key={type} className="sidebar-option">
-              <input type="checkbox" />
+              <input
+                type="checkbox"
+                checked={skinFilters.includes(type)}
+                onChange={() => toggleFilter(type, setSkinFilters)}
+              />
               <span>{type}</span>
             </label>
           ))}
@@ -93,7 +133,11 @@ function Products() {
           <h3>Hair Type</h3>
           {["Straight", "Wavy", "Curly", "Coily / 4C"].map((type) => (
             <label key={type} className="sidebar-option">
-              <input type="checkbox" />
+              <input
+                type="checkbox"
+                checked={hairFilters.includes(type)}
+                onChange={() => toggleFilter(type, setHairFilters)}
+              />
               <span>{type}</span>
             </label>
           ))}
@@ -122,9 +166,7 @@ function Products() {
         <div className="products-top-bar">
           <div>
             <h1>{categoryLabels[activeCategory]}</h1>
-            <p className="products-count">
-              {getSortedProducts().length} products
-            </p>
+            <p className="products-count">{filteredProducts.length} products</p>
           </div>
           <div className="products-top-right">
             <input
@@ -145,8 +187,34 @@ function Products() {
                 </option>
               ))}
             </select>
+            <button
+              className="btn-smart-search"
+              onClick={() => setShowSmartSearch(true)}
+            >
+              ✦ AI Search
+            </button>
           </div>
         </div>
+
+        {smartResults && (
+          <div className="smart-results-banner">
+            <span>
+              ✦ AI results for: <strong>"{smartQuery}"</strong> —{" "}
+              {smartResults.length} found
+            </span>
+
+            <button
+              onClick={() => {
+                setSmartResults(null);
+                setSmartQuery("");
+              }}
+            >
+              ✕ Clear
+            </button>
+          </div>
+        )}
+
+        {error && <div className="error-banner">{error}</div>}
 
         {/* Grid */}
         {loading ? (
@@ -157,12 +225,46 @@ function Products() {
           </div>
         ) : (
           <div className="products-grid">
-            {getSortedProducts().map((p) => (
+            {displayedProducts.map((p) => (
               <ProductCard key={p._id} product={p} />
             ))}
           </div>
         )}
       </div>
+      {showSmartSearch && (
+        <div
+          className="smart-search-modal-overlay"
+          onClick={() => setShowSmartSearch(false)}
+        >
+          <div
+            className="smart-search-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="smart-search-close"
+              onClick={() => setShowSmartSearch(false)}
+            >
+              ✕
+            </button>
+
+            <h2 className="smart-search-title">✦ AI Beauty Search</h2>
+
+            <p className="smart-search-subtitle">
+              Ask anything — I understand natural language
+            </p>
+
+            <SmartSearch
+              onResults={(results, query) => {
+                setSmartResults(results);
+                setSmartQuery(query);
+                setShowSmartSearch(false);
+              }}
+              onClose={() => setShowSmartSearch(false)}
+              fullPage
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

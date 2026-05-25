@@ -12,6 +12,7 @@ import sitemapRoutes from "./routes/sitemapRoutes.js";
 import { createRequire } from "module";
 import contactRoutes from "./routes/contactRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
+import searchRoutes from "./routes/searchRoutes.js";
 
 dotenv.config();
 connectDB();
@@ -43,6 +44,7 @@ app.use("/api/admin", adminRoutes);
 app.use("/sitemap.xml", sitemapRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/reviews", reviewRoutes);
+app.use("/api/search", searchRoutes);
 
 app.get("/", (req, res) => {
   res.json({ message: "💄 BeautyAI API is running!" });

@@ -23,6 +23,8 @@ import Dashboard from "./pages/Dashboard";
 import Wishlist from "./pages/Wishlist";
 import AdminDashboard from "./pages/AdminDashboard";
 import BackToTop from "./components/BackToTop";
+import InstallPrompt from "./components/InstallPrompt";
+import BeautyLanding from "./pages/BeautyLanding";
 
 // ── Protected route — redirects to login if not authenticated ──
 function ProtectedRoute({ children }) {
@@ -190,6 +192,15 @@ function App() {
           }
         />
 
+        <Route
+          path="/beauty/:slug"
+          element={
+            <ProtectedRoute>
+              <BeautyLanding onCartOpen={openCart} />
+            </ProtectedRoute>
+          }
+        />
+
         {/* ── Admin only ── */}
         <Route
           path="/admin"
@@ -204,6 +215,7 @@ function App() {
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
       <BackToTop />
+      <InstallPrompt />
     </Router>
   );
 }

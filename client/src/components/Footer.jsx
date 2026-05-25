@@ -28,6 +28,25 @@ function Footer() {
         </div>
 
         <div className="footer-col">
+          <h4>Beauty Guides</h4>
+          <Link to="/beauty/best-moisturiser-oily-skin-nigeria">
+            Oily Skin Moisturiser
+          </Link>
+          <Link to="/beauty/best-wig-oval-face-nigeria">
+            Wigs for Oval Face
+          </Link>
+          <Link to="/beauty/bridal-skincare-routine-nigeria">
+            Bridal Skincare
+          </Link>
+          <Link to="/beauty/haircare-products-natural-hair-nigeria">
+            Natural Hair Products
+          </Link>
+          <Link to="/beauty/skincare-routine-dark-skin-nigeria">
+            Dark Skin Routine
+          </Link>
+        </div>
+
+        <div className="footer-col">
           <h4>Shop</h4>
           <Link to="/products">All Products</Link>
           <Link to="/products?category=skincare">Skincare</Link>
