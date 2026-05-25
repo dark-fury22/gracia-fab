@@ -296,9 +296,201 @@
   .products-top-bar h1 { font-size: 1.5rem; }
 }
 
-@media (max-width: 400px) {
-  .products-grid { grid-template-columns: 1fr; }
+/* ── Reviews ── */
+.review-section {
+  margin-top: 4rem;
+  padding-top: 2.5rem;
+  border-top: 1.5px solid var(--border-soft);
 }
+
+.review-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.review-header h2 {
+  font-size: 1.4rem;
+  font-style: italic;
+  color: var(--text);
+}
+
+.review-avg {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--surface-2);
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  border: 1px solid var(--border-soft);
+}
+
+.review-avg-num {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--accent);
+  font-family: var(--font-mono);
+}
+
+.review-count {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.btn-write-review {
+  margin-left: auto;
+  background: var(--accent-light);
+  border: 1.5px solid var(--border);
+  color: var(--accent);
+  padding: 0.55rem 1.2rem;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--duration) var(--ease);
+}
+
+.btn-write-review:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+[data-theme="light"] .btn-write-review:hover { color: #fff; }
+[data-theme="dark"] .btn-write-review:hover { color: #000; }
+
+.review-form {
+  background: var(--surface);
+  border: 1.5px solid var(--border-soft);
+  border-radius: var(--radius-xl);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.review-form h3 {
+  font-size: 1.1rem;
+  font-style: italic;
+  color: var(--text);
+  margin-bottom: 1.2rem;
+}
+
+.review-error { color: var(--error); font-size: 0.82rem; margin-bottom: 0.75rem; }
+.review-success { color: var(--success); font-size: 0.82rem; margin-bottom: 0.75rem; }
+
+.review-rating-pick { margin-bottom: 1rem; }
+.review-rating-pick label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: 0.45rem;
+}
+
+.star-picker { display: flex; gap: 0.35rem; }
+.star-btn {
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  cursor: pointer;
+  opacity: 0.3;
+  transition: opacity 0.15s;
+}
+.star-btn.active { opacity: 1; }
+
+.btn-submit-review {
+  background: var(--accent);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 30px;
+  font-weight: 700;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all var(--duration) var(--ease);
+}
+
+[data-theme="light"] .btn-submit-review { color: #fff; }
+[data-theme="dark"] .btn-submit-review { color: #000; }
+.btn-submit-review:hover { background: var(--accent-hover); }
+
+.btn-cancel-review {
+  background: none;
+  border: 1.5px solid var(--border-soft);
+  color: var(--text-muted);
+  padding: 0.75rem 1.2rem;
+  border-radius: 30px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all var(--duration) var(--ease);
+}
+
+.btn-cancel-review:hover { border-color: var(--accent); color: var(--accent); }
+
+.reviews-empty {
+  text-align: center;
+  padding: 3rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.reviews-list { display: flex; flex-direction: column; gap: 1rem; }
+
+.review-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  padding: 1.2rem 1.5rem;
+  transition: border-color var(--duration) var(--ease);
+}
+
+.review-card:hover { border-color: var(--accent); }
+
+.review-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.reviewer-name {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text);
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+.verified-badge {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--success);
+  margin-left: 0.5rem;
+}
+
+.skin-type-badge {
+  font-size: 0.65rem;
+  font-weight: 600;
+  background: var(--accent-light);
+  color: var(--accent);
+  padding: 0.15rem 0.6rem;
+  border-radius: 20px;
+  margin-left: 0.4rem;
+}
+
+.review-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 0.2rem; }
+.review-rating-stars { font-size: 0.78rem; }
+.review-date { font-size: 0.72rem; color: var(--text-muted); }
+
+.review-comment {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
 
 /* ═══════════════════════════════
    PRODUCTS — RESPONSIVE FIX
@@ -346,6 +538,10 @@
 @media (max-width: 480px) {
   .products-grid { grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
   .products-page { padding: 0.85rem; }
+  .review-card-header { flex-direction: column; }
+  .review-meta { align-items: flex-start; }
+  .btn-write-review { margin-left: 0; width: 100%; text-align: center; }
+
 }
 
 /* Very small (375px): 1 col */
