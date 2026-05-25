@@ -69,9 +69,6 @@ export const createOrder = async (req, res) => {
     const productMap = new Map();
     products.forEach((p) => productMap.set(p._id.toString(), p));
 
-    let itemsPrice = 0;
-    const validatedItems = [];
-
     for (const item of orderItems) {
       const product = productMap.get(item.product);
 
@@ -106,6 +103,8 @@ export const createOrder = async (req, res) => {
       orderItems: validatedItems,
 
       deliveryAddress,
+
+      itemsPrice,
 
       deliveryPrice,
 
