@@ -27,6 +27,8 @@ function Navbar({ onCartOpen }) {
           <Link to="/about">About</Link>
           <Link to="/contact">Contact</Link>
           <Link to="/recommend">✦ AI Advisor</Link>
+          <Link to="/skin-tone">✨ Skin Tone</Link>
+          <Link to="/virtual-tryon">💄 Try-On</Link>
         </div>
 
         {/* Center logo */}
@@ -120,6 +122,13 @@ function Navbar({ onCartOpen }) {
               <Link to="/contact" onClick={() => setMenuOpen(false)}>
                 Contact
               </Link>
+              <Link to="/skin-tone" onClick={() => setMenuOpen(false)}>
+                ✨ Skin Tone Detector
+              </Link>
+              <Link to="/virtual-tryon" onClick={() => setMenuOpen(false)}>
+                💄 Virtual Try-On
+              </Link>
+
               {user.isAdmin && (
                 <Link to="/admin" onClick={() => setMenuOpen(false)}>
                   Admin

@@ -544,6 +544,23 @@
   line-height: 1.7;
 }
 
+.ai-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.4rem;
+}
+
+.ai-tag {
+  background: var(--surface-2);
+  border: 1px solid var(--border-soft);
+  color: var(--accent);
+  padding: 0.15rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.68rem;
+  font-weight: 600;
+}
+
 
 /* ═══════════════════════════════
    PRODUCTS — RESPONSIVE FIX

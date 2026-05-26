@@ -154,26 +154,61 @@ function Contact({ onCartOpen }) {
 
             {/* Info cards */}
             <div className="contact-info">
-              <div className="contact-info-card">
+              {/* Email — opens mail app */}
+              <a
+                href="mailto:hello@graciafab.com?subject=Beauty Inquiry"
+                className="contact-info-card contact-info-link"
+              >
                 <span className="contact-info-icon">📧</span>
-                <h3>Email Us</h3>
-                <p>hello@graciafab.com — we reply within 24 hours.</p>
-              </div>
-              <div className="contact-info-card">
+                <div>
+                  <h3>Email Us</h3>
+                  <p>hello@graciafab.com — we reply within 24 hours.</p>
+                  <span className="contact-info-action">Tap to email →</span>
+                </div>
+              </a>
+
+              {/* Store — opens Google Maps */}
+              <a
+                href="https://maps.google.com/?q=Victoria+Island+Lagos+Nigeria"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="contact-info-card contact-info-link"
+              >
                 <span className="contact-info-icon">🏪</span>
-                <h3>Visit Our Store</h3>
-                <p>
-                  Stop by our boutique in Lagos, Nigeria for in-person
-                  consultations.
-                </p>
-              </div>
-              <div className="contact-info-card">
+                <div>
+                  <h3>Visit Our Store</h3>
+                  <p>Victoria Island, Lagos, Nigeria.</p>
+                  <span className="contact-info-action">Get directions →</span>
+                </div>
+              </a>
+
+              {/* Phone — opens phone dialer */}
+              <a
+                href="tel:+2348012345678"
+                className="contact-info-card contact-info-link"
+              >
                 <span className="contact-info-icon">📞</span>
-                <h3>Call Support</h3>
-                <p>
-                  Our beauty specialists are available Mon–Sat, 9am–6pm WAT.
-                </p>
-              </div>
+                <div>
+                  <h3>Call Support</h3>
+                  <p>Mon–Sat, 9am–6pm WAT.</p>
+                  <span className="contact-info-action">Tap to call →</span>
+                </div>
+              </a>
+
+              {/* WhatsApp — opens WhatsApp directly */}
+              <a
+                href="https://wa.me/2348012345678?text=Hi%20Gracia%20Fab!%20I%20need%20help%20with..."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="contact-info-card contact-info-link"
+              >
+                <span className="contact-info-icon">💬</span>
+                <div>
+                  <h3>WhatsApp Us</h3>
+                  <p>Chat with us instantly on WhatsApp.</p>
+                  <span className="contact-info-action">Open WhatsApp →</span>
+                </div>
+              </a>
             </div>
           </div>
         </section>

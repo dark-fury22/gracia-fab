@@ -290,3 +290,31 @@
 }
 
 
+/* Make info cards clickable */
+.contact-info-link {
+  text-decoration: none;
+  display: block;
+  cursor: pointer;
+  transition: transform var(--duration-lg) var(--ease),
+    border-color var(--duration) var(--ease),
+    box-shadow var(--duration) var(--ease);
+}
+
+.contact-info-link:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent) !important;
+  box-shadow: var(--shadow-md);
+}
+
+.contact-info-link:active {
+  transform: scale(0.98);
+}
+
+.contact-info-action {
+  display: inline-block;
+  margin-top: 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+}

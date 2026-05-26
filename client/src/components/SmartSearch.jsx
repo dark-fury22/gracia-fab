@@ -59,17 +59,24 @@ function SmartSearch({ onResults, onClose, fullPage = false }) {
       setLoading(true);
 
       try {
+        const token = localStorage.getItem("token");
         const res = await fetch(`${API_URL}/api/search`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
           body: JSON.stringify({ query: searchQuery }),
         });
         const data = await res.json();
 
         if (onResults) {
-          onResults(data.results || [], searchQuery, data.parsedFilters);
-        } else {
-          navigate(`/products?search=${encodeURIComponent(searchQuery)}`);
+          onResults(
+            data.results || [],
+            searchQuery,
+            data.parsedFilters,
+            data.aiUnderstanding,
+          );
         }
         if (onClose) onClose();
       } catch (err) {
@@ -78,7 +85,7 @@ function SmartSearch({ onResults, onClose, fullPage = false }) {
         setLoading(false);
       }
     },
-    [query, onResults, onClose, navigate],
+    [query, onResults, onClose],
   );
 
   const handleKeyDown = (e) => {

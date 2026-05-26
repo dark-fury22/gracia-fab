@@ -198,15 +198,36 @@ function Products() {
 
         {smartResults && (
           <div className="smart-results-banner">
-            <span>
-              ✦ AI results for: <strong>"{smartQuery}"</strong> —{" "}
-              {smartResults.length} found
-            </span>
-
+            <div>
+              <span>
+                ✦ AI results for: <strong>"{smartQuery}"</strong> —{" "}
+                {smartResults.length} found
+              </span>
+              {aiUnderstanding?.categories?.length > 0 && (
+                <span className="ai-tags">
+                  {aiUnderstanding.categories.map((c) => (
+                    <span key={c} className="ai-tag">
+                      📦 {c}
+                    </span>
+                  ))}
+                  {aiUnderstanding.skinTypes?.map((s) => (
+                    <span key={s} className="ai-tag">
+                      ✨ {s} skin
+                    </span>
+                  ))}
+                  {aiUnderstanding.concerns?.map((c) => (
+                    <span key={c} className="ai-tag">
+                      🎯 {c}
+                    </span>
+                  ))}
+                </span>
+              )}
+            </div>
             <button
               onClick={() => {
                 setSmartResults(null);
                 setSmartQuery("");
+                setAiUnderstanding(null);
               }}
             >
               ✕ Clear

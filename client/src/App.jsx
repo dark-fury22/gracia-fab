@@ -25,6 +25,31 @@ import AdminDashboard from "./pages/AdminDashboard";
 import BackToTop from "./components/BackToTop";
 import InstallPrompt from "./components/InstallPrompt";
 import BeautyLanding from "./pages/BeautyLanding";
+import SkinToneDetector from "./pages/SkinToneDetectorPage";
+import VirtualTryOn from "./components/VirtualTryOn";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+
+// Wrapper pages
+function SkinToneDetectorPage({ onCartOpen }) {
+  return (
+    <>
+      <Navbar onCartOpen={onCartOpen} />
+      <SkinToneDetector />
+      <Footer />
+    </>
+  );
+}
+
+function VirtualTryOnPage({ onCartOpen }) {
+  return (
+    <>
+      <Navbar onCartOpen={onCartOpen} />
+      <VirtualTryOn />
+      <Footer />
+    </>
+  );
+}
 
 // ── Protected route — redirects to login if not authenticated ──
 function ProtectedRoute({ children }) {
@@ -93,7 +118,6 @@ function App() {
             </PublicOnlyRoute>
           }
         />
-
         {/* ── Protected routes ── */}
         <Route
           path="/"
@@ -191,7 +215,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/beauty/:slug"
           element={
@@ -200,7 +223,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
         {/* ── Admin only ── */}
         <Route
           path="/admin"
@@ -210,7 +232,23 @@ function App() {
             </AdminRoute>
           }
         />
-
+        // Add inside Routes:
+        <Route
+          path="/skin-tone"
+          element={
+            <ProtectedRoute>
+              <SkinToneDetectorPage onCartOpen={openCart} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/virtual-tryon"
+          element={
+            <ProtectedRoute>
+              <VirtualTryOnPage onCartOpen={openCart} />
+            </ProtectedRoute>
+          }
+        />
         {/* ── Catch all ── */}
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
