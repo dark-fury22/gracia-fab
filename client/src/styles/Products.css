@@ -153,13 +153,66 @@
   overflow: hidden;
   background: var(--surface-2);
   border: 1.5px solid var(--border-soft);
+  position: relative;
+  /* Aspect ratio forces a perfect square on all screens */
+  aspect-ratio: 1 / 1;
 }
 
 .detail-image {
   width: 100%;
-  height: 500px;
+  height: 100%;
   object-fit: cover;
+  object-position: center;
   display: block;
+}
+
+/* Mobile — make image smaller and centered */
+@media (max-width: 820px) {
+  .detail-page { padding: 1rem; }
+
+  .detail-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .detail-image-wrapper {
+    max-width: 340px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .detail-info h1 {
+    font-size: 1.5rem;
+    text-align: center;
+  }
+
+  .detail-category {
+    text-align: center;
+    display: block;
+  }
+
+  .detail-brand,
+  .detail-rating {
+    text-align: center;
+  }
+
+  .detail-price {
+    font-size: 1.6rem;
+    text-align: center;
+  }
+
+  .detail-tags {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .detail-image-wrapper {
+    max-width: 280px;
+  }
+
+  .detail-info h1 { font-size: 1.3rem; }
+  .detail-price { font-size: 1.4rem; }
 }
 
 .detail-category {

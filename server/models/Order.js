@@ -18,31 +18,87 @@ const orderSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
-  orderItems: [orderItemSchema],
+  orderItems: [{
+    name:     { type: String, required: true },
+    quantity: { type: Number, required: true, min: 1 },
+    image:    String,
+    price:    { type: Number, required: true },
+    product:  {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Product',
+      required: true
+    }
+  }],
   deliveryAddress: {
-    fullName: { type: String, required: true },
-    phone: { type: String, required: true },
-    address: { type: String, required: true },
-    city: { type: String, required: true },
-    state: { type: String, required: true }
+    fullName: String,
+    phone:    String,
+    address:  String,
+    city:     String,
+    state:    String
   },
   paymentResult: {
-    reference: { type: String },
-    status: { type: String },
-    amount: { type: Number }
+    reference: String,
+    status:    String,
+    amount:    Number,
+    channel:   String,
+    paidAt:    String
   },
-  itemsPrice: { type: Number, required: true },
-  deliveryPrice: { type: Number, default: 2500 },
-  totalPrice: { type: Number, required: true },
-  isPaid: { type: Boolean, default: false },
-  paidAt: { type: Date },
-  isDelivered: { type: Boolean, default: false },
+  itemsPrice:    { type: Number, required: true },
+  deliveryPrice: { type: Number, required: true },
+  totalPrice:    { type: Number, required: true },
+  isPaid:        { type: Boolean, default: false },
+  paidAt:        Date,
+
+  // ── The state machine: only these values allowed, in this order
   status: {
     type: String,
-    enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'],
+    enum: ['pending', 'paid', 'processing', 'shipped', 'delivered', 'cancelled'],
     default: 'pending'
-  }
+  },
+
+  // Track when each stage happened
+  statusHistory: [{
+    status:    String,
+    changedAt: { type: Date, default: Date.now },
+    note:      String
+  }],
+
+  isDelivered: { type: Boolean, default: false },
+  deliveredAt: Date
 }, { timestamps: true })
 
-const Order = mongoose.model('Order', orderSchema)
+// ── Method to safely advance order status
+orderSchema.methods.advanceStatus = function(newStatus, note = '') {
+  const validTransitions = {
+    'pending':    ['paid', 'cancelled'],
+    'paid':       ['processing', 'cancelled'],
+    'processing': ['shipped'],
+    'shipped':    ['delivered'],
+    'delivered':  [],
+    'cancelled':  []
+  }
+
+  const allowed = validTransitions[this.status] || []
+  if (!allowed.includes(newStatus)) {
+    throw new Error(
+      `Cannot change order from "${this.status}" to "${newStatus}"`
+    )
+  }
+
+  this.status = newStatus
+  this.statusHistory.push({ status: newStatus, note })
+
+  if (newStatus === 'delivered') {
+    this.isDelivered = true
+    this.deliveredAt = new Date()
+  }
+  if (newStatus === 'paid') {
+    this.isPaid = true
+    this.paidAt = new Date()
+  }
+
+  return this
+}
+
+export default mongoose.model('Order', orderSchema)
 export default Order

@@ -57,6 +57,52 @@ function Recommend() {
     }
   };
 
+  const handleSaveRecommendation = async () => {
+    if (!user) {
+      alert("Please log in to save recommendations");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+
+      // Collect the product IDs from results
+      const productIds = results
+        .map((r) => r.product?._id || r.product)
+        .filter(Boolean);
+
+      console.log("Saving", productIds.length, "products");
+
+      const response = await fetch(
+        `${API_URL}/api/wishlist/recommendations/save`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            profile: {
+              skinType: formData.skinType || "",
+              hairType: formData.hairType || "",
+              occasion: formData.occasion || "",
+            },
+            productIds,
+          }),
+        },
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) throw new Error(data.message);
+
+      alert("✅ " + data.message);
+    } catch (err) {
+      console.error("Save failed:", err);
+      alert("Failed to save: " + err.message);
+    }
+  };
+
   const formatPrice = (price) =>
     new Intl.NumberFormat("en-NG", {
       style: "currency",
@@ -297,32 +343,7 @@ function Recommend() {
             </div>
 
             {/* Add this Save button after the results grid */}
-            <button
-              className="btn-save-rec"
-              onClick={async () => {
-                if (!user) return navigate("/login");
-                try {
-                  const token = localStorage.getItem("token");
-                  await fetch(
-                    "${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/wishlist/recommendations/save",
-                    {
-                      method: "POST",
-                      headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                      },
-                      body: JSON.stringify({
-                        profile: formData,
-                        productIds: results.map((r) => r.product._id),
-                      }),
-                    },
-                  );
-                  alert("Recommendations saved to your wishlist! 💖");
-                } catch (err) {
-                  console.error(err);
-                }
-              }}
-            >
+            <button className="btn-save-rec" onClick={handleSaveRecommendation}>
               💾 Save These Recommendations
             </button>
 

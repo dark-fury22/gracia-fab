@@ -9,15 +9,117 @@ import orderRoutes from "./routes/orderRoutes.js";
 import wishlistRoutes from "./routes/wishlistRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import sitemapRoutes from "./routes/sitemapRoutes.js";
-import { createRequire } from "module";
 import contactRoutes from "./routes/contactRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
 import searchRoutes from "./routes/searchRoutes.js";
+import { errorHandler, notFound } from "./middleware/errorMiddleware.js";
+import rateLimit from "express-rate-limit";
+import helmet from "helmet";
+import crypto from "crypto";
+import loyaltyRoutes from "./routes/loyaltyRoutes.js";
+import fetch from "node-fetch";
 
 dotenv.config();
-connectDB();
 
 const app = express();
+
+connectDB();
+
+// ── Security headers (helmet protects against common attacks)
+app.use(
+  helmet({
+    crossOriginEmbedderPolicy: false,
+    contentSecurityPolicy: false,
+  }),
+);
+
+// ── General rate limit: 100 requests per minute per IP
+const generalLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 100, // max 100 requests
+  message: {
+    message: "Too many requests, please slow down and try again in a minute.",
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// ── Strict limit for auth routes (stop password guessing)
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // only 10 login attempts
+  message: {
+    message: "Too many login attempts. Please wait 15 minutes.",
+  },
+});
+
+// ── AI routes are expensive — limit them
+const aiLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 5, // only 5 AI calls per minute
+  message: {
+    message: "Too many AI requests. Please wait a moment.",
+  },
+});
+
+// ── Paystack Webhook — receives payment confirmations directly from Paystack
+// Must be RAW body (before JSON parsing) for signature verification
+app.post(
+  "/api/webhooks/paystack",
+  express.raw({ type: "application/json" }),
+  async (req, res) => {
+    const signature = req.headers["x-paystack-signature"];
+    const secret = process.env.PAYSTACK_SECRET_KEY;
+
+    // Step 1: Verify this actually came from Paystack
+    const hash = crypto
+      .createHmac("sha512", secret)
+      .update(req.body)
+      .digest("hex");
+
+    if (hash !== signature) {
+      console.log("❌ Invalid Paystack webhook signature");
+      return res.status(400).json({ message: "Invalid signature" });
+    }
+
+    const event = JSON.parse(req.body);
+    console.log("📩 Paystack webhook event:", event.event);
+
+    // Step 2: Handle the payment success event
+    if (event.event === "charge.success") {
+      try {
+        const reference = event.data.reference;
+        const amount = event.data.amount / 100; // Convert kobo to NGN
+
+        // Find order by reference
+        const Order = (await import("./models/Order.js")).default;
+        const order = await Order.findOne({
+          "paymentResult.reference": reference,
+        });
+
+        if (order && !order.isPaid) {
+          order.isPaid = true;
+          order.paidAt = new Date();
+          order.status = "processing";
+          order.paymentResult = {
+            reference,
+            status: "success",
+            amount,
+            channel: event.data.channel,
+            paidAt: event.data.paid_at,
+          };
+          await order.save();
+          console.log(`✅ Order ${order._id} marked as paid via webhook`);
+        }
+      } catch (err) {
+        console.error("Webhook processing error:", err.message);
+      }
+    }
+
+    // Always respond quickly to Paystack
+    res.json({ received: true });
+  },
+);
 
 app.use(
   cors({
@@ -35,6 +137,12 @@ app.use(
 
 app.use(express.json());
 
+app.use("/api/", generalLimiter);
+app.use("/api/auth/login", authLimiter);
+app.use("/api/auth/register", authLimiter);
+app.use("/api/recommend", aiLimiter);
+app.use("/api/search", aiLimiter);
+
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/recommend", recommendRoutes);
@@ -45,6 +153,10 @@ app.use("/sitemap.xml", sitemapRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/search", searchRoutes);
+app.use("/api/loyalty", loyaltyRoutes);
+
+app.use(notFound);
+app.use(errorHandler);
 
 app.get("/", (req, res) => {
   res.json({ message: "💄 BeautyAI API is running!" });

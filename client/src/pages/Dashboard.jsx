@@ -6,6 +6,7 @@ import { useAuth } from "../context/AuthContext";
 import "../styles/Dashboard.css";
 import SEO from "../components/SEO";
 import API_URL from "../config";
+import LoyaltyWidget from "../components/LoyaltyWidget";
 
 const tabs = [
   { id: "profile", label: "👤 My Profile" },
@@ -238,95 +239,102 @@ function Dashboard() {
           <div className="dashboard-content">
             {/* Profile Tab */}
             {activeTab === "profile" && (
-              <div className="dashboard-card">
-                <h2>My Profile</h2>
-                <p className="dashboard-card-sub">
-                  Update your personal information
-                </p>
+              <>
+                <LoyaltyWidget />
 
-                {profileSuccess && (
-                  <div className="dashboard-success">{profileSuccess}</div>
-                )}
-                {profileError && (
-                  <div className="dashboard-error">⚠️ {profileError}</div>
-                )}
+                <div className="dashboard-card">
+                  <h2>My Profile</h2>
+                  <p className="dashboard-card-sub">
+                    Update your personal information
+                  </p>
 
-                <form onSubmit={handleProfileUpdate}>
-                  <div className="form-group">
-                    <label>Full Name</label>
-                    <input
-                      type="text"
-                      value={profileData.name}
-                      onChange={(e) =>
-                        setProfileData({ ...profileData, name: e.target.value })
-                      }
-                      placeholder="Your full name"
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>Email Address</label>
-                    <input
-                      type="email"
-                      value={profileData.email}
-                      onChange={(e) =>
-                        setProfileData({
-                          ...profileData,
-                          email: e.target.value,
-                        })
-                      }
-                      placeholder="your@email.com"
-                    />
-                  </div>
+                  {profileSuccess && (
+                    <div className="dashboard-success">{profileSuccess}</div>
+                  )}
+                  {profileError && (
+                    <div className="dashboard-error">⚠️ {profileError}</div>
+                  )}
 
-                  <div className="form-row">
+                  <form onSubmit={handleProfileUpdate}>
                     <div className="form-group">
-                      <label>Skin Type</label>
-                      <select
-                        value={profileData.skinType}
+                      <label>Full Name</label>
+                      <input
+                        type="text"
+                        value={profileData.name}
                         onChange={(e) =>
                           setProfileData({
                             ...profileData,
-                            skinType: e.target.value,
+                            name: e.target.value,
                           })
                         }
-                      >
-                        <option value="">Select skin type</option>
-                        <option value="oily">Oily</option>
-                        <option value="dry">Dry</option>
-                        <option value="combination">Combination</option>
-                        <option value="normal">Normal</option>
-                        <option value="sensitive">Sensitive</option>
-                      </select>
+                        placeholder="Your full name"
+                      />
                     </div>
                     <div className="form-group">
-                      <label>Hair Type</label>
-                      <select
-                        value={profileData.hairType}
+                      <label>Email Address</label>
+                      <input
+                        type="email"
+                        value={profileData.email}
                         onChange={(e) =>
                           setProfileData({
                             ...profileData,
-                            hairType: e.target.value,
+                            email: e.target.value,
                           })
                         }
-                      >
-                        <option value="">Select hair type</option>
-                        <option value="straight">Straight</option>
-                        <option value="wavy">Wavy</option>
-                        <option value="curly">Curly</option>
-                        <option value="coily">Coily / 4C</option>
-                      </select>
+                        placeholder="your@email.com"
+                      />
                     </div>
-                  </div>
 
-                  <button
-                    type="submit"
-                    className="btn-save"
-                    disabled={profileLoading}
-                  >
-                    {profileLoading ? "Saving..." : "💾 Save Changes"}
-                  </button>
-                </form>
-              </div>
+                    <div className="form-row">
+                      <div className="form-group">
+                        <label>Skin Type</label>
+                        <select
+                          value={profileData.skinType}
+                          onChange={(e) =>
+                            setProfileData({
+                              ...profileData,
+                              skinType: e.target.value,
+                            })
+                          }
+                        >
+                          <option value="">Select skin type</option>
+                          <option value="oily">Oily</option>
+                          <option value="dry">Dry</option>
+                          <option value="combination">Combination</option>
+                          <option value="normal">Normal</option>
+                          <option value="sensitive">Sensitive</option>
+                        </select>
+                      </div>
+                      <div className="form-group">
+                        <label>Hair Type</label>
+                        <select
+                          value={profileData.hairType}
+                          onChange={(e) =>
+                            setProfileData({
+                              ...profileData,
+                              hairType: e.target.value,
+                            })
+                          }
+                        >
+                          <option value="">Select hair type</option>
+                          <option value="straight">Straight</option>
+                          <option value="wavy">Wavy</option>
+                          <option value="curly">Curly</option>
+                          <option value="coily">Coily / 4C</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <button
+                      type="submit"
+                      className="btn-save"
+                      disabled={profileLoading}
+                    >
+                      {profileLoading ? "Saving..." : "💾 Save Changes"}
+                    </button>
+                  </form>
+                </div>
+              </>
             )}
 
             {/* Orders Tab */}

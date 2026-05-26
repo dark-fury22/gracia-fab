@@ -1,5 +1,7 @@
 import Order from "../models/Order.js";
 import Product from "../models/Product.js";
+import { sendWhatsApp, messages } from "../services/whatsappService.js";
+import { awardPoints } from "./loyaltyController.js";
 import fetch from "node-fetch";
 
 // WhatsApp notification helper
@@ -69,20 +71,38 @@ export const createOrder = async (req, res) => {
     const productMap = new Map();
     products.forEach((p) => productMap.set(p._id.toString(), p));
 
+    // ── STOCK CHECK
+    const stockErrors = [];
+
     for (const item of orderItems) {
-      const product = productMap.get(item.product);
+      const product = productMap.get(item.product.toString());
 
       if (!product) {
-        return res.status(404).json({
-          message: `Product not found: ${item.product}`,
-        });
+        stockErrors.push(`Product not found: ${item.product}`);
+        continue;
       }
 
       if (!item.qty || item.qty < 1) {
-        return res.status(400).json({
-          message: "Invalid quantity",
-        });
+        stockErrors.push(`Invalid quantity for ${product.name}`);
+        continue;
       }
+
+      if (product.stock !== undefined && product.stock < item.qty) {
+        stockErrors.push(
+          `"${product.name}" only has ${product.stock} left in stock`,
+        );
+      }
+    }
+
+    if (stockErrors.length > 0) {
+      return res.status(400).json({
+        message: stockErrors.join(", "),
+      });
+    }
+
+    // ── BUILD VALIDATED ITEMS
+    for (const item of orderItems) {
+      const product = productMap.get(item.product.toString());
 
       itemsPrice += product.price * item.qty;
 
@@ -97,6 +117,7 @@ export const createOrder = async (req, res) => {
 
     const totalPrice = itemsPrice + deliveryPrice;
 
+    // ── CREATE ORDER
     const order = await Order.create({
       user: req.user._id,
 
@@ -114,6 +135,47 @@ export const createOrder = async (req, res) => {
 
       isPaid: false,
     });
+
+    // ── REDUCE STOCK
+    for (const item of validatedItems) {
+      const updated = await Product.findOneAndUpdate(
+        {
+          _id: item.product,
+          stock: { $gte: item.qty },
+        },
+        {
+          $inc: { stock: -item.qty },
+        },
+        { new: true },
+      );
+
+      if (!updated) {
+        throw new Error("Stock update failed");
+      }
+    }
+
+    // ── OPTIONAL: AUTO UPDATE isInStock
+    for (const item of validatedItems) {
+      const updatedProduct = await Product.findById(item.product);
+
+      if (updatedProduct.stock <= 0) {
+        updatedProduct.isInStock = false;
+        await updatedProduct.save();
+      }
+    }
+
+    // Send WhatsApp order confirmation
+    const phone = order.deliveryAddress?.phone;
+    const name = order.deliveryAddress?.fullName || "Customer";
+    const orderId = order._id.toString().slice(-8).toUpperCase();
+
+    if (phone) {
+      await sendWhatsApp(
+        phone,
+        messages.orderConfirmed(name, orderId, order.totalPrice),
+      );
+    }
+
     await sendWhatsAppNotification(
       order.deliveryAddress.phone,
       `✅ Order #${order._id.toString().slice(-8).toUpperCase()} confirmed!
@@ -123,9 +185,11 @@ Total: ₦${order.totalPrice.toLocaleString()}
 We’re preparing your beauty essentials 💄`,
     );
 
+    console.log("📦 Order created:", order._id);
+
     res.status(201).json(order);
   } catch (error) {
-    console.error(error);
+    console.error("createOrder error:", error);
 
     res.status(500).json({
       message: error.message,
@@ -246,6 +310,14 @@ export const verifyPayment = async (req, res) => {
 
     const updatedOrder = await order.save();
 
+    // Award loyalty points (₦1 spent = 0.01 points, minimum 1 point)
+    const pointsEarned = Math.max(1, Math.floor(order.totalPrice * 0.01));
+    await awardPoints(
+      order.user,
+      pointsEarned,
+      `Purchase #${order._id.toString().slice(-8).toUpperCase()}`,
+    );
+
     console.log("ORDER PAID:", updatedOrder._id);
 
     res.json(updatedOrder);
@@ -301,5 +373,39 @@ export const getOrderById = async (req, res) => {
     res.status(500).json({
       message: error.message,
     });
+  }
+};
+
+// @desc   Update order status (admin only)
+// @route  PUT /api/orders/:id/status
+export const updateOrderStatus = async (req, res) => {
+  const { status, note } = req.body;
+
+  try {
+    const order = await Order.findById(req.params.id);
+    if (!order) return res.status(404).json({ message: "Order not found" });
+
+    // Use the state machine method (prevents invalid transitions)
+    order.advanceStatus(status, note);
+    await order.save();
+
+    const phone = order.deliveryAddress?.phone;
+    const name = order.deliveryAddress?.fullName || "Customer";
+    const orderId = order._id.toString().slice(-8).toUpperCase();
+
+    if (phone) {
+      if (status === "shipped") {
+        await sendWhatsApp(phone, messages.orderShipped(name, orderId));
+      }
+      if (status === "delivered") {
+        await sendWhatsApp(phone, messages.orderDelivered(name));
+      }
+    }
+
+    console.log(`📦 Order ${order._id} → ${status}`);
+    res.json(order);
+  } catch (error) {
+    // This catches invalid transitions too
+    res.status(400).json({ message: error.message });
   }
 };
