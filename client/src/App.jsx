@@ -25,7 +25,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import BackToTop from "./components/BackToTop";
 import InstallPrompt from "./components/InstallPrompt";
 import BeautyLanding from "./pages/BeautyLanding";
-import SkinToneDetector from "./pages/SkinToneDetector";
+import SkinToneDetector from "./components/SkinToneDetector";
 import VirtualTryOn from "./components/VirtualTryOn";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
