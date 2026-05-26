@@ -3,6 +3,13 @@ import Product from "../models/Product.js";
 import { sendWhatsApp, messages } from "../services/whatsappService.js";
 import { awardPoints } from "./loyaltyController.js";
 import fetch from "node-fetch";
+import {
+  whatsappQueue,
+  emailQueue,
+  pointsQueue,
+  addToQueue,
+} from "../queues/index.js";
+import { emailTemplates } from "../services/emailService.js";
 
 // WhatsApp notification helper
 const sendWhatsAppNotification = async (phone, message) => {
@@ -170,20 +177,30 @@ export const createOrder = async (req, res) => {
     const orderId = order._id.toString().slice(-8).toUpperCase();
 
     if (phone) {
-      await sendWhatsApp(
+      const orderId = order._id.toString().slice(-8).toUpperCase();
+
+      // WhatsApp queue
+      await addToQueue(whatsappQueue, "order-confirmed", {
         phone,
-        messages.orderConfirmed(name, orderId, order.totalPrice),
+        message: messages.orderConfirmed(name, orderId, order.totalPrice),
+        type: "order-confirmed",
+      });
+
+      // Email queue
+      const template = emailTemplates.orderConfirmed(
+        name,
+        orderId,
+        order.totalPrice,
+        order.orderItems,
       );
+
+      await addToQueue(emailQueue, "order-confirmed", {
+        to: req.user.email,
+        subject: template.subject,
+        html: template.html,
+        type: "order-confirmed",
+      });
     }
-
-    await sendWhatsAppNotification(
-      order.deliveryAddress.phone,
-      `✅ Order #${order._id.toString().slice(-8).toUpperCase()} confirmed!
-
-Total: ₦${order.totalPrice.toLocaleString()}
-
-We’re preparing your beauty essentials 💄`,
-    );
 
     console.log("📦 Order created:", order._id);
 
@@ -312,11 +329,12 @@ export const verifyPayment = async (req, res) => {
 
     // Award loyalty points (₦1 spent = 0.01 points, minimum 1 point)
     const pointsEarned = Math.max(1, Math.floor(order.totalPrice * 0.01));
-    await awardPoints(
-      order.user,
-      pointsEarned,
-      `Purchase #${order._id.toString().slice(-8).toUpperCase()}`,
-    );
+
+    await addToQueue(pointsQueue, "purchase-points", {
+      userId: order.user.toString(),
+      points: pointsEarned,
+      reason: `Purchase #${order._id.toString().slice(-8).toUpperCase()}`,
+    });
 
     console.log("ORDER PAID:", updatedOrder._id);
 
@@ -392,13 +410,42 @@ export const updateOrderStatus = async (req, res) => {
     const phone = order.deliveryAddress?.phone;
     const name = order.deliveryAddress?.fullName || "Customer";
     const orderId = order._id.toString().slice(-8).toUpperCase();
+    const orderUserEmail = (await Order.findById(order._id).populate("user"))
+      .user.email;
 
     if (phone) {
       if (status === "shipped") {
-        await sendWhatsApp(phone, messages.orderShipped(name, orderId));
+        await addToQueue(whatsappQueue, "order-shipped", {
+          phone,
+          message: messages.orderShipped(name, orderId),
+          type: "order-shipped",
+        });
+
+        const template = emailTemplates.orderShipped(name, orderId);
+
+        await addToQueue(emailQueue, "order-shipped", {
+          to: orderUserEmail,
+          subject: template.subject,
+          html: template.html,
+          type: "order-shipped",
+        });
       }
+
       if (status === "delivered") {
-        await sendWhatsApp(phone, messages.orderDelivered(name));
+        await addToQueue(whatsappQueue, "order-delivered", {
+          phone,
+          message: messages.orderDelivered(name),
+          type: "order-delivered",
+        });
+
+        const template = emailTemplates.orderDelivered(name);
+
+        await addToQueue(emailQueue, "order-delivered", {
+          to: orderUserEmail,
+          subject: template.subject,
+          html: template.html,
+          type: "order-delivered",
+        });
       }
     }
 

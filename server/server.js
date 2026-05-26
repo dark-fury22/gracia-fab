@@ -18,12 +18,14 @@ import helmet from "helmet";
 import crypto from "crypto";
 import loyaltyRoutes from "./routes/loyaltyRoutes.js";
 import fetch from "node-fetch";
+import { startWorkers } from "./queues/workers.js";
 
 dotenv.config();
 
 const app = express();
 
 connectDB();
+startWorkers();
 
 // ── Security headers (helmet protects against common attacks)
 app.use(
