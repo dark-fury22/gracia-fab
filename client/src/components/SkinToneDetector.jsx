@@ -2,6 +2,7 @@ import { useState, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
 import API_URL from "../config";
 import "./SkinToneDetector.css";
+import PhotoUpload from "./PhotoUpload";
 
 // ── Skin tone definitions ──────────────────
 const SKIN_TONES = [
@@ -289,35 +290,29 @@ function SkinToneDetector() {
         <div className="skin-upload-area">
           {error && <div className="skin-error">⚠️ {error}</div>}
 
-          <div
-            className="skin-dropzone"
-            onClick={() => fileInputRef.current?.click()}
-          >
+          <div className="skin-dropzone">
             <div className="skin-dropzone-icon">📸</div>
             <h3>Upload Your Selfie</h3>
-            <p>Face the camera straight-on, in good lighting</p>
-            <span className="skin-dropzone-btn">Choose Photo</span>
-            <p className="skin-dropzone-note">
-              Your photo is processed locally — never sent to any server
+            <p>Face the camera straight-on in good lighting</p>
+            <br />
+            <PhotoUpload
+              label="Add Your Selfie"
+              onPhotoSelected={(url) => {
+                setPhoto(url);
+                setError("");
+                runAnalysis(url);
+              }}
+            />
+            <p className="skin-dropzone-note" style={{ marginTop: "1rem" }}>
+              🔒 Your photo is processed locally — never uploaded to any server
             </p>
           </div>
 
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            capture="user"
-            onChange={handleFileSelect}
-            style={{ display: "none" }}
-          />
-
-          {/* Tips for best results */}
           <div className="skin-tips-box">
             <h4>📷 Tips for accurate results</h4>
             <ul>
-              <li>Face the camera directly</li>
-              <li>Use natural daylight if possible</li>
-              <li>Remove glasses and heavy filters</li>
+              <li>Face the camera directly in natural daylight</li>
+              <li>Remove glasses and heavy makeup filters</li>
               <li>Make sure your face fills most of the frame</li>
             </ul>
           </div>

@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import "./VirtualTryOn.css";
+import PhotoUpload from "./PhotoUpload";
 
 const LIPSTICK_SHADES = [
   { id: "nude", name: "Nude Beige", hex: "#C4956A", rgb: [196, 149, 106] },
@@ -142,20 +143,12 @@ function LipstickTryOn() {
       </div>
 
       {!photo ? (
-        <div className="tryon-upload" onClick={() => fileRef.current?.click()}>
-          <span>📸</span>
-          <p>Upload your selfie</p>
-          <span className="tryon-upload-btn">Choose Photo</span>
-          <input
-            ref={fileRef}
-            type="file"
-            accept="image/*"
-            capture="user"
-            style={{ display: "none" }}
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (!file) return;
-              const url = URL.createObjectURL(file);
+        <div className="tryon-upload">
+          <span>💄</span>
+          <p>Upload a selfie to try on lipstick shades</p>
+          <PhotoUpload
+            label="Add Your Photo"
+            onPhotoSelected={(url) => {
               setPhoto(url);
               setTimeout(() => loadImage(url), 100);
             }}
@@ -317,20 +310,13 @@ function WigTryOn() {
       </div>
 
       {!photo ? (
-        <div className="tryon-upload" onClick={() => fileRef.current?.click()}>
-          <span>📸</span>
-          <p>Upload your selfie</p>
-          <span className="tryon-upload-btn">Choose Photo</span>
-          <input
-            ref={fileRef}
-            type="file"
-            accept="image/*"
-            capture="user"
-            style={{ display: "none" }}
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (!file) return;
-              setPhoto(URL.createObjectURL(file));
+        <div className="tryon-upload">
+          <span>👑</span>
+          <p>Upload a selfie to try on wig styles</p>
+          <PhotoUpload
+            label="Add Your Photo"
+            onPhotoSelected={(url) => {
+              setPhoto(url);
               setWigY(-60);
             }}
           />

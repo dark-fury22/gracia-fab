@@ -1,0 +1,150 @@
+/* Trigger button */
+.photo-upload-trigger {
+  background: var(--accent);
+  border: none;
+  border-radius: 30px;
+  padding: 0.85rem 2rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--duration) var(--ease);
+  font-family: var(--font-body);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: var(--shadow-md);
+}
+
+[data-theme="light"] .photo-upload-trigger { color: #fff; }
+[data-theme="dark"]  .photo-upload-trigger { color: #000; }
+.photo-upload-trigger:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+/* Overlay */
+.photo-options-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: fadeIn 0.2s ease;
+}
+
+/* Bottom sheet */
+.photo-options-sheet {
+  width: 100%;
+  max-width: 480px;
+  background: var(--surface);
+  border-radius: 24px 24px 0 0;
+  padding: 1rem 1.2rem 2rem;
+  animation: slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.photo-options-handle {
+  width: 40px;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  margin: 0 auto 1.2rem;
+}
+
+.photo-options-title {
+  font-size: 1rem;
+  font-style: italic;
+  color: var(--text);
+  text-align: center;
+  margin-bottom: 1.2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+/* Option buttons */
+.photo-option-btn {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  padding: 1rem;
+  background: none;
+  border: none;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: background var(--duration) var(--ease);
+  text-align: left;
+  font-family: var(--font-body);
+  margin-bottom: 0.4rem;
+}
+
+.photo-option-btn:hover {
+  background: var(--surface-2);
+}
+
+.photo-option-btn:active {
+  background: var(--accent-light);
+  transform: scale(0.98);
+}
+
+.photo-option-icon {
+  font-size: 1.8rem;
+  width: 52px;
+  height: 52px;
+  background: var(--surface-2);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.photo-option-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.photo-option-text strong {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--text);
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+}
+
+.photo-option-text p {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.photo-option-arrow {
+  font-size: 1.5rem;
+  color: var(--text-faint);
+  font-weight: 300;
+}
+
+/* Cancel */
+.photo-option-cancel {
+  width: 100%;
+  padding: 0.9rem;
+  margin-top: 0.75rem;
+  background: var(--surface-2);
+  border: none;
+  border-radius: var(--radius-lg);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--error);
+  cursor: pointer;
+  transition: background var(--duration) var(--ease);
+  font-family: var(--font-body);
+}
+
+.photo-option-cancel:hover { background: var(--error-bg); }
