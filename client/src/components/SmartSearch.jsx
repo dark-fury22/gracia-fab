@@ -32,7 +32,7 @@ function SmartSearch({ onResults, onClose, fullPage = false }) {
   ];
 
   useEffect(() => {
-    if (inputRef.current) inputRef.current.focus();
+    inputRef.current?.focus();
   }, []);
 
   // Autocomplete suggestions
@@ -52,44 +52,58 @@ function SmartSearch({ onResults, onClose, fullPage = false }) {
       .catch(() => setSuggestions([]));
   }, [debouncedQuery]);
 
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (!e.target.closest(".smart-search")) {
+        setShowSuggestions(false);
+      }
+    };
+
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, []);
+
   const handleSearch = useCallback(
-    async (searchQuery = query) => {
-      if (!searchQuery.trim()) return;
+    async (searchQuery) => {
+      const q = searchQuery ?? query;
+
+      if (!q.trim()) return;
+
       setShowSuggestions(false);
       setLoading(true);
 
       try {
         const token = localStorage.getItem("token");
+
         const res = await fetch(`${API_URL}/api/search`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
           },
-          body: JSON.stringify({ query: searchQuery }),
+          body: JSON.stringify({ query: q }),
         });
+
         const data = await res.json();
 
-        if (onResults) {
-          onResults(
-            data.results || [],
-            searchQuery,
-            data.parsedFilters,
-            data.aiUnderstanding,
-          );
-        }
-        if (onClose) onClose();
+        onResults?.(
+          data.results || [],
+          q,
+          data.parsedFilters,
+          data.aiUnderstanding,
+        );
+
+        onClose?.();
       } catch (err) {
         console.error("Search error:", err);
       } finally {
         setLoading(false);
       }
     },
-    [query, onResults, onClose],
+    [onResults, onClose],
   );
-
   const handleKeyDown = (e) => {
-    if (e.key === "Enter") handleSearch();
+    if (e.key === "Enter" && !loading) handleSearch(query);
     if (e.key === "Escape") {
       setShowSuggestions(false);
       if (onClose) onClose();
@@ -144,6 +158,7 @@ function SmartSearch({ onResults, onClose, fullPage = false }) {
               key={i}
               className="suggestion-item"
               onClick={() => {
+                if (!s) return;
                 setQuery(s);
                 setShowSuggestions(false);
                 handleSearch(s);

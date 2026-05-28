@@ -28,6 +28,8 @@ function Products() {
   const [smartQuery, setSmartQuery] = useState("");
   const [skinFilters, setSkinFilters] = useState([]);
   const [hairFilters, setHairFilters] = useState([]);
+  const [aiUnderstanding, setAiUnderstanding] = useState(null);
+  const [isSmartMode, setIsSmartMode] = useState(false);
 
   useEffect(() => {
     fetchProducts();
@@ -80,7 +82,11 @@ function Products() {
       return skinMatch && hairMatch;
     });
   }, [sortedProducts, skinFilters, hairFilters]);
-  const displayedProducts = smartResults ? smartResults : filteredProducts;
+  const displayedProducts = isSmartMode
+    ? smartResults?.length
+      ? smartResults
+      : filteredProducts
+    : filteredProducts;
 
   const categoryLabels = {
     all: "All Products",
@@ -228,6 +234,7 @@ function Products() {
                 setSmartResults(null);
                 setSmartQuery("");
                 setAiUnderstanding(null);
+                setIsSmartMode(false);
               }}
             >
               ✕ Clear
@@ -247,7 +254,7 @@ function Products() {
         ) : (
           <div className="products-grid">
             {displayedProducts.map((p) => (
-              <ProductCard key={p._id} product={p} />
+              <ProductCard key={p._id?.toString?.() || p.name} product={p} />
             ))}
           </div>
         )}
@@ -275,9 +282,10 @@ function Products() {
             </p>
 
             <SmartSearch
-              onResults={(results, query) => {
+              onResults={(results, query, parsedFilters, ai) => {
                 setSmartResults(results);
                 setSmartQuery(query);
+                setAiUnderstanding(ai);
                 setShowSmartSearch(false);
               }}
               onClose={() => setShowSmartSearch(false)}

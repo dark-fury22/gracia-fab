@@ -13,16 +13,17 @@ const queryCache = new Map();
 const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
 
 const getCached = (key) => {
-  const item = cache.get(key);
+  const item = queryCache.get(key);
   if (!item) return null;
+
   if (Date.now() > item.expiry) {
     queryCache.delete(key);
     return null;
   }
+
   console.log(`📦 Cache HIT for: "${key}"`);
   return item.value;
 };
-
 const setCache = (key, value) => {
   queryCache.set(key, {
     value,
@@ -98,8 +99,15 @@ Return this exact JSON structure (omit fields that don't apply):
 
     const raw = completion.choices[0]?.message?.content || "{}";
     const cleaned = raw.replace(/```json|```/g, "").trim();
-    const match = cleaned.match(/\{[\s\S]*\}/);
-    const parsed = match ? JSON.parse(match[0]) : {};
+    let parsed = {};
+
+    try {
+      const match = cleaned.match(/\{[\s\S]*\}/);
+      parsed = match ? JSON.parse(match[0]) : {};
+    } catch (err) {
+      console.log("JSON parse failed:", err.message);
+      parsed = {};
+    }
 
     // Store in cache so we don't call AI for same query again
     setCache(cacheKey, parsed);
@@ -195,6 +203,7 @@ const scoreProduct = (product, query, parsedFilters, userProfile) => {
     `${product.name} ${product.description} ${(product.tags || []).join(" ")} ${product.brand} ${product.category}`.toLowerCase();
   const queryWords = (parsedFilters.keywords || query)
     .toLowerCase()
+    .trim()
     .split(/\s+/);
 
   let wordMatches = 0;
@@ -294,13 +303,13 @@ const scoreProduct = (product, query, parsedFilters, userProfile) => {
     }
 
     // Has user bought from this category before? (familiarity boost)
-    if (userProfile.purchasedCategories.includes(product.category)) {
+    if (userProfile?.purchasedCategories?.includes(product.category)) {
       personalMatches += 0.5;
       personalTotal += 0.5;
     }
 
     // Is this in their wishlist? (high intent signal)
-    if (userProfile.wishlistIds.includes(product._id.toString())) {
+    if (userProfile?.wishlistIds?.includes(product._id.toString())) {
       personalMatches += 1;
       personalTotal += 1;
     }
@@ -368,7 +377,11 @@ export const semanticSearch = async (req, res) => {
     }
 
     // ── Step 3: Fetch all products from DB
-    const allProducts = await Product.find({}).lean();
+    const allProducts = await Product.find({})
+      .select(
+        "name description tags brand category price rating numReviews isFeatured suitableFor",
+      )
+      .lean();
 
     // ── Step 4: Score every product (Item 5 — hybrid ranking)
     const scored = allProducts.map((product) => {
