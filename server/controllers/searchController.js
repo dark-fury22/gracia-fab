@@ -378,3 +378,11 @@ export const getSearchSuggestions = async (req, res) => {
     res.json([]);
   }
 };
+
+export const getCacheStats = (req, res) => {
+  res.json({
+    cache: "ok",
+    hits: 0,
+    misses: 0,
+  });
+};
