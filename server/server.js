@@ -19,6 +19,10 @@ import crypto from "crypto";
 import loyaltyRoutes from "./routes/loyaltyRoutes.js";
 import fetch from "node-fetch";
 import { startWorkers } from "./queues/workers.js";
+import skinAnalysisRoutes from "./routes/skinAnalysisRoutes.js";
+import trackingRoutes from "./routes/trackingRoutes.js";
+import cron from "node-cron";
+import { sendMarketingEmails } from "./controllers/marketingController.js";
 
 dotenv.config();
 
@@ -123,6 +127,107 @@ app.post(
   },
 );
 
+// ── AI Beauty Chat (Gemini or Groq fallback)
+app.post("/api/chat", async (req, res) => {
+  const { message, history = [] } = req.body;
+  if (!message) return res.status(400).json({ message: "Message required" });
+
+  try {
+    const Product = (await import("./models/Product.js")).default;
+    const products = await Product.find({})
+      .select("name price category tags image _id")
+      .limit(30)
+      .lean();
+    const productList = products
+      .map((p) => `ID:${p._id} | ${p.name} | ${p.category} | ₦${p.price}`)
+      .join("\n");
+
+    const systemInstruction = `You are a friendly beauty advisor for Gracia Fab, a Nigerian beauty store.
+Help with skincare, haircare, wigs, and bridal beauty.
+Keep responses to 2-3 sentences max. Be warm and helpful.
+If recommending products from our catalog, add "PRODUCTS: ["id1","id2"]" at the end.
+
+Available products:
+${productList}`;
+
+    let reply = "";
+
+    // Try Gemini first
+    if (process.env.GEMINI_API_KEY) {
+      try {
+        const { GoogleGenerativeAI } = await import("@google/generative-ai");
+        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+        const model = genAI.getGenerativeModel({
+          model: "gemini-1.5-flash",
+          systemInstruction,
+        });
+
+        // Build Gemini chat history format
+        const geminiHistory = history.slice(-6).map((m) => ({
+          role: m.role === "assistant" ? "model" : "user",
+          parts: [{ text: m.content || m.text }],
+        }));
+
+        const chat = model.startChat({ history: geminiHistory });
+        const result = await chat.sendMessage(message);
+        reply = result.response.text();
+      } catch (geminiErr) {
+        console.log("Chat Gemini failed, using Groq:", geminiErr.message);
+      }
+    }
+
+    // Fallback to Groq
+    if (!reply && process.env.GROQ_API_KEY) {
+      const Groq = (await import("groq-sdk")).default;
+      const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+      const completion = await groq.chat.completions.create({
+        model: "llama-3.1-8b-instant",
+        max_tokens: 300,
+        temperature: 0.7,
+        messages: [
+          { role: "system", content: systemInstruction },
+          ...history.slice(-6).map((m) => ({
+            role: m.role === "assistant" ? "assistant" : "user",
+            content: m.text || m.content,
+          })),
+          { role: "user", content: message },
+        ],
+      });
+      reply = completion.choices[0]?.message?.content || "";
+    }
+
+    if (!reply) {
+      reply =
+        "I'm here to help with your beauty questions! Please ask me about skincare, haircare, or our products 💄";
+    }
+
+    // Extract recommended product IDs
+    let recommendedProducts = [];
+    const prodMatch = reply.match(/PRODUCTS:\s*\[([^\]]+)\]/);
+    if (prodMatch) {
+      reply = reply.replace(/PRODUCTS:\s*\[[^\]]+\]/, "").trim();
+      const ids = prodMatch[1]
+        .match(/"([^"]+)"/g)
+        ?.map((id) => id.replace(/"/g, ""));
+      if (ids?.length) {
+        recommendedProducts = await Product.find({
+          _id: { $in: ids },
+        })
+          .select("name price image _id")
+          .limit(2);
+      }
+    }
+
+    res.json({ reply, products: recommendedProducts });
+  } catch (err) {
+    console.error("Chat error:", err.message);
+    res.json({
+      reply: "I'm having a quick break! Try again in a moment 💄",
+      products: [],
+    });
+  }
+});
+
 app.use(
   cors({
     origin: [
@@ -156,6 +261,8 @@ app.use("/api/contact", contactRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/search", searchRoutes);
 app.use("/api/loyalty", loyaltyRoutes);
+app.use("/api/skin-analysis", skinAnalysisRoutes);
+app.use("/api/track", trackingRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
@@ -190,6 +297,11 @@ app.get("/health", (req, res) => {
     uptime: Math.floor(process.uptime()),
     environment: process.env.NODE_ENV,
   });
+});
+
+cron.schedule("0 10 * * *", async () => {
+  console.log("📧 Running daily marketing email job...");
+  await sendMarketingEmails();
 });
 
 const PORT = process.env.PORT || 5000;

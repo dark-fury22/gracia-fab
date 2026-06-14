@@ -112,7 +112,21 @@ const userSchema = new mongoose.Schema(
         },
       },
     ],
+    // Add inside userSchema:
+    interests: [
+      {
+        productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
+        category: String,
+        viewCount: { type: Number, default: 1 },
+        lastViewed: { type: Date, default: Date.now },
+      },
+    ],
+    emailPreferences: {
+      marketing: { type: Boolean, default: true },
+      lastSent: Date,
+    },
   },
+
   { timestamps: true },
 );
 

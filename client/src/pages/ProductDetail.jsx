@@ -15,6 +15,8 @@ function ProductDetail({ onCartOpen }) {
   const [loading, setLoading] = useState(true);
   const [added, setAdded] = useState(false);
 
+  const { user } = useAuth();
+
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -27,8 +29,8 @@ function ProductDetail({ onCartOpen }) {
         }
 
         const data = await response.json();
-        console.log("PRODUCT:", data);
 
+        console.log("PRODUCT:", data);
         setProduct(data);
       } catch (err) {
         console.error("PRODUCT FETCH ERROR:", err);
@@ -40,6 +42,26 @@ function ProductDetail({ onCartOpen }) {
 
     fetchProduct();
   }, [id]);
+
+  useEffect(() => {
+    if (!user || !product) return;
+
+    const token = localStorage.getItem("token");
+
+    fetch(`${API_URL}/api/track/view`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        productId: id,
+        category: product.category,
+      }),
+    }).catch(() => {
+      // silent fail (intentionally ignored)
+    });
+  }, [user, product, id]);
 
   const handleAddToCart = () => {
     addToCart(product);

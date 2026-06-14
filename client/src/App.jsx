@@ -29,6 +29,8 @@ import SkinToneDetector from "./components/SkinToneDetector";
 import VirtualTryOn from "./components/VirtualTryOn";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import SkinAnalysis from "./pages/SkinAnalysis";
+import RoutineGenerator from "./pages/RoutineGenerator";
 
 // Wrapper pages
 function SkinToneDetectorPage({ onCartOpen }) {
@@ -246,6 +248,22 @@ function App() {
           element={
             <ProtectedRoute>
               <VirtualTryOnPage onCartOpen={openCart} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/skin-analysis"
+          element={
+            <ProtectedRoute>
+              <SkinAnalysis onCartOpen={openCart} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/routine-generator"
+          element={
+            <ProtectedRoute>
+              <RoutineGenerator onCartOpen={openCart} />
             </ProtectedRoute>
           }
         />

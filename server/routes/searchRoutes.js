@@ -13,6 +13,9 @@ const router = express.Router();
 router.post("/", semanticSearch);
 router.get("/suggestions", getSearchSuggestions);
 
+// Authenticated version gets personalized results
+router.post("/personalized", protect, semanticSearch);
+
 // Admin — see cache stats
 router.get("/cache-stats", protect, admin, getCacheStats);
 

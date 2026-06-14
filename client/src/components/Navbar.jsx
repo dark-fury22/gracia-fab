@@ -112,7 +112,29 @@ function Navbar({ onCartOpen }) {
                   <span className="dropdown-item-icon">🤖</span>
                   <div>
                     <strong>AI Advisor</strong>
-                    <p>Get personalized recommendations</p>
+                    <p>Personalized recommendations</p>
+                  </div>
+                </Link>
+                <Link
+                  to="/skin-analysis"
+                  className="dropdown-item"
+                  onClick={() => setLabOpen(false)}
+                >
+                  <span className="dropdown-item-icon">🔬</span>
+                  <div>
+                    <strong>AI Skin Analysis</strong>
+                    <p>Analyse your selfie with AI</p>
+                  </div>
+                </Link>
+                <Link
+                  to="/routine-generator"
+                  className="dropdown-item"
+                  onClick={() => setLabOpen(false)}
+                >
+                  <span className="dropdown-item-icon">✨</span>
+                  <div>
+                    <strong>Routine Generator</strong>
+                    <p>Build your perfect routine</p>
                   </div>
                 </Link>
                 <Link
@@ -120,10 +142,10 @@ function Navbar({ onCartOpen }) {
                   className="dropdown-item"
                   onClick={() => setLabOpen(false)}
                 >
-                  <span className="dropdown-item-icon">✨</span>
+                  <span className="dropdown-item-icon">🎨</span>
                   <div>
-                    <strong>Skin Tone</strong>
-                    <p>Detect your complexion</p>
+                    <strong>Skin Tone Detector</strong>
+                    <p>Find your complexion</p>
                   </div>
                 </Link>
                 <Link

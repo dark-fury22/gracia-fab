@@ -1,459 +1,367 @@
-import Groq from "groq-sdk";
 import Product from "../models/Product.js";
 import User from "../models/User.js";
 import Order from "../models/Order.js";
 
 // ─────────────────────────────────────────
-//  ITEM 6: QUERY CACHE
-//  Think of this like a notepad where we
-//  write down AI answers so we don't have
-//  to ask again for 1 hour
+//  SMART QUERY PARSER (No API needed)
+//  Understands natural language using rules
 // ─────────────────────────────────────────
-const queryCache = new Map();
-const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
+const parseQuery = (query) => {
+  const q = query.toLowerCase().trim();
+  const result = {
+    categories: [],
+    skinTypes: [],
+    hairTypes: [],
+    concerns: [],
+    priceRange: null,
+    keywords: q,
+    intent: "browse",
+  };
 
-const getCached = (key) => {
-  const item = queryCache.get(key);
-  if (!item) return null;
+  // ── Category detection
+  if (
+    /\b(serum|moistur|cleanser|toner|sunscreen|spf|face|skin|cream|lotion|glow|brightening)\b/.test(
+      q,
+    )
+  )
+    result.categories.push("skincare");
+  if (
+    /\b(hair|curl|scalp|shampoo|conditioner|growth|natural hair|braid|locs)\b/.test(
+      q,
+    )
+  )
+    result.categories.push("haircare");
+  if (/\b(wig|lace|frontal|closure|bob|afro|weave|hair piece)\b/.test(q))
+    result.categories.push("wig");
+  if (/\b(bride|bridal|wedding|occasion|ceremony|pre-wedding)\b/.test(q))
+    result.categories.push("bridal");
 
-  if (Date.now() > item.expiry) {
-    queryCache.delete(key);
-    return null;
+  // ── Skin type detection
+  if (/\b(oily|greasy|shiny|pores)\b/.test(q)) result.skinTypes.push("oily");
+  if (/\b(dry|flaky|tight|parched)\b/.test(q)) result.skinTypes.push("dry");
+  if (/\b(combination|combo|t-zone)\b/.test(q))
+    result.skinTypes.push("combination");
+  if (/\b(normal)\b/.test(q)) result.skinTypes.push("normal");
+  if (/\b(sensitive|react|irritat|redness)\b/.test(q))
+    result.skinTypes.push("sensitive");
+
+  // ── Hair type
+  if (/\b(straight|relaxed)\b/.test(q)) result.hairTypes.push("straight");
+  if (/\b(wavy)\b/.test(q)) result.hairTypes.push("wavy");
+  if (/\b(curly|curl)\b/.test(q)) result.hairTypes.push("curly");
+  if (/\b(coily|4c|natural|kinky)\b/.test(q)) result.hairTypes.push("coily");
+
+  // ── Concern detection
+  const concernMap = {
+    acne: /\b(acne|pimple|breakout|blemish|spot)\b/,
+    "dark spots": /\b(dark spot|hyperpigmentation|uneven|patch|melanin)\b/,
+    "hair loss": /\b(hair loss|thinning|bald|growth|shedding)\b/,
+    frizz: /\b(frizz|fizzy|puff)\b/,
+    aging: /\b(aging|wrinkle|fine line|anti-age|mature)\b/,
+    brightening: /\b(bright|dull|glow|radiant|lighten)\b/,
+    moisturizing: /\b(moistur|hydrat|dry|water)\b/,
+  };
+  for (const [concern, regex] of Object.entries(concernMap)) {
+    if (regex.test(q)) result.concerns.push(concern);
   }
 
-  console.log(`📦 Cache HIT for: "${key}"`);
-  return item.value;
-};
-const setCache = (key, value) => {
-  queryCache.set(key, {
-    value,
-    expiry: Date.now() + CACHE_TTL_MS,
-  });
-  console.log(`💾 Cached: "${key}" (${queryCache.size} items in cache)`);
-};
+  // ── Price range
+  const budgetMatch = q.match(/under\s*[₦#]?\s*(\d[\d,]*)/i);
+  if (budgetMatch) {
+    result.priceRange = { max: parseInt(budgetMatch[1].replace(",", "")) };
+  }
+  if (/\b(cheap|affordable|budget|low.price)\b/.test(q)) {
+    result.priceRange = { max: result.priceRange?.max || 10000 };
+  }
+  if (/\b(premium|luxury|high.end)\b/.test(q)) {
+    result.priceRange = { min: 20000 };
+  }
 
-// Clear old cache entries every 30 mins (housekeeping)
-setInterval(
-  () => {
-    const now = Date.now();
-    for (const [key, item] of queryCache.entries()) {
-      if (now > item.expiry) queryCache.delete(key);
-    }
-  },
-  30 * 60 * 1000,
-);
+  // ── Intent
+  if (/\b(acne|dark spot|hair loss|frizz|dull)\b/.test(q))
+    result.intent = "problem";
+  if (/\b(bride|wedding|gift)\b/.test(q)) result.intent = "occasion";
+  if (/\b(vitamin|retinol|niacinamide|spf)\b/.test(q))
+    result.intent = "ingredient";
+
+  return result;
+};
 
 // ─────────────────────────────────────────
-//  ITEM 7: SERVER-SIDE AI SEARCH
-//  Groq reads the query like a human and
-//  extracts structured filters from it
+//  OPTIONAL: Groq AI enhances the parse
+//  If Groq fails, falls back to rule-based
 // ─────────────────────────────────────────
 let groqClient = null;
 const getGroq = () => {
-  if (!groqClient) {
+  if (!groqClient && process.env.GROQ_API_KEY) {
+    const Groq = require("groq-sdk");
     groqClient = new Groq({ apiKey: process.env.GROQ_API_KEY });
   }
   return groqClient;
 };
 
-const parseQueryWithAI = async (query) => {
-  // Check cache first
-  const cacheKey = `parse:${query.toLowerCase().trim()}`;
-  const cached = getCached(cacheKey);
-  if (cached) return cached;
+const enhanceWithAI = async (query, baseParse) => {
+  const groq = getGroq();
+  if (!groq) return baseParse;
 
-  const prompt = `You are a beauty product search AI for a Nigerian beauty store (Gracia Fab).
-
-Parse this search query and extract structured filters.
-Return ONLY valid JSON, no explanation, no markdown.
+  try {
+    const prompt = `Extract search intent from this beauty query. Return ONLY JSON, no markdown.
 
 Query: "${query}"
 
-Available values:
-- categories: skincare, haircare, wig, bridal
-- skinTypes:  oily, dry, combination, normal, sensitive
-- hairTypes:  straight, wavy, curly, coily
-- priceRange: budget (<5000), mid (5000-30000), premium (>30000)
+Return: {"keywords":"","categories":[],"skinTypes":[],"concerns":[],"priceRange":null}
 
-Return this exact JSON structure (omit fields that don't apply):
-{
-  "categories":  [],
-  "skinTypes":   [],
-  "hairTypes":   [],
-  "concerns":    [],
-  "ingredients": [],
-  "priceRange":  null,
-  "occasion":    null,
-  "keywords":    "",
-  "intent":      "browse|problem|occasion|ingredient|gift",
-  "confidence":  0.0
-}`;
+Categories: skincare, haircare, wig, bridal
+SkinTypes: oily, dry, combination, normal, sensitive`;
 
-  try {
-    const completion = await getGroq().chat.completions.create({
+    const completion = await groq.chat.completions.create({
       messages: [{ role: "user", content: prompt }],
       model: "llama-3.1-8b-instant",
       temperature: 0.1,
-      max_tokens: 300,
+      max_tokens: 200,
     });
 
     const raw = completion.choices[0]?.message?.content || "{}";
-    const cleaned = raw.replace(/```json|```/g, "").trim();
-    let parsed = {};
+    const clean = raw.replace(/```json|```/g, "").trim();
+    const match = clean.match(/\{[\s\S]*\}/);
+    if (!match) return baseParse;
 
-    try {
-      const match = cleaned.match(/\{[\s\S]*\}/);
-      parsed = match ? JSON.parse(match[0]) : {};
-    } catch (err) {
-      console.log("JSON parse failed:", err.message);
-      parsed = {};
-    }
+    const aiParse = JSON.parse(match[0]);
 
-    // Store in cache so we don't call AI for same query again
-    setCache(cacheKey, parsed);
-    return parsed;
-  } catch (err) {
-    console.log("AI parse failed, using empty filters:", err.message);
-    return {};
-  }
-};
-
-// ─────────────────────────────────────────
-//  ITEM 8: PERSONALIZATION LAYER
-//  Loads the user's profile, purchase
-//  history, and wishlist to score products
-//  higher if they match who the user is
-// ─────────────────────────────────────────
-const loadUserProfile = async (userId) => {
-  if (!userId) return null;
-
-  try {
-    // Get user preferences
-    const user = await User.findById(userId).select(
-      "skinType hairType wishlist loyaltyTier",
-    );
-
-    if (!user) return null;
-
-    // Get their purchase history (what categories they buy)
-    const orders = await Order.find({
-      user: userId,
-      isPaid: true,
-    })
-      .select("orderItems")
-      .limit(20)
-      .lean();
-
-    // Extract categories and brands they've bought
-    const purchasedCategories = new Set();
-    const purchasedProductIds = new Set();
-
-    for (const order of orders) {
-      for (const item of order.orderItems || []) {
-        if (item.product) purchasedProductIds.add(item.product.toString());
-      }
-    }
-
-    // Get categories from purchased products
-    if (purchasedProductIds.size > 0) {
-      const purchasedProducts = await Product.find({
-        _id: { $in: [...purchasedProductIds] },
-      })
-        .select("category brand")
-        .lean();
-
-      for (const p of purchasedProducts) {
-        purchasedCategories.add(p.category);
-      }
-    }
-
+    // Merge AI results with rule-based (AI fills gaps)
     return {
-      skinType: user.skinType || null,
-      hairType: user.hairType || null,
-      wishlistIds: (user.wishlist || []).map((id) => id.toString()),
-      purchasedCategories: [...purchasedCategories],
-      loyaltyTier: user.loyaltyTier || "bronze",
-      isPremium: ["gold", "platinum"].includes(user.loyaltyTier),
+      ...baseParse,
+      categories: [
+        ...new Set([...baseParse.categories, ...(aiParse.categories || [])]),
+      ],
+      skinTypes: [
+        ...new Set([...baseParse.skinTypes, ...(aiParse.skinTypes || [])]),
+      ],
+      concerns: [
+        ...new Set([...baseParse.concerns, ...(aiParse.concerns || [])]),
+      ],
+      keywords: aiParse.keywords || baseParse.keywords,
+      priceRange: baseParse.priceRange || aiParse.priceRange,
     };
-  } catch (err) {
-    console.error("loadUserProfile error:", err.message);
-    return null;
+  } catch {
+    return baseParse; // graceful fallback
   }
 };
 
 // ─────────────────────────────────────────
-//  ITEM 5: HYBRID SCORING ENGINE
-//  Every product gets 4 scores combined:
-//
-//  1. AI Score       (40%) — query relevance
-//  2. Filter Score   (30%) — exact filter match
-//  3. Personal Score (20%) — matches user profile
-//  4. Quality Score  (10%) — rating + reviews
-//
-//  Final = weighted sum → sort descending
+//  HYBRID SCORING ENGINE
 // ─────────────────────────────────────────
-const scoreProduct = (product, query, parsedFilters, userProfile) => {
-  let aiScore = 0; // out of 100
-  let filterScore = 0; // out of 100
-  let personalScore = 0; // out of 100
-  let qualityScore = 0; // out of 100
+const scoreProduct = (product, query, filters, userProfile) => {
+  const text = [
+    product.name,
+    product.description,
+    product.category,
+    product.brand,
+    ...(product.tags || []),
+    ...(product.suitableFor?.skinType || []),
+    ...(product.suitableFor?.hairType || []),
+    ...(product.suitableFor?.concern || []),
+  ]
+    .join(" ")
+    .toLowerCase();
 
-  // ── AI Score: keyword + semantic match
-  const searchText =
-    `${product.name} ${product.description} ${(product.tags || []).join(" ")} ${product.brand} ${product.category}`.toLowerCase();
-  const queryWords = (parsedFilters.keywords || query)
+  const words = (filters.keywords || query)
     .toLowerCase()
-    .trim()
-    .split(/\s+/);
+    .split(/\s+/)
+    .filter((w) => w.length > 2);
+  const matched = words.filter((w) => text.includes(w));
 
-  let wordMatches = 0;
-  for (const word of queryWords) {
-    if (word.length > 2 && searchText.includes(word)) wordMatches++;
-  }
-  aiScore = Math.min(100, (wordMatches / Math.max(queryWords.length, 1)) * 100);
+  // AI score — keyword relevance
+  let aiScore = words.length > 0 ? (matched.length / words.length) * 100 : 50;
+  if (product.name.toLowerCase().includes(query.toLowerCase()))
+    aiScore = Math.min(100, aiScore + 40);
 
-  // Boost if product name directly contains the query
-  if (product.name.toLowerCase().includes(query.toLowerCase())) {
-    aiScore = Math.min(100, aiScore + 30);
-  }
-
-  // ── Filter Score: category, skin type, hair type, price
+  // Filter score — structured match
   let filterMatches = 0;
-  let totalFilters = 0;
+  let filterTotal = 0;
 
-  if (parsedFilters.categories?.length > 0) {
-    totalFilters++;
-    if (parsedFilters.categories.includes(product.category)) filterMatches++;
+  if (filters.categories?.length) {
+    filterTotal++;
+    if (filters.categories.includes(product.category)) filterMatches++;
   }
-
-  if (parsedFilters.skinTypes?.length > 0) {
-    totalFilters++;
-    const productSkinTypes = product.suitableFor?.skinType || [];
-    if (
-      parsedFilters.skinTypes.some((st) => productSkinTypes.includes(st)) ||
-      productSkinTypes.includes("all")
-    )
+  if (filters.skinTypes?.length) {
+    filterTotal++;
+    const st = product.suitableFor?.skinType || [];
+    if (filters.skinTypes.some((s) => st.includes(s) || st.includes("all")))
       filterMatches++;
   }
-
-  if (parsedFilters.hairTypes?.length > 0) {
-    totalFilters++;
-    const productHairTypes = product.suitableFor?.hairType || [];
-    if (
-      parsedFilters.hairTypes.some((ht) => productHairTypes.includes(ht)) ||
-      productHairTypes.includes("all")
-    )
+  if (filters.hairTypes?.length) {
+    filterTotal++;
+    const ht = product.suitableFor?.hairType || [];
+    if (filters.hairTypes.some((h) => ht.includes(h) || ht.includes("all")))
       filterMatches++;
   }
-
-  if (parsedFilters.concerns?.length > 0) {
-    totalFilters++;
-    const productTags = (product.tags || []).map((t) => t.toLowerCase());
-    const productConcerns = (product.suitableFor?.concern || []).map((c) =>
-      c.toLowerCase(),
-    );
-    if (
-      parsedFilters.concerns.some(
-        (c) =>
-          productTags.includes(c.toLowerCase()) ||
-          productConcerns.includes(c.toLowerCase()),
-      )
-    )
+  if (filters.concerns?.length) {
+    filterTotal++;
+    const tags = (product.tags || []).join(" ").toLowerCase();
+    if (filters.concerns.some((c) => tags.includes(c.toLowerCase())))
       filterMatches++;
   }
-
-  if (parsedFilters.priceRange) {
-    totalFilters++;
-    const price = product.price;
-    if (
-      (parsedFilters.priceRange === "budget" && price < 5000) ||
-      (parsedFilters.priceRange === "mid" && price >= 5000 && price <= 30000) ||
-      (parsedFilters.priceRange === "premium" && price > 30000)
-    )
-      filterMatches++;
+  if (filters.priceRange?.max) {
+    filterTotal++;
+    if (product.price <= filters.priceRange.max) filterMatches++;
+  }
+  if (filters.priceRange?.min) {
+    filterTotal++;
+    if (product.price >= filters.priceRange.min) filterMatches++;
   }
 
-  filterScore = totalFilters > 0 ? (filterMatches / totalFilters) * 100 : 50; // neutral if no filters
+  const filterScore =
+    filterTotal > 0 ? (filterMatches / filterTotal) * 100 : 50;
 
-  // ── Personal Score: matches user's known profile
+  // Personal score
+  let personalScore = 50;
   if (userProfile) {
-    let personalMatches = 0;
-    let personalTotal = 0;
-
-    // User's skin type
+    let pm = 0,
+      pt = 0;
     if (userProfile.skinType) {
-      personalTotal++;
-      const productSkinTypes = product.suitableFor?.skinType || [];
-      if (
-        productSkinTypes.includes(userProfile.skinType) ||
-        productSkinTypes.includes("all")
-      )
-        personalMatches++;
+      pt++;
+      const st = product.suitableFor?.skinType || [];
+      if (st.includes(userProfile.skinType) || st.includes("all")) pm++;
     }
-
-    // User's hair type
     if (userProfile.hairType) {
-      personalTotal++;
-      const productHairTypes = product.suitableFor?.hairType || [];
-      if (
-        productHairTypes.includes(userProfile.hairType) ||
-        productHairTypes.includes("all")
-      )
-        personalMatches++;
+      pt++;
+      const ht = product.suitableFor?.hairType || [];
+      if (ht.includes(userProfile.hairType) || ht.includes("all")) pm++;
     }
-
-    // Has user bought from this category before? (familiarity boost)
-    if (userProfile?.purchasedCategories?.includes(product.category)) {
-      personalMatches += 0.5;
-      personalTotal += 0.5;
+    if (userProfile.wishlistIds?.includes(product._id.toString())) {
+      pm += 1.5;
+      pt += 1.5;
     }
-
-    // Is this in their wishlist? (high intent signal)
-    if (userProfile?.wishlistIds?.includes(product._id.toString())) {
-      personalMatches += 1;
-      personalTotal += 1;
+    if (userProfile.purchasedCategories?.includes(product.category)) {
+      pm += 0.5;
+      pt += 0.5;
     }
-
-    personalScore =
-      personalTotal > 0
-        ? Math.min(100, (personalMatches / personalTotal) * 100)
-        : 50;
-  } else {
-    personalScore = 50; // neutral if no user profile
+    personalScore = pt > 0 ? Math.min(100, (pm / pt) * 100) : 50;
   }
 
-  // ── Quality Score: rating + reviews + featured
-  const ratingScore = ((product.rating || 0) / 5) * 60; // max 60
-  const reviewScore = Math.min(20, product.numReviews || 0); // max 20
-  const featuredBonus = product.isFeatured ? 20 : 0; // max 20
-  qualityScore = Math.min(100, ratingScore + reviewScore + featuredBonus);
+  // Quality score
+  const qualityScore = Math.min(
+    100,
+    ((product.rating || 0) / 5) * 50 +
+      Math.min(25, product.numReviews || 0) +
+      (product.isFeatured ? 25 : 0),
+  );
 
-  // ── HYBRID FINAL SCORE (Item 5)
-  const finalScore =
-    aiScore * 0.4 +
-    filterScore * 0.3 +
-    personalScore * 0.2 +
-    qualityScore * 0.1;
-
-  return {
-    finalScore: Math.round(finalScore * 10) / 10,
-    breakdown: {
-      ai: Math.round(aiScore),
-      filter: Math.round(filterScore),
-      personal: Math.round(personalScore),
-      quality: Math.round(qualityScore),
-    },
-  };
+  return (
+    aiScore * 0.4 + filterScore * 0.3 + personalScore * 0.2 + qualityScore * 0.1
+  );
 };
 
 // ─────────────────────────────────────────
-//  MAIN SEARCH ENDPOINT
-//  Combines all 4 items into one flow
+//  MAIN SEARCH ROUTE
+//  POST /api/search
 // ─────────────────────────────────────────
-
-// @route POST /api/search
 export const semanticSearch = async (req, res) => {
   const { query } = req.body;
-  const userId = req.user?._id; // optional — works for both guests and logged-in users
+  const userId = req.user?._id;
 
   if (!query || query.trim().length < 2) {
     return res.status(400).json({ message: "Search query too short" });
   }
 
-  const startTime = Date.now();
-  console.log(`🔍 Search: "${query}" | User: ${userId || "guest"}`);
+  const start = Date.now();
 
   try {
-    // ── Step 1: Parse query with AI (Item 7) — cached (Item 6)
-    const parsedFilters = await parseQueryWithAI(query);
-    console.log("📋 Parsed filters:", JSON.stringify(parsedFilters));
+    // Step 1: Parse with rules (always works, no API needed)
+    let filters = parseQuery(query);
 
-    // ── Step 2: Load user profile for personalization (Item 8)
-    const userProfile = await loadUserProfile(userId);
-    if (userProfile) {
-      console.log(
-        `👤 User profile: skin=${userProfile.skinType}, hair=${userProfile.hairType}`,
-      );
+    // Step 2: Optionally enhance with Groq AI (silent fail)
+    filters = await enhanceWithAI(query, filters);
+
+    // Step 3: User profile for personalization
+    let userProfile = null;
+    if (userId) {
+      try {
+        const user = await User.findById(userId)
+          .select("skinType hairType wishlist")
+          .lean();
+        const orders = await Order.find({ user: userId, isPaid: true })
+          .select("orderItems")
+          .limit(10)
+          .lean();
+
+        const purchasedCats = new Set();
+        for (const o of orders) {
+          for (const item of o.orderItems || []) {
+            const p = await Product.findById(item.product)
+              .select("category")
+              .lean();
+            if (p) purchasedCats.add(p.category);
+          }
+        }
+
+        userProfile = {
+          skinType: user?.skinType,
+          hairType: user?.hairType,
+          wishlistIds: (user?.wishlist || []).map(String),
+          purchasedCategories: [...purchasedCats],
+        };
+      } catch {
+        /* personalization fails silently */
+      }
     }
 
-    // ── Step 3: Fetch all products from DB
-    const allProducts = await Product.find({})
-      .select(
-        "name description tags brand category price rating numReviews isFeatured suitableFor",
-      )
-      .lean();
+    // Step 4: Score all products
+    const allProducts = await Product.find({}).lean();
+    const scored = allProducts
+      .map((p) => ({
+        product: p,
+        score: scoreProduct(p, query, filters, userProfile),
+      }))
+      .filter((s) => s.score >= 10)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 18)
+      .map((s) => ({ ...s.product, _score: Math.round(s.score) }));
 
-    // ── Step 4: Score every product (Item 5 — hybrid ranking)
-    const scored = allProducts.map((product) => {
-      const { finalScore, breakdown } = scoreProduct(
-        product,
-        query,
-        parsedFilters,
-        userProfile,
+    // Step 5: Fallback — if no results, return broad match
+    let results = scored;
+    if (results.length === 0) {
+      const rx = new RegExp(
+        query
+          .split(" ")
+          .filter((w) => w.length > 2)
+          .join("|"),
+        "i",
       );
-      return { product, finalScore, breakdown };
-    });
-
-    // ── Step 5: Sort by final score (highest first)
-    scored.sort((a, b) => b.finalScore - a.finalScore);
-
-    // ── Step 6: Filter out very low scores (irrelevant products)
-    const MINIMUM_SCORE = 15;
-    const relevant = scored.filter((s) => s.finalScore >= MINIMUM_SCORE);
-
-    // Return top 16 results
-    const results = relevant.slice(0, 16).map((s) => ({
-      ...s.product,
-      _score: s.finalScore,
-      _breakdown: s.breakdown,
-    }));
-
-    const elapsed = Date.now() - startTime;
-    console.log(`✅ Found ${results.length} results in ${elapsed}ms`);
+      const fallback = await Product.find({
+        $or: [{ name: rx }, { description: rx }, { category: rx }],
+      })
+        .limit(8)
+        .lean();
+      results = fallback;
+    }
 
     res.json({
       results,
       total: results.length,
       query,
-      parsedFilters,
+      parsedFilters: filters,
       personalized: !!userProfile,
-      responseTimeMs: elapsed,
-
-      // Show user what the AI understood
-      aiUnderstanding: {
-        categories: parsedFilters.categories || [],
-        skinTypes: parsedFilters.skinTypes || [],
-        concerns: parsedFilters.concerns || [],
-        intent: parsedFilters.intent || "browse",
-      },
+      aiEnhanced: !!process.env.GROQ_API_KEY,
+      responseMs: Date.now() - start,
     });
-  } catch (error) {
-    console.error("Search error:", error.message);
-    res.status(500).json({ message: error.message });
+  } catch (err) {
+    console.error("Search error:", err.message);
+    res.status(500).json({ message: err.message });
   }
 };
 
-// @route GET /api/search/suggestions?q=...
 export const getSearchSuggestions = async (req, res) => {
   const { q } = req.query;
   if (!q || q.length < 2) return res.json([]);
 
-  // Cache suggestions too
-  const cacheKey = `suggest:${q.toLowerCase()}`;
-  const cached = getCached(cacheKey);
-  if (cached) return res.json(cached);
-
   try {
-    const regex = new RegExp(q, "i");
+    const rx = new RegExp(q, "i");
     const products = await Product.find({
-      $or: [
-        { name: regex },
-        { category: regex },
-        { brand: regex },
-        { tags: regex },
-      ],
+      $or: [{ name: rx }, { category: rx }, { brand: rx }],
     })
-      .select("name category brand tags")
+      .select("name category brand")
       .limit(8)
       .lean();
 
@@ -461,30 +369,12 @@ export const getSearchSuggestions = async (req, res) => {
       ...new Set([
         ...products.map((p) => p.name),
         ...products.map((p) => p.category),
-        ...products.flatMap((p) => p.tags || []).slice(0, 4),
+        ...products.map((p) => p.brand).filter(Boolean),
       ]),
-    ]
-      .filter((s) => s.toLowerCase().includes(q.toLowerCase()))
-      .slice(0, 8);
+    ].slice(0, 8);
 
-    setCache(cacheKey, suggestions);
     res.json(suggestions);
   } catch {
     res.json([]);
   }
-};
-
-// @route GET /api/search/cache-stats  (admin tool)
-export const getCacheStats = async (req, res) => {
-  const entries = [];
-  for (const [key, item] of queryCache.entries()) {
-    entries.push({
-      key,
-      expiresIn: Math.round((item.expiry - Date.now()) / 1000) + "s",
-    });
-  }
-  res.json({
-    totalCachedQueries: queryCache.size,
-    entries,
-  });
 };
