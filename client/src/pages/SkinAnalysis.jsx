@@ -40,19 +40,51 @@ function SkinAnalysis({ onCartOpen }) {
   const [error, setError] = useState("");
   const [step, setStep] = useState("upload");
 
-  const resizeImage = (dataUrl, maxWidth = 800) => {
-    return new Promise((resolve) => {
+  // Compress image aggressively before sending to server
+  // Target: under 500KB regardless of original size
+  const resizeAndCompress = (dataUrl) => {
+    return new Promise((resolve, reject) => {
       const img = new Image();
       img.onload = () => {
-        const scale = Math.min(1, maxWidth / img.width);
-        const canvas = document.createElement("canvas");
-        canvas.width = img.width * scale;
-        canvas.height = img.height * scale;
-        canvas
-          .getContext("2d")
-          .drawImage(img, 0, 0, canvas.width, canvas.height);
-        resolve(canvas.toDataURL("image/jpeg", 0.85));
+        try {
+          // Step 1: Calculate target size
+          // Max dimension 600px — enough for AI analysis
+          const MAX_DIMENSION = 600;
+          const scale = Math.min(
+            MAX_DIMENSION / img.width,
+            MAX_DIMENSION / img.height,
+            1, // never upscale
+          );
+
+          const canvas = document.createElement("canvas");
+          canvas.width = Math.floor(img.width * scale);
+          canvas.height = Math.floor(img.height * scale);
+
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+          // Step 2: Start with 70% quality JPEG
+          let quality = 0.7;
+          let dataResult = canvas.toDataURL("image/jpeg", quality);
+
+          // Step 3: Keep reducing quality until under 400KB
+          // 400KB in base64 ≈ 533KB raw ≈ safe for 10mb limit
+          const TARGET_SIZE = 400 * 1024; // 400KB in characters
+
+          while (dataResult.length > TARGET_SIZE && quality > 0.2) {
+            quality -= 0.1;
+            dataResult = canvas.toDataURL("image/jpeg", quality);
+          }
+
+          console.log(
+            `📸 Image compressed: ${Math.round(dataResult.length / 1024)}KB at quality ${Math.round(quality * 100)}%`,
+          );
+          resolve(dataResult);
+        } catch (err) {
+          reject(err);
+        }
       };
+      img.onerror = () => reject(new Error("Failed to load image"));
       img.src = dataUrl;
     });
   };
@@ -71,12 +103,15 @@ function SkinAnalysis({ onCartOpen }) {
 
     try {
       const token = localStorage.getItem("token");
-      const resized = await resizeImage(photo);
-      // Remove the data:image/jpeg;base64, prefix
-      const base64 = resized.replace(/^data:image\/[a-z]+;base64,/, "");
-      const mimeType = resized.startsWith("data:image/png")
-        ? "image/png"
-        : "image/jpeg";
+
+      // Compress before sending
+      const compressed = await resizeAndCompress(photo);
+
+      // Remove the data:image/jpeg;base64, prefix — only send raw base64
+      const base64 = compressed.replace(/^data:image\/[a-z]+;base64,/, "");
+      const mimeType = "image/jpeg";
+
+      console.log(`📤 Sending ${Math.round(base64.length / 1024)}KB to server`);
 
       const response = await fetch(`${API_URL}/api/skin-analysis`, {
         method: "POST",
@@ -87,8 +122,14 @@ function SkinAnalysis({ onCartOpen }) {
         body: JSON.stringify({ imageBase64: base64, mimeType }),
       });
 
+      if (response.status === 413) {
+        throw new Error(
+          "Photo is still too large. Please try a smaller image.",
+        );
+      }
+
       const data = await response.json();
-      if (!response.ok) throw new Error(data.message);
+      if (!response.ok) throw new Error(data.message || "Analysis failed");
 
       setResult(data);
       setStep("result");

@@ -23,6 +23,7 @@ import skinAnalysisRoutes from "./routes/skinAnalysisRoutes.js";
 import trackingRoutes from "./routes/trackingRoutes.js";
 import cron from "node-cron";
 import { sendMarketingEmails } from "./controllers/marketingController.js";
+import routineRoutes from "./routes/routineRoutes.js";
 
 dotenv.config();
 
@@ -228,6 +229,9 @@ ${productList}`;
   }
 });
 
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ limit: "10mb", extended: true }));
+
 app.use(
   cors({
     origin: [
@@ -241,8 +245,6 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
-
-app.use(express.json());
 
 app.use("/api/", generalLimiter);
 app.use("/api/auth/login", authLimiter);
@@ -263,6 +265,7 @@ app.use("/api/search", searchRoutes);
 app.use("/api/loyalty", loyaltyRoutes);
 app.use("/api/skin-analysis", skinAnalysisRoutes);
 app.use("/api/track", trackingRoutes);
+app.use("/api/routine", routineRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
