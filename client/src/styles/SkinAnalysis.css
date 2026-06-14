@@ -287,22 +287,135 @@
   text-align: center;
 }
 
+
+
+
+.sa-countdown {
+  margin-top: 0.6rem;
+  font-size: 0.78rem;
+  color: var(--accent);
+}
+
+.sa-countdown-bar {
+  height: 3px;
+  background: var(--accent);
+  border-radius: 2px;
+  margin-top: 0.4rem;
+  transition: width 1s linear;
+}
+
+/* ═══════════════════════════════════════
+   SKIN ANALYSIS — COMPLETE MOBILE FIX
+═══════════════════════════════════════ */
+
 @media (max-width: 768px) {
-  .skin-analysis-page { padding: 1rem; }
-  .sa-steps { grid-template-columns: repeat(2, 1fr); }
-  .sa-preview-section { grid-template-columns: 1fr; }
-  .sa-preview-photo { max-width: 200px; margin: 0 auto; }
-  .sa-analysing { grid-template-columns: 1fr; }
-  .sa-analysing-photo { max-width: 150px; margin: 0 auto; }
-  .sa-concerns-grid { grid-template-columns: repeat(2, 1fr); }
-  .sa-products-grid { grid-template-columns: repeat(2, 1fr); }
+  .skin-analysis-page {
+    padding: 1rem;
+  }
+
+  .sa-header h1 { font-size: 1.8rem; }
+  .sa-disclaimer { font-size: 0.68rem; padding: 0.5rem 0.85rem; }
+
+  .sa-upload-zone {
+    padding: 2rem 1rem;
+  }
+
+  .sa-upload-icon { font-size: 2.2rem; }
+  .sa-upload-zone h2 { font-size: 1.2rem; }
+  .sa-upload-zone p  { font-size: 0.8rem; }
+
+  /* Preview — stack vertically */
+  .sa-preview-section {
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+    padding: 1.2rem;
+  }
+
+  .sa-preview-photo {
+    max-width: 200px;
+    margin: 0 auto;
+    display: block;
+  }
+
+  .sa-preview-actions { text-align: center; }
+  .sa-preview-actions p { margin-bottom: 1rem; }
+
+  /* How it works */
+  .sa-steps {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.85rem;
+  }
+
+  .sa-step-icon { font-size: 1.5rem; }
+  .sa-step strong { font-size: 0.75rem; }
+  .sa-step p      { font-size: 0.65rem; }
+
+  /* Analysing */
+  .sa-analysing {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 1.5rem;
+  }
+
+  .sa-analysing-photo {
+    max-width: 140px;
+    margin: 0 auto;
+  }
+
+  /* Overall result */
+  .sa-overall {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding: 1rem;
+  }
+
+  .sa-overall-emoji { font-size: 1.8rem; }
+  .sa-overall h2    { font-size: 1.1rem; }
+  .sa-overall p     { font-size: 0.78rem; }
+  .sa-skin-type-chip { margin-left: 0; font-size: 0.7rem; }
+
+  /* Concerns */
+  .sa-concerns-section h3 { font-size: 1rem; }
+
+  .sa-concerns-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.65rem;
+  }
+
+  .sa-concern-card { padding: 0.75rem; }
+  .sa-concern-emoji { font-size: 1rem; }
+  .sa-concern-label { font-size: 0.72rem; }
+  .sa-concern-note  { font-size: 0.65rem; }
+
+  /* Products */
+  .sa-products-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  .sa-product-card img { height: 130px; }
+  .sa-product-name     { font-size: 0.75rem; }
+
+  /* Action buttons */
   .sa-result-actions { flex-direction: column; }
-  .sa-overall { flex-wrap: wrap; }
-  .sa-skin-type-chip { margin-left: 0; }
+  .sa-btn-retry  { width: 100%; text-align: center; }
+  .sa-btn-routine { width: 100%; }
 }
 
 @media (max-width: 480px) {
-  .sa-concerns-grid { grid-template-columns: 1fr; }
-  .sa-products-grid { grid-template-columns: 1fr; }
-  .sa-steps { grid-template-columns: 1fr 1fr; }
+  .skin-analysis-page { padding: 0.85rem; }
+
+  .sa-header h1 { font-size: 1.5rem; }
+
+  .sa-steps { grid-template-columns: 1fr 1fr; gap: 0.65rem; }
+
+  .sa-concerns-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sa-products-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sa-how-it-works { padding: 1.2rem; }
 }

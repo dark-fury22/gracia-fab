@@ -293,3 +293,130 @@
 }
 
 .btn-back-to-form:hover { color: var(--accent); }
+
+/* ═══════════════════════════════════════
+   CHECKOUT — MOBILE COMPLETE FIX
+═══════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .checkout-page {
+    padding: 1rem;
+  }
+
+  .checkout-page h1 {
+    font-size: 1.4rem;
+    margin-bottom: 1.2rem;
+  }
+
+  /* Stack form and summary vertically */
+  .checkout-layout {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.2rem;
+  }
+
+  /* Form section full width */
+  .checkout-form-section {
+    padding: 1.2rem;
+    border-radius: var(--radius-lg);
+    width: 100%;
+  }
+
+  .checkout-form-section h2 {
+    font-size: 1rem;
+    margin-bottom: 1.2rem;
+  }
+
+  /* Summary sits ABOVE form on mobile
+     (user wants to see what they're buying) */
+  .checkout-summary {
+    order: -1;
+    position: static !important;
+    padding: 1rem;
+    border-radius: var(--radius-lg);
+    width: 100%;
+  }
+
+  .checkout-summary h2 {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  /* Form fields full width */
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    font-size: 1rem; /* Prevents iOS zoom on focus */
+    padding: 0.75rem 0.9rem;
+  }
+
+  /* State dropdown full width */
+  .form-row {
+    grid-template-columns: 1fr !important;
+    gap: 0.5rem;
+  }
+
+  /* Cart items in checkout */
+  .checkout-item {
+    gap: 0.6rem;
+  }
+
+  .checkout-item-img {
+    width: 48px;
+    height: 54px;
+  }
+
+  .checkout-item-name { font-size: 0.78rem; }
+  .checkout-item-price { font-size: 0.8rem; }
+
+  /* Totals */
+  .total-row { font-size: 0.8rem; }
+  .total-row.grand { font-size: 0.95rem; }
+
+  /* Buttons */
+  .btn-place-order,
+  .btn-pay {
+    padding: 0.9rem;
+    font-size: 0.85rem;
+  }
+
+  /* Payment step */
+  .payment-ready { padding: 1.2rem; }
+  .payment-amount {
+    flex-direction: column;
+    gap: 0.3rem;
+    text-align: center;
+    padding: 0.85rem;
+  }
+  .payment-amount strong { font-size: 1.2rem; }
+}
+
+@media (max-width: 480px) {
+  .checkout-page { padding: 0.85rem; }
+
+  .checkout-form-section { padding: 1rem 0.9rem; }
+  .checkout-summary      { padding: 0.9rem; }
+
+  .checkout-page h1 { font-size: 1.2rem; }
+
+  .checkout-item-img {
+    width: 42px;
+    height: 48px;
+    border-radius: 6px;
+  }
+
+  /* Prevent keyboard from zooming on iPhone */
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+
+  .btn-place-order,
+  .btn-pay {
+    min-height: 50px;
+    font-size: 0.88rem;
+  }
+
+  .btn-back-to-form {
+    font-size: 0.75rem;
+  }
+}

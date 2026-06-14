@@ -1,21 +1,17 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import Product from "../models/Product.js";
 
-// ── Lazy init — only created when first called
 let geminiClient = null;
-
 const getGemini = () => {
-  if (!geminiClient) {
-    if (!process.env.GEMINI_API_KEY) {
-      throw new Error("GEMINI_API_KEY not set in server .env file");
-    }
+  if (!geminiClient && process.env.GEMINI_API_KEY) {
     geminiClient = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
   }
   return geminiClient;
 };
 
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
 // @route POST /api/skin-analysis
-// @access Private (logged in users only)
 export const analyseSkin = async (req, res) => {
   const { imageBase64, mimeType = "image/jpeg" } = req.body;
 
@@ -23,162 +19,128 @@ export const analyseSkin = async (req, res) => {
     return res.status(400).json({ message: "No image provided" });
   }
 
-  try {
-    const genAI = getGemini();
+  const gemini = getGemini();
+  if (!gemini) {
+    return res.status(503).json({
+      message:
+        "AI service not configured. Please add GEMINI_API_KEY to server .env",
+    });
+  }
 
-    // Use gemini-1.5-flash — free, fast, supports images
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const MAX_RETRIES = 3;
 
-    console.log("🔬 Running Gemini skin analysis...");
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      console.log(`🔬 Skin analysis attempt ${attempt}/${MAX_RETRIES}...`);
 
-    const prompt = `You are a cosmetic beauty advisor AI for Gracia Fab, a Nigerian beauty store.
+      const model = gemini.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-Analyse this selfie image and assess the following visible cosmetic skin indicators.
-IMPORTANT: This is for cosmetic product recommendations ONLY — not medical diagnosis.
-DO NOT give any medical advice. Only comment on what you can visibly see.
+      const prompt = `You are a cosmetic beauty advisor AI for Gracia Fab, a Nigerian beauty store.
+Analyse this selfie image for cosmetic skin indicators only.
+This is NOT medical diagnosis — only cosmetic product recommendations.
 
-Respond ONLY with valid JSON. No markdown. No explanation. Just the JSON object:
-
+Return ONLY this exact JSON, no markdown, no other text:
 {
-  "overallCondition": "great",
-  "skinTone": "medium",
+  "overallCondition": "good",
+  "skinTone": "deep",
   "concerns": {
-    "acne": {
-      "detected": false,
-      "severity": "none",
-      "note": "Skin looks clear"
-    },
-    "darkSpots": {
-      "detected": false,
-      "severity": "none",
-      "note": "Even tone visible"
-    },
-    "oiliness": {
-      "detected": false,
-      "severity": "none",
-      "note": ""
-    },
-    "dryness": {
-      "detected": false,
-      "severity": "none",
-      "note": ""
-    },
-    "unevenTone": {
-      "detected": false,
-      "severity": "none",
-      "note": ""
-    },
-    "redness": {
-      "detected": false,
-      "severity": "none",
-      "note": ""
-    }
+    "acne": {"detected": false, "severity": "none", "note": "Skin looks clear"},
+    "darkSpots": {"detected": false, "severity": "none", "note": "Even tone"},
+    "oiliness": {"detected": false, "severity": "none", "note": ""},
+    "dryness": {"detected": false, "severity": "none", "note": ""},
+    "unevenTone": {"detected": false, "severity": "none", "note": ""},
+    "redness": {"detected": false, "severity": "none", "note": ""}
   },
   "detectedSkinType": "normal",
   "topConcerns": [],
-  "generalAdvice": "Your skin looks healthy! Keep up with daily SPF and hydration especially in Nigeria's tropical climate.",
-  "disclaimer": "For cosmetic guidance only. Consult a dermatologist for medical skin concerns."
+  "generalAdvice": "Your skin looks great! Maintain SPF daily in Nigeria's tropical climate.",
+  "disclaimer": "For cosmetic guidance only. Consult a dermatologist for medical concerns."
 }
+Values: overallCondition=great|good|fair|needs_attention, skinTone=fair|light|medium|tan|deep|rich, severity=none|mild|moderate|visible, detectedSkinType=oily|dry|combination|normal|sensitive`;
 
-Use these exact values:
-- overallCondition: "great" | "good" | "fair" | "needs_attention"
-- skinTone: "fair" | "light" | "medium" | "tan" | "deep" | "rich"
-- severity: "none" | "mild" | "moderate" | "visible"
-- detectedSkinType: "oily" | "dry" | "combination" | "normal" | "sensitive"
-- topConcerns: array of strings like ["acne", "dark spots"] — can be empty`;
+      const result = await model.generateContent([
+        { inlineData: { data: imageBase64, mimeType } },
+        prompt,
+      ]);
 
-    const result = await model.generateContent([
-      {
-        inlineData: {
-          data: imageBase64,
-          mimeType: mimeType,
-        },
-      },
-      prompt,
-    ]);
+      const raw = result.response.text();
+      const clean = raw.replace(/```json|```/g, "").trim();
+      const match = clean.match(/\{[\s\S]*\}/);
 
-    const raw = result.response.text();
-    const cleaned = raw.replace(/```json|```/g, "").trim();
-    const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+      if (!match) throw new Error("Could not parse AI response");
 
-    if (!jsonMatch) {
-      throw new Error("Could not parse Gemini response");
-    }
+      const analysis = JSON.parse(match[0]);
+      console.log("✅ Analysis complete:", analysis.detectedSkinType);
 
-    const analysis = JSON.parse(jsonMatch[0]);
-    console.log(
-      "✅ Skin analysis done:",
-      analysis.detectedSkinType,
-      "|",
-      analysis.overallCondition,
-    );
+      // Find matching products
+      const skinType = analysis.detectedSkinType || "normal";
+      const concerns = analysis.topConcerns || [];
 
-    // Find matching products based on skin type and concerns
-    const skinType = analysis.detectedSkinType || "normal";
-    const topConcerns = analysis.topConcerns || [];
-
-    const tagSearchTerms = [...topConcerns, skinType].filter(Boolean);
-
-    const products = await Product.find({
-      category: "skincare",
-      $or: [
-        { "suitableFor.skinType": { $in: [skinType, "all"] } },
-        {
-          "suitableFor.concern": {
-            $elemMatch: { $regex: topConcerns.join("|"), $options: "i" },
+      const products = await Product.find({
+        category: "skincare",
+        $or: [
+          { "suitableFor.skinType": { $in: [skinType, "all"] } },
+          {
+            tags: {
+              $elemMatch: {
+                $regex: concerns.join("|") || "skincare",
+                $options: "i",
+              },
+            },
           },
-        },
-        {
-          tags: {
-            $elemMatch: { $regex: tagSearchTerms.join("|"), $options: "i" },
-          },
-        },
-      ],
-    })
-      .sort({ isFeatured: -1, rating: -1 })
-      .limit(6)
-      .lean();
+        ],
+      })
+        .sort({ isFeatured: -1, rating: -1 })
+        .limit(6)
+        .lean();
 
-    // If no specific match, return top-rated skincare
-    const finalProducts =
-      products.length > 0
-        ? products
-        : await Product.find({ category: "skincare" })
-            .sort({ rating: -1 })
-            .limit(4)
-            .lean();
+      const finalProducts =
+        products.length > 0
+          ? products
+          : await Product.find({ category: "skincare" })
+              .sort({ rating: -1 })
+              .limit(4)
+              .lean();
 
-    res.json({
-      success: true,
-      analysis,
-      products: finalProducts,
-    });
-  } catch (err) {
-    console.error("❌ Skin analysis error:", err.message);
+      return res.json({ success: true, analysis, products: finalProducts });
+    } catch (err) {
+      const is429 =
+        err.message?.includes("429") ||
+        err.status === 429 ||
+        err.message?.includes("quota") ||
+        err.message?.includes("Too Many");
 
-    if (err.message.includes("GEMINI_API_KEY")) {
-      return res.status(503).json({
-        message:
-          "AI service not configured. Please add GEMINI_API_KEY to server .env",
-      });
+      if (is429 && attempt < MAX_RETRIES) {
+        const waitSec = attempt * 10; // 10s, 20s
+        console.log(
+          `⏳ Rate limited. Waiting ${waitSec}s before retry ${attempt + 1}...`,
+        );
+        await sleep(waitSec * 1000);
+        continue; // retry
+      }
+
+      console.error(
+        `❌ Skin analysis failed (attempt ${attempt}):`,
+        err.message,
+      );
+
+      if (attempt === MAX_RETRIES) {
+        if (is429) {
+          return res.status(429).json({
+            message:
+              "AI is busy right now. Please wait 1-2 minutes and try again. (Free tier limit reached)",
+          });
+        }
+        if (err.message?.includes("parse") || err.message?.includes("JSON")) {
+          return res.status(400).json({
+            message:
+              "Could not read the image clearly. Please try a well-lit selfie facing the camera directly.",
+          });
+        }
+        return res.status(500).json({
+          message: "Analysis failed. Please try again with a clearer photo.",
+        });
+      }
     }
-
-    if (err.message.includes("quota") || err.message.includes("rate")) {
-      return res.status(429).json({
-        message: "Too many requests. Please wait a moment and try again.",
-      });
-    }
-
-    if (err.message.includes("image") || err.message.includes("parse")) {
-      return res.status(400).json({
-        message:
-          "Could not analyse this image. Please try a clearer selfie facing the camera directly.",
-      });
-    }
-
-    res.status(500).json({
-      message:
-        "Analysis failed. Please try again with a clearer photo in good lighting.",
-    });
   }
 };

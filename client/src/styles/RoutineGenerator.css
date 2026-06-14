@@ -188,9 +188,108 @@
 [data-theme="dark"]  .rg-shop-btn { color: #000; }
 .rg-shop-btn:hover { background: var(--accent-hover); }
 
-@media (max-width: 600px) {
-  .routine-generator { padding: 1rem; }
-  .rg-form-card { padding: 1.5rem 1rem; }
-  .rg-step-card { flex-direction: column; gap: 0.75rem; }
+
+
+/* ═══════════════════════════════════════
+   ROUTINE GENERATOR — COMPLETE MOBILE FIX
+═══════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .routine-generator {
+    padding: 1rem;
+  }
+
+  .rg-header h1 { font-size: 1.8rem; }
+  .rg-header p  { font-size: 0.85rem; }
+
+  .rg-form-card { padding: 1.2rem 1rem; }
+
+  /* Option buttons wrap naturally */
+  .rg-options-row { gap: 0.4rem; }
+
+  .rg-option-btn {
+    padding: 0.45rem 0.85rem;
+    font-size: 0.75rem;
+  }
+
+  .rg-field { margin-bottom: 1.4rem; }
+
+  .rg-generate-btn {
+    font-size: 0.9rem;
+    padding: 0.95rem;
+    min-height: 50px;
+  }
+
+  /* Result header */
+  .rg-result-header h1 { font-size: 1.5rem; }
+  .rg-result-meta { flex-direction: column; gap: 0.5rem; align-items: center; }
+
+  /* Tabs */
+  .rg-tabs {
+    gap: 0;
+    border-radius: 0;
+  }
+
+  .rg-tab {
+    padding: 0.75rem 0.9rem;
+    font-size: 0.75rem;
+    flex: 1;
+    text-align: center;
+  }
+
+  /* Step cards */
+  .rg-step-card {
+    flex-direction: column;
+    gap: 0.6rem;
+    padding: 1rem;
+  }
+
+  .rg-step-number {
+    width: 30px;
+    height: 30px;
+    font-size: 0.75rem;
+    align-self: flex-start;
+  }
+
+  .rg-step-header strong { font-size: 0.88rem; }
+  .rg-step-instruction   { font-size: 0.8rem; }
+  .rg-step-why           { font-size: 0.72rem; }
+  .rg-step-tip           { font-size: 0.7rem; }
+
+  /* Product chip in step */
+  .rg-step-product {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .rg-step-product img { width: 36px; height: 36px; }
+
+  /* Tips */
+  .rg-tips-card { padding: 1rem; }
+  .rg-tips-card li { font-size: 0.8rem; }
+
+  /* Actions */
   .rg-actions { flex-direction: column; }
+  .rg-regenerate-btn { width: 100%; text-align: center; }
+  .rg-shop-btn       { width: 100%; }
+}
+
+@media (max-width: 480px) {
+  .routine-generator { padding: 0.85rem; }
+
+  .rg-header h1 { font-size: 1.5rem; }
+  .rg-form-card { padding: 1rem 0.85rem; }
+
+  .rg-option-btn {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.72rem;
+  }
+
+  .rg-tab {
+    padding: 0.65rem 0.5rem;
+    font-size: 0.68rem;
+  }
+
+  .rg-steps-list { gap: 0.75rem; }
+  .rg-step-card  { padding: 0.85rem; }
 }

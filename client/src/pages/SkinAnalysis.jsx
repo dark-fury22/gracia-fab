@@ -34,6 +34,7 @@ const OVERALL_LABELS = {
 };
 
 function SkinAnalysis({ onCartOpen }) {
+  const [countdown, setCountdown] = useState(0);
   const [photo, setPhoto] = useState(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
@@ -134,10 +135,34 @@ function SkinAnalysis({ onCartOpen }) {
       setResult(data);
       setStep("result");
     } catch (err) {
-      setError(
-        err.message ||
-          "Analysis failed. Please try again with a clearer photo.",
-      );
+      if (
+        err.message?.toLowerCase().includes("wait") ||
+        err.message?.toLowerCase().includes("busy")
+      ) {
+        // Start countdown for rate limiting
+        setError(err.message);
+
+        let secs = data.retryAfter || 60;
+        setCountdown(secs);
+
+        const timer = setInterval(() => {
+          secs--;
+
+          setCountdown(secs);
+
+          if (secs <= 0) {
+            clearInterval(timer);
+            setCountdown(0);
+            setError("");
+          }
+        }, 1000);
+      } else {
+        setError(
+          err.message ||
+            "Analysis failed. Please try again with a clearer photo.",
+        );
+      }
+
       setStep("ready");
     } finally {
       setLoading(false);
@@ -176,7 +201,22 @@ function SkinAnalysis({ onCartOpen }) {
         {/* Upload step */}
         {(step === "upload" || step === "ready") && (
           <div className="sa-upload-section">
-            {error && <div className="sa-error">⚠️ {error}</div>}
+            {error && (
+              <div className="sa-error">
+                ⚠️ {error}
+                {countdown > 0 && (
+                  <div className="sa-countdown">
+                    Retry available in {countdown}s...
+                    <div
+                      className="sa-countdown-bar"
+                      style={{
+                        width: `${(countdown / 60) * 100}%`,
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
 
             {!photo ? (
               <div className="sa-upload-zone">
@@ -207,12 +247,13 @@ function SkinAnalysis({ onCartOpen }) {
                   <button
                     className="sa-analyse-btn"
                     onClick={runAnalysis}
-                    disabled={loading}
+                    disabled={loading || countdown > 0}
                   >
-                    🔬 Analyse My Skin
-                  </button>
-                  <button className="sa-retake-btn" onClick={reset}>
-                    ↩ Use Different Photo
+                    {loading
+                      ? "🔬 Analysing..."
+                      : countdown > 0
+                        ? `⏳ Please wait ${countdown}s...`
+                        : "🔬 Analyse My Skin"}
                   </button>
                 </div>
               </div>
