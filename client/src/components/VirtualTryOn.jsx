@@ -18,29 +18,25 @@ const WIG_STYLES = [
     id: "body-wave",
     name: "Body Wave",
     description: "Long flowing waves",
-    image:
-      "https://images.unsplash.com/photo-1522337913-f31d2e5ecca6?w=300&h=400&fit=crop",
+    image: "https://pngimg.com/uploads/wig/wig_PNG143.png",
   },
   {
     id: "bob",
     name: "Sleek Bob",
     description: "Clean jaw-length bob",
-    image:
-      "https://images.unsplash.com/photo-1580618672591-eb180b1a973f?w=300&h=400&fit=crop",
+    image: "https://pngimg.com/uploads/wig/wig_PNG40.png",
   },
   {
     id: "afro",
     name: "Natural Afro",
     description: "Bold kinky afro",
-    image:
-      "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=300&h=400&fit=crop",
+    image: "https://pngimg.com/uploads/wig/wig_PNG26.png",
   },
   {
     id: "curly",
     name: "Deep Curls",
     description: "Luscious deep curls",
-    image:
-      "https://images.unsplash.com/photo-1487412912498-0447578fcca8?w=300&h=400&fit=crop",
+    image: "https://pngimg.com/uploads/wig/wig_PNG56.png",
   },
 ];
 
@@ -262,24 +258,31 @@ function WigTryOn() {
   const [photo, setPhoto] = useState(null);
   const [wig, setWig] = useState(null);
   const [wigY, setWigY] = useState(0);
+  const [wigX, setWigX] = useState(0);
   const [wigSize, setWigSize] = useState(100);
   const [dragging, setDragging] = useState(false);
-  const [dragStart, setDragStart] = useState(null);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const containerRef = useRef(null);
   const fileRef = useRef(null);
 
   const handleDragStart = (e) => {
     e.preventDefault();
     setDragging(true);
+    const clientX = e.touches?.[0]?.clientX ?? e.clientX;
     const clientY = e.touches?.[0]?.clientY ?? e.clientY;
-    setDragStart(clientY - wigY);
+    setDragStart({
+      x: clientX - wigX,
+      y: clientY - wigY,
+    });
   };
 
   const handleDragMove = useCallback(
     (e) => {
       if (!dragging) return;
+      const clientX = e.touches?.[0]?.clientX ?? e.clientX;
       const clientY = e.touches?.[0]?.clientY ?? e.clientY;
-      setWigY(clientY - dragStart);
+      setWigX(clientX - dragStart.x);
+      setWigY(clientY - dragStart.y);
     },
     [dragging, dragStart],
   );
@@ -318,6 +321,7 @@ function WigTryOn() {
             onPhotoSelected={(url) => {
               setPhoto(url);
               setWigY(-60);
+              setWigX(0);
             }}
           />
         </div>
@@ -356,7 +360,7 @@ function WigTryOn() {
                   />
                 </div>
                 <p className="wig-drag-hint">
-                  Drag the wig image to position it on your head ↕
+                  Drag the wig image to position it on your head ↕↔
                 </p>
               </>
             )}
@@ -368,6 +372,7 @@ function WigTryOn() {
                   setPhoto(null);
                   setWig(null);
                   setWigY(0);
+                  setWigX(0);
                   if (fileRef.current) fileRef.current.value = "";
                 }}
               >
@@ -385,7 +390,8 @@ function WigTryOn() {
                 alt={wig.name}
                 className="wig-overlay"
                 style={{
-                  top: `calc(0px + ${wigY}px)`,
+                  top: `${wigY}px`,
+                  left: `calc(50% + ${wigX}px)`,
                   width: `${wigSize}%`,
                   cursor: dragging ? "grabbing" : "grab",
                 }}

@@ -299,7 +299,6 @@
   transform: translateX(-50%);
   opacity: 0.88;
   user-select: none;
-  border-radius: 50% 50% 0 0 / 40% 40% 0 0;
 }
 
 .wig-choose-hint {

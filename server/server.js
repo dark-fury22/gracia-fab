@@ -1,5 +1,5 @@
+import "dotenv/config";
 import express from "express";
-import dotenv from "dotenv";
 import cors from "cors";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
@@ -25,8 +25,6 @@ import cron from "node-cron";
 import { sendMarketingEmails } from "./controllers/marketingController.js";
 import routineRoutes from "./routes/routineRoutes.js";
 
-dotenv.config();
-
 const app = express();
 
 connectDB();
@@ -37,6 +35,21 @@ app.use(
   helmet({
     crossOriginEmbedderPolicy: false,
     contentSecurityPolicy: false,
+  }),
+);
+
+// ── CORS configuration — must be early to affect all routes
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "http://localhost:5174",
+      process.env.FRONTEND_URL, // Vercel URL
+      "https://gracia-fab.vercel.app", // your actual Vercel URL
+    ].filter(Boolean),
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
 
@@ -68,6 +81,13 @@ const aiLimiter = rateLimit({
     message: "Too many AI requests. Please wait a moment.",
   },
 });
+
+// ── Apply general rate limit to all /api/ routes
+app.use("/api/", generalLimiter);
+app.use("/api/auth/login", authLimiter);
+app.use("/api/auth/register", authLimiter);
+app.use("/api/recommend", aiLimiter);
+app.use("/api/search", aiLimiter);
 
 // ── Paystack Webhook — receives payment confirmations directly from Paystack
 // Must be RAW body (before JSON parsing) for signature verification
@@ -128,8 +148,12 @@ app.post(
   },
 );
 
+// ── Global Body Parsers (after Paystack webhook, before routes that require JSON body)
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ limit: "10mb", extended: true }));
+
 // ── AI Beauty Chat (Gemini or Groq fallback)
-app.post("/api/chat", async (req, res) => {
+app.post("/api/chat", aiLimiter, async (req, res) => {
   const { message, history = [] } = req.body;
   if (!message) return res.status(400).json({ message: "Message required" });
 
@@ -228,29 +252,6 @@ ${productList}`;
     });
   }
 });
-
-app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ limit: "10mb", extended: true }));
-
-app.use(
-  cors({
-    origin: [
-      "http://localhost:5173",
-      "http://localhost:5174",
-      process.env.FRONTEND_URL, // Vercel URL
-      "https://gracia-fab.vercel.app", // your actual Vercel URL
-    ].filter(Boolean),
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  }),
-);
-
-app.use("/api/", generalLimiter);
-app.use("/api/auth/login", authLimiter);
-app.use("/api/auth/register", authLimiter);
-app.use("/api/recommend", aiLimiter);
-app.use("/api/search", aiLimiter);
 
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);

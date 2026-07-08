@@ -136,14 +136,16 @@ ${JSON.stringify(productList, null, 2)}
 
 Recommend the 3 most suitable products from the list above based on the user profile.
 
-Respond ONLY with a valid JSON array. No markdown, no backticks, no explanation. Just the raw JSON:
-[
-  {
-    "productId": "the product id string",
-    "reason": "warm 1-2 sentence explanation of why this suits this user",
-    "tip": "practical pro beauty tip for using this product"
-  }
-]`
+Respond ONLY with a valid JSON object matching this structure:
+{
+  "recommendations": [
+    {
+      "productId": "the product id string",
+      "reason": "warm 1-2 sentence explanation of why this suits this user",
+      "tip": "practical pro beauty tip for using this product"
+    }
+  ]
+}`
 
     console.log('🤖 Calling Groq AI...')
 
@@ -155,20 +157,15 @@ Respond ONLY with a valid JSON array. No markdown, no backticks, no explanation.
         model: 'llama-3.1-8b-instant',
         temperature: 0.7,
         max_tokens: 1024,
+        response_format: { type: "json_object" }
       })
 
       const rawText = completion.choices[0]?.message?.content || ''
       console.log('✅ Groq responded')
 
-      // Clean and parse JSON
-      const cleaned = rawText
-        .replace(/```json/g, '')
-        .replace(/```/g, '')
-        .trim()
-
-      const jsonMatch = cleaned.match(/\[[\s\S]*\]/)
-      if (jsonMatch) {
-        recommendations = JSON.parse(jsonMatch[0])
+      const parsed = JSON.parse(rawText.trim())
+      if (parsed && Array.isArray(parsed.recommendations)) {
+        recommendations = parsed.recommendations
         console.log('✅ AI recommendations parsed successfully')
       }
     } catch (aiError) {

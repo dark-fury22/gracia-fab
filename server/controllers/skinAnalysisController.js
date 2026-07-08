@@ -11,6 +11,105 @@ const getGemini = () => {
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+const skinAnalysisSchema = {
+  type: "OBJECT",
+  properties: {
+    overallCondition: {
+      type: "STRING",
+      description: "Overall condition of the skin",
+      enum: ["great", "good", "fair", "needs_attention"]
+    },
+    skinTone: {
+      type: "STRING",
+      description: "Apparent skin tone shade group",
+      enum: ["fair", "light", "medium", "tan", "deep", "rich"]
+    },
+    concerns: {
+      type: "OBJECT",
+      properties: {
+        acne: {
+          type: "OBJECT",
+          properties: {
+            detected: { type: "BOOLEAN" },
+            severity: { type: "STRING", enum: ["none", "mild", "moderate", "visible"] },
+            note: { type: "STRING" }
+          },
+          required: ["detected", "severity", "note"]
+        },
+        darkSpots: {
+          type: "OBJECT",
+          properties: {
+            detected: { type: "BOOLEAN" },
+            severity: { type: "STRING", enum: ["none", "mild", "moderate", "visible"] },
+            note: { type: "STRING" }
+          },
+          required: ["detected", "severity", "note"]
+        },
+        oiliness: {
+          type: "OBJECT",
+          properties: {
+            detected: { type: "BOOLEAN" },
+            severity: { type: "STRING", enum: ["none", "mild", "moderate", "visible"] },
+            note: { type: "STRING" }
+          },
+          required: ["detected", "severity", "note"]
+        },
+        dryness: {
+          type: "OBJECT",
+          properties: {
+            detected: { type: "BOOLEAN" },
+            severity: { type: "STRING", enum: ["none", "mild", "moderate", "visible"] },
+            note: { type: "STRING" }
+          },
+          required: ["detected", "severity", "note"]
+        },
+        unevenTone: {
+          type: "OBJECT",
+          properties: {
+            detected: { type: "BOOLEAN" },
+            severity: { type: "STRING", enum: ["none", "mild", "moderate", "visible"] },
+            note: { type: "STRING" }
+          },
+          required: ["detected", "severity", "note"]
+        },
+        redness: {
+          type: "OBJECT",
+          properties: {
+            detected: { type: "BOOLEAN" },
+            severity: { type: "STRING", enum: ["none", "mild", "moderate", "visible"] },
+            note: { type: "STRING" }
+          },
+          required: ["detected", "severity", "note"]
+        }
+      },
+      required: ["acne", "darkSpots", "oiliness", "dryness", "unevenTone", "redness"]
+    },
+    detectedSkinType: {
+      type: "STRING",
+      enum: ["oily", "dry", "combination", "normal", "sensitive"]
+    },
+    topConcerns: {
+      type: "ARRAY",
+      items: { type: "STRING" }
+    },
+    generalAdvice: {
+      type: "STRING"
+    },
+    disclaimer: {
+      type: "STRING"
+    }
+  },
+  required: [
+    "overallCondition",
+    "skinTone",
+    "concerns",
+    "detectedSkinType",
+    "topConcerns",
+    "generalAdvice",
+    "disclaimer"
+  ]
+};
+
 // @route POST /api/skin-analysis
 export const analyseSkin = async (req, res) => {
   const { imageBase64, mimeType = "image/jpeg" } = req.body;
@@ -33,30 +132,23 @@ export const analyseSkin = async (req, res) => {
     try {
       console.log(`🔬 Skin analysis attempt ${attempt}/${MAX_RETRIES}...`);
 
-      const model = gemini.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const model = gemini.getGenerativeModel({
+        model: "gemini-2.0-flash",
+        generationConfig: {
+          responseMimeType: "application/json",
+          responseSchema: skinAnalysisSchema
+        }
+      });
 
       const prompt = `You are a cosmetic beauty advisor AI for Gracia Fab, a Nigerian beauty store.
 Analyse this selfie image for cosmetic skin indicators only.
 This is NOT medical diagnosis — only cosmetic product recommendations.
 
-Return ONLY this exact JSON, no markdown, no other text:
-{
-  "overallCondition": "good",
-  "skinTone": "deep",
-  "concerns": {
-    "acne": {"detected": false, "severity": "none", "note": "Skin looks clear"},
-    "darkSpots": {"detected": false, "severity": "none", "note": "Even tone"},
-    "oiliness": {"detected": false, "severity": "none", "note": ""},
-    "dryness": {"detected": false, "severity": "none", "note": ""},
-    "unevenTone": {"detected": false, "severity": "none", "note": ""},
-    "redness": {"detected": false, "severity": "none", "note": ""}
-  },
-  "detectedSkinType": "normal",
-  "topConcerns": [],
-  "generalAdvice": "Your skin looks great! Maintain SPF daily in Nigeria's tropical climate.",
-  "disclaimer": "For cosmetic guidance only. Consult a dermatologist for medical concerns."
-}
-Values: overallCondition=great|good|fair|needs_attention, skinTone=fair|light|medium|tan|deep|rich, severity=none|mild|moderate|visible, detectedSkinType=oily|dry|combination|normal|sensitive`;
+Provide analysis based on values:
+- overallCondition: great, good, fair, needs_attention
+- skinTone: fair, light, medium, tan, deep, rich
+- detectedSkinType: oily, dry, combination, normal, sensitive
+- concerns severity values: none, mild, moderate, visible`;
 
       const result = await model.generateContent([
         { inlineData: { data: imageBase64, mimeType } },
@@ -64,12 +156,7 @@ Values: overallCondition=great|good|fair|needs_attention, skinTone=fair|light|me
       ]);
 
       const raw = result.response.text();
-      const clean = raw.replace(/```json|```/g, "").trim();
-      const match = clean.match(/\{[\s\S]*\}/);
-
-      if (!match) throw new Error("Could not parse AI response");
-
-      const analysis = JSON.parse(match[0]);
+      const analysis = JSON.parse(raw.trim());
       console.log("✅ Analysis complete:", analysis.detectedSkinType);
 
       // Find matching products

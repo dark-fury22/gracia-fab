@@ -25,13 +25,22 @@ const getGroq = () => {
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // ── Call AI with Gemini first, Groq fallback ─
-const callAI = async (prompt, retries = 2) => {
+const callAI = async (prompt, schema = null, retries = 2) => {
   // Try Gemini
   const gemini = getGemini();
   if (gemini) {
     for (let attempt = 0; attempt <= retries; attempt++) {
       try {
-        const model = gemini.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const config = {
+          model: "gemini-2.0-flash"
+        };
+        if (schema) {
+          config.generationConfig = {
+            responseMimeType: "application/json",
+            responseSchema: schema
+          };
+        }
+        const model = gemini.getGenerativeModel(config);
         const result = await model.generateContent(prompt);
         const text = result.response.text();
         console.log("✅ Gemini responded for routine");
@@ -57,12 +66,16 @@ const callAI = async (prompt, retries = 2) => {
   if (groq) {
     try {
       console.log("🔄 Using Groq fallback for routine...");
-      const completion = await groq.chat.completions.create({
-        messages: [{ role: "user", content: prompt }],
+      const config = {
         model: "llama-3.1-8b-instant",
         temperature: 0.4,
         max_tokens: 2000,
-      });
+        messages: [{ role: "user", content: prompt }]
+      };
+      if (schema) {
+        config.response_format = { type: "json_object" };
+      }
+      const completion = await groq.chat.completions.create(config);
       return completion.choices[0]?.message?.content || "";
     } catch (groqErr) {
       console.error("Groq also failed:", groqErr.message);
@@ -81,6 +94,74 @@ const parseJSON = (text) => {
   const match = clean.match(/\{[\s\S]*\}/);
   if (!match) throw new Error("Could not extract JSON from AI response");
   return JSON.parse(match[0]);
+};
+
+const routineSchema = {
+  type: "OBJECT",
+  properties: {
+    morningRoutine: {
+      type: "ARRAY",
+      items: {
+        type: "OBJECT",
+        properties: {
+          step: { type: "INTEGER" },
+          type: { type: "STRING" },
+          instruction: { type: "STRING" },
+          why: { type: "STRING" },
+          productId: { type: "STRING" },
+          productName: { type: "STRING" },
+          tip: { type: "STRING" }
+        },
+        required: ["step", "type", "instruction", "why"]
+      }
+    },
+    nightRoutine: {
+      type: "ARRAY",
+      items: {
+        type: "OBJECT",
+        properties: {
+          step: { type: "INTEGER" },
+          type: { type: "STRING" },
+          instruction: { type: "STRING" },
+          why: { type: "STRING" },
+          productId: { type: "STRING" },
+          productName: { type: "STRING" },
+          tip: { type: "STRING" }
+        },
+        required: ["step", "type", "instruction", "why"]
+      }
+    },
+    weeklyTreatments: {
+      type: "ARRAY",
+      items: {
+        type: "OBJECT",
+        properties: {
+          step: { type: "INTEGER" },
+          type: { type: "STRING" },
+          frequency: { type: "STRING" },
+          instruction: { type: "STRING" },
+          why: { type: "STRING" },
+          productId: { type: "STRING" },
+          productName: { type: "STRING" }
+        },
+        required: ["step", "type", "frequency", "instruction", "why"]
+      }
+    },
+    generalTips: {
+      type: "ARRAY",
+      items: { type: "STRING" }
+    },
+    estimatedMonthlyBudget: { type: "STRING" },
+    routineComplexity: { type: "STRING", enum: ["beginner", "intermediate", "advanced"] }
+  },
+  required: [
+    "morningRoutine",
+    "nightRoutine",
+    "weeklyTreatments",
+    "generalTips",
+    "estimatedMonthlyBudget",
+    "routineComplexity"
+  ]
 };
 
 // @route POST /api/routine/generate
@@ -106,7 +187,7 @@ export const generateRoutine = async (req, res) => {
       .join("\n");
 
     const prompt = `You are a beauty advisor at Gracia Fab, a Nigerian beauty store.
-Create a skincare routine. Return ONLY valid JSON, nothing else.
+Create a skincare routine.
 
 Customer profile:
 - Skin type: ${skinType}
@@ -118,33 +199,9 @@ Customer profile:
 Store products available (use exact IDs when relevant):
 ${productList}
 
-Return this exact JSON structure:
-{
-  "morningRoutine": [
-    {"step":1,"type":"Gentle Cleanser","instruction":"Wash face with lukewarm water","why":"Removes overnight oils","productId":null,"productName":null,"tip":"In Lagos heat, cleanse twice daily"},
-    {"step":2,"type":"Toner","instruction":"Apply with cotton pad","why":"Balances skin pH","productId":null,"productName":null,"tip":"Look for niacinamide for oily skin"},
-    {"step":3,"type":"Moisturiser","instruction":"Apply small amount evenly","why":"Hydration is key even for oily skin","productId":null,"productName":null,"tip":"Gel formulas work well in humidity"},
-    {"step":4,"type":"SPF 50 Sunscreen","instruction":"Apply generously as last step","why":"UV protection is critical for dark skin","productId":null,"productName":null,"tip":"Reapply every 2 hours outdoors"}
-  ],
-  "nightRoutine": [
-    {"step":1,"type":"Double Cleanse","instruction":"Oil cleanser then foaming cleanser","why":"Removes sunscreen and makeup fully","productId":null,"productName":null,"tip":"Never sleep with makeup on"},
-    {"step":2,"type":"Treatment Serum","instruction":"Apply 2-3 drops to face","why":"Active ingredients work overnight","productId":null,"productName":null,"tip":"Vitamin C for dark spots, retinol for aging"},
-    {"step":3,"type":"Night Moisturiser","instruction":"Apply generous amount","why":"Skin repairs overnight","productId":null,"productName":null,"tip":"Shea butter works great for dry patches"}
-  ],
-  "weeklyTreatments": [
-    {"step":1,"type":"Exfoliator","frequency":"2x per week","instruction":"Gentle circular motions","why":"Removes dead skin cells","productId":null,"productName":null},
-    {"step":2,"type":"Face Mask","frequency":"1x per week","instruction":"Leave on 15-20 mins","why":"Deep treatment boost","productId":null,"productName":null}
-  ],
-  "generalTips": [
-    "Drink at least 2 litres of water daily — Lagos heat dehydrates skin fast",
-    "Change your pillowcase every 3 days to prevent breakouts",
-    "Always patch test new products on your jaw first"
-  ],
-  "estimatedMonthlyBudget": "NGN 15,000 - NGN 25,000",
-  "routineComplexity": "beginner"
-}`;
+Response format must match the requested routine schema. Set productId and productName to exact values from store products when matching, or leave empty if recommending generic types.`;
 
-    const raw = await callAI(prompt);
+    const raw = await callAI(prompt, routineSchema);
     const routine = parseJSON(raw);
 
     // Enrich steps with product data from DB

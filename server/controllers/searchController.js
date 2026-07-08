@@ -1,6 +1,7 @@
 import Product from "../models/Product.js";
 import User from "../models/User.js";
 import Order from "../models/Order.js";
+import Groq from "groq-sdk";
 
 // ─────────────────────────────────────────
 //  SMART QUERY PARSER (No API needed)
@@ -94,7 +95,6 @@ const parseQuery = (query) => {
 let groqClient = null;
 const getGroq = () => {
   if (!groqClient && process.env.GROQ_API_KEY) {
-    const Groq = require("groq-sdk");
     groqClient = new Groq({ apiKey: process.env.GROQ_API_KEY });
   }
   return groqClient;
