@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -102,6 +102,7 @@ function SkinAnalysis({ onCartOpen }) {
     setLoading(true);
     setError("");
 
+    let data = null;
     try {
       const token = localStorage.getItem("token");
 
@@ -129,7 +130,7 @@ function SkinAnalysis({ onCartOpen }) {
         );
       }
 
-      const data = await response.json();
+      data = await response.json();
       if (!response.ok) throw new Error(data.message || "Analysis failed");
 
       setResult(data);
@@ -142,7 +143,7 @@ function SkinAnalysis({ onCartOpen }) {
         // Start countdown for rate limiting
         setError(err.message);
 
-        let secs = data.retryAfter || 60;
+        let secs = (data && data.retryAfter) || 60;
         setCountdown(secs);
 
         const timer = setInterval(() => {

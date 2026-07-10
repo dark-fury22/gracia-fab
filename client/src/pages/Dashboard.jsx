@@ -15,7 +15,7 @@ const tabs = [
 ];
 
 function Dashboard() {
-  const { user, login, logout } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("profile");
 
@@ -45,51 +45,55 @@ function Dashboard() {
   // Redirect if not logged in
   useEffect(() => {
     if (!user) navigate("/login");
-  }, [user]);
+  }, [user, navigate]);
 
   // Fetch profile details
   useEffect(() => {
-    if (user) fetchProfile();
+    const fetchProfile = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await fetch(`${API_URL}/api/auth/profile`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await response.json();
+        setProfileData({
+          name: data.name || "",
+          email: data.email || "",
+          skinType: data.skinType || "",
+          hairType: data.hairType || "",
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    if (user) {
+      fetchProfile();
+    }
   }, [user]);
 
   // Fetch orders when tab changes
   useEffect(() => {
-    if (activeTab === "orders") fetchOrders();
+    const fetchOrders = async () => {
+      try {
+        setLoadingOrders(true);
+        const token = localStorage.getItem("token");
+        const response = await fetch(`${API_URL}/api/orders/myorders`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await response.json();
+        setOrders(data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoadingOrders(false);
+      }
+    };
+
+    if (activeTab === "orders") {
+      fetchOrders();
+    }
   }, [activeTab]);
-
-  const fetchProfile = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(`${API_URL}/api/auth/profile`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await response.json();
-      setProfileData({
-        name: data.name || "",
-        email: data.email || "",
-        skinType: data.skinType || "",
-        hairType: data.hairType || "",
-      });
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const fetchOrders = async () => {
-    try {
-      setLoadingOrders(true);
-      const token = localStorage.getItem("token");
-      const response = await fetch(`${API_URL}/api/orders/myorders`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await response.json();
-      setOrders(data);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoadingOrders(false);
-    }
-  };
 
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
@@ -100,7 +104,7 @@ function Dashboard() {
       setProfileLoading(true);
       const token = localStorage.getItem("token");
 
-      const response = await fetch("${config.API_URL}/api/auth/profile", {
+      const response = await fetch(`${API_URL}/api/auth/profile`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -149,7 +153,7 @@ function Dashboard() {
       setProfileLoading(true);
       const token = localStorage.getItem("token");
 
-      const response = await fetch("${config.API_URL}/api/auth/profile", {
+      const response = await fetch(`${API_URL}/api/auth/profile`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

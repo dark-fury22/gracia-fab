@@ -26,6 +26,14 @@ export const registerUser = async (req, res) => {
     const user = await User.create({ name, email, password });
 
     if (user) {
+      const template = emailTemplates.welcome(user.name);
+      await addToQueue(emailQueue, "welcome", {
+        to: user.email,
+        subject: template.subject,
+        html: template.html,
+        type: "welcome",
+      });
+
       res.status(201).json({
         _id: user._id,
         name: user.name,
@@ -118,14 +126,6 @@ export const updateUserProfile = async (req, res) => {
     }
 
     const updatedUser = await user.save();
-
-    const template = emailTemplates.welcome(user.name);
-    await addToQueue(emailQueue, "welcome", {
-      to: user.email,
-      subject: template.subject,
-      html: template.html,
-      type: "welcome",
-    });
 
     res.json({
       _id: updatedUser._id,
