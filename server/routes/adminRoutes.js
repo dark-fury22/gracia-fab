@@ -7,7 +7,8 @@ import {
   createProduct,
   updateProduct,
   deleteProduct,
-  getAllUsers
+  getAllUsers,
+  uploadImage
 } from '../controllers/adminController.js'
 import protect from '../middleware/authMiddleware.js'
 import admin from '../middleware/adminMiddleware.js'
@@ -22,6 +23,7 @@ router.get('/orders', getAllOrders)
 router.put('/orders/:id', updateOrderStatus)
 router.get('/products', getAllProducts)
 router.post('/products', createProduct)
+router.post('/upload', uploadImage)
 router.put('/products/:id', updateProduct)
 router.delete('/products/:id', deleteProduct)
 router.get('/users', getAllUsers)

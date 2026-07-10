@@ -1,6 +1,9 @@
 import User from '../models/User.js'
 import Product from '../models/Product.js'
 import Order from '../models/Order.js'
+import fs from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
 
 // @desc   Get dashboard stats
 // @route  GET /api/admin/stats
@@ -166,6 +169,49 @@ export const getAllUsers = async (req, res) => {
       .sort({ createdAt: -1 })
     res.json(users)
   } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+}
+
+// @desc   Upload product image
+// @route  POST /api/admin/upload
+export const uploadImage = async (req, res) => {
+  try {
+    const { imageBase64, mimeType } = req.body
+    if (!imageBase64) {
+      return res.status(400).json({ message: 'No image data provided' })
+    }
+
+    // Determine extension from mimeType
+    let extension = 'jpg'
+    if (mimeType) {
+      const match = mimeType.match(/\/([a-zA-Z0-9+]+)$/)
+      if (match) extension = match[1]
+    }
+
+    // Create unique filename
+    const filename = `img-${Date.now()}-${Math.round(Math.random() * 1e9)}.${extension}`
+    const __filename = fileURLToPath(import.meta.url)
+    const __dirname = path.dirname(__filename)
+    const uploadPath = path.join(__dirname, '../public/uploads', filename)
+
+    // Ensure uploads folder exists
+    fs.mkdirSync(path.dirname(uploadPath), { recursive: true })
+
+    // Decode base64 and write
+    const buffer = Buffer.from(imageBase64, 'base64')
+    fs.writeFileSync(uploadPath, buffer)
+
+    // Construct dynamic absolute URL
+    const host = req.get('host')
+    const protocol = req.protocol
+    const imageUrl = `${protocol}://${host}/uploads/${filename}`
+
+    console.log(`📤 Image uploaded and saved to ${uploadPath} -> ${imageUrl}`)
+
+    res.status(201).json({ success: true, url: imageUrl })
+  } catch (error) {
+    console.error('❌ uploadImage error:', error.message)
     res.status(500).json({ message: error.message })
   }
 }

@@ -24,11 +24,23 @@ import trackingRoutes from "./routes/trackingRoutes.js";
 import cron from "node-cron";
 import { sendMarketingEmails } from "./controllers/marketingController.js";
 import routineRoutes from "./routes/routineRoutes.js";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 
 connectDB();
 startWorkers();
+
+// Ensure public/uploads folder exists
+const uploadsDir = path.join(__dirname, "public/uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
 
 // ── Security headers (helmet protects against common attacks)
 app.use(
@@ -151,6 +163,7 @@ app.post(
 // ── Global Body Parsers (after Paystack webhook, before routes that require JSON body)
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ limit: "10mb", extended: true }));
+app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
 
 // ── AI Beauty Chat (Gemini or Groq fallback)
 app.post("/api/chat", aiLimiter, async (req, res) => {

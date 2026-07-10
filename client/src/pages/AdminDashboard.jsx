@@ -1,10 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "../styles/Admin.css";
-import SEO from "../components/SEO";
 import API_URL from "../config";
 
 const tabs = [
@@ -51,29 +50,16 @@ function AdminDashboard() {
   });
   const [formError, setFormError] = useState("");
   const [formSuccess, setFormSuccess] = useState("");
+  const [uploadingImage, setUploadingImage] = useState(false);
 
-  useEffect(() => {
-    if (!user) return navigate("/login");
-    if (!user.isAdmin) return navigate("/");
-    fetchStats();
-  }, [user]);
-
-  useEffect(() => {
-    if (activeTab === "overview") fetchStats();
-    if (activeTab === "products") fetchProducts();
-    if (activeTab === "orders") fetchOrders();
-    if (activeTab === "users") fetchUsers();
-    if (activeTab === "messages") fetchMessages();
-    if (activeTab === "subscribers") fetchSubscribers();
-  }, [activeTab]);
-
-  const getHeaders = () => ({
+  const getHeaders = useCallback(() => ({
     "Content-Type": "application/json",
     Authorization: `Bearer ${localStorage.getItem("token")}`,
-  });
+  }), []);
 
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     try {
+      await Promise.resolve();
       setLoading(true);
       const res = await fetch(`${API_URL}/api/admin/stats`, {
         headers: getHeaders(),
@@ -85,10 +71,11 @@ function AdminDashboard() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [getHeaders]);
 
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
+      await Promise.resolve();
       setLoading(true);
       const res = await fetch(`${API_URL}/api/admin/products`, {
         headers: getHeaders(),
@@ -100,10 +87,11 @@ function AdminDashboard() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [getHeaders]);
 
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     try {
+      await Promise.resolve();
       setLoading(true);
       const res = await fetch(`${API_URL}/api/admin/orders`, {
         headers: getHeaders(),
@@ -115,10 +103,11 @@ function AdminDashboard() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [getHeaders]);
 
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
+      await Promise.resolve();
       setLoading(true);
       const res = await fetch(`${API_URL}/api/admin/users`, {
         headers: getHeaders(),
@@ -130,10 +119,11 @@ function AdminDashboard() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [getHeaders]);
 
-  const fetchMessages = async () => {
+  const fetchMessages = useCallback(async () => {
     try {
+      await Promise.resolve();
       setMsgLoading(true);
       const token = localStorage.getItem("token");
       const res = await fetch(`${API_URL}/api/contact`, {
@@ -146,9 +136,9 @@ function AdminDashboard() {
     } finally {
       setMsgLoading(false);
     }
-  };
+  }, []);
 
-  const fetchSubscribers = async () => {
+  const fetchSubscribers = useCallback(async () => {
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(`${API_URL}/api/contact/subscribers`, {
@@ -159,7 +149,24 @@ function AdminDashboard() {
     } catch (err) {
       console.error(err);
     }
-  };
+  }, []);
+
+  /* eslint-disable react-hooks/set-state-in-effect */
+  useEffect(() => {
+    if (!user) return navigate("/login");
+    if (!user.isAdmin) return navigate("/");
+    fetchStats();
+  }, [user, navigate, fetchStats]);
+
+  useEffect(() => {
+    if (activeTab === "overview") fetchStats();
+    if (activeTab === "products") fetchProducts();
+    if (activeTab === "orders") fetchOrders();
+    if (activeTab === "users") fetchUsers();
+    if (activeTab === "messages") fetchMessages();
+    if (activeTab === "subscribers") fetchSubscribers();
+  }, [activeTab, fetchStats, fetchProducts, fetchOrders, fetchUsers, fetchMessages, fetchSubscribers]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const handleMarkRead = async (id) => {
     try {
@@ -206,6 +213,56 @@ function AdminDashboard() {
     }
   };
 
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      alert("Please upload an image file (JPG, PNG, etc.)");
+      return;
+    }
+
+    setUploadingImage(true);
+    setFormError("");
+
+    try {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = async () => {
+        try {
+          const base64 = reader.result.replace(/^data:image\/[a-z]+;base64,/, "");
+          const mimeType = file.type;
+
+          const res = await fetch(`${API_URL}/api/admin/upload`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            body: JSON.stringify({ imageBase64: base64, mimeType }),
+          });
+
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.message || "Upload failed");
+
+          setProductForm((prev) => ({
+            ...prev,
+            image: data.url,
+          }));
+          setFormSuccess("✅ Image uploaded successfully!");
+          setTimeout(() => setFormSuccess(""), 3000);
+        } catch (err) {
+          setFormError(err.message);
+        } finally {
+          setUploadingImage(false);
+        }
+      };
+    } catch {
+      setFormError("Failed to read file");
+      setUploadingImage(false);
+    }
+  };
+
   const handleProductSubmit = async (e) => {
     e.preventDefault();
     setFormError("");
@@ -222,8 +279,8 @@ function AdminDashboard() {
 
     try {
       const url = editProduct
-        ? `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/admin/products/${editProduct._id}`
-        : `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/admin/products`;
+        ? `${API_URL}/api/admin/products/${editProduct._id}`
+        : `${API_URL}/api/admin/products`;
 
       const method = editProduct ? "PUT" : "POST";
 
@@ -545,18 +602,42 @@ function AdminDashboard() {
                   </div>
 
                   <div className="form-group">
-                    <label>Image URL *</label>
-                    <input
-                      type="text"
-                      value={productForm.image}
-                      onChange={(e) =>
-                        setProductForm({
-                          ...productForm,
-                          image: e.target.value,
-                        })
-                      }
-                      placeholder="https://..."
-                    />
+                    <label>Image *</label>
+                    <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                      <input
+                        type="text"
+                        value={productForm.image}
+                        onChange={(e) =>
+                          setProductForm({
+                            ...productForm,
+                            image: e.target.value,
+                          })
+                        }
+                        placeholder="https://... or upload file"
+                        style={{ flex: 1 }}
+                      />
+                      <label style={{
+                        padding: "10px 16px",
+                        background: "var(--accent)",
+                        color: "#000",
+                        borderRadius: "6px",
+                        cursor: "pointer",
+                        fontWeight: "bold",
+                        display: "inline-block",
+                        textAlign: "center",
+                        fontSize: "14px",
+                        whiteSpace: "nowrap"
+                      }}>
+                        {uploadingImage ? "Uploading..." : "📂 Choose File"}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageUpload}
+                          disabled={uploadingImage}
+                          style={{ display: "none" }}
+                        />
+                      </label>
+                    </div>
                   </div>
 
                   <div className="form-group">
