@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { useCart } from "../context/CartContext";
-import { useAuth } from "../context/AuthContext";
+import { useCart } from "../hooks/useCart";
+import { useAuth } from "../hooks/useAuth";
 import SEO from "../components/SEO";
 import "../styles/Checkout.css";
 import API_URL from "../config";
@@ -111,6 +111,9 @@ function Checkout({ onCartOpen }) {
       email: user.email,
       amount: amountInKobo,
       currency: "NGN",
+      // Date.now() only runs inside this click handler, never during
+      // render — Paystack requires a fresh, unique ref per payment attempt.
+      // eslint-disable-next-line react-hooks/purity
       ref: `gf_${Date.now()}`,
       metadata: {
         custom_fields: [

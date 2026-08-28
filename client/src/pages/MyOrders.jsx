@@ -2,9 +2,8 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 import "../styles/Orders.css";
-import SEO from "../components/SEO";
 import API_URL from "../config";
 
 function MyOrders() {
@@ -12,11 +11,6 @@ function MyOrders() {
   const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!user) return navigate("/login");
-    fetchOrders();
-  }, [user]);
 
   const fetchOrders = async () => {
     try {
@@ -32,6 +26,14 @@ function MyOrders() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (!user) return navigate("/login");
+    // Kicks off an async fetch that sets state on completion — not a value
+    // derivable at render time.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchOrders();
+  }, [user]);
 
   const formatPrice = (price) =>
     new Intl.NumberFormat("en-NG", {

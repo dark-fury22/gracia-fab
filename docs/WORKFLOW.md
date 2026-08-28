@@ -23,12 +23,10 @@ Matches the commit prefixes already used in this repo's history (`feat:`, `fix:`
 ## CI gate
 
 Every push/PR to `main` runs `.github/workflows/ci.yml`:
-- **client** job: lint (non-blocking — see below) → test → build
+- **client** job: lint → test → build
 - **server** job: test (against an in-memory MongoDB, no external services needed)
 
 A PR should not be merged with a red CI run. CI does **not** deploy — Render and Vercel each auto-deploy from `main` independently once a PR merges.
-
-Lint currently runs with `continue-on-error: true` because the existing codebase has ~35 pre-existing ESLint errors (tracked in [ROADMAP.md](ROADMAP.md)) that predate this CI setup. Once that debt is cleared, remove `continue-on-error` from the lint step so it becomes a real blocking gate like test and build already are.
 
 ## Deployment
 

@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { useAuth } from "../context/AuthContext";
-import { useCart } from "../context/CartContext";
+import { useAuth } from "../hooks/useAuth";
+import { useCart } from "../hooks/useCart";
 import WishlistButton from "../components/WishlistButton";
 import "../styles/Wishlist.css";
 import SEO from "../components/SEO";
@@ -18,12 +18,6 @@ function Wishlist() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("wishlist");
   const [addedId, setAddedId] = useState(null);
-
-  useEffect(() => {
-    if (!user) return navigate("/login");
-    fetchWishlist();
-    fetchSavedRecs();
-  }, [user]);
 
   const fetchWishlist = async () => {
     try {
@@ -57,6 +51,15 @@ function Wishlist() {
       setSavedRecs([]);
     }
   };
+
+  useEffect(() => {
+    if (!user) return navigate("/login");
+    // Both kick off an async fetch that sets state on completion — not a
+    // value derivable at render time.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchWishlist();
+    fetchSavedRecs();
+  }, [user]);
 
   const handleAddToCart = (product) => {
     addToCart(product);

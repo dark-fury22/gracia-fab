@@ -2,10 +2,10 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { useCart } from "../context/CartContext";
+import { useCart } from "../hooks/useCart";
 import "../styles/Products.css";
 import API_URL from "../config";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 
 function ProductDetail({ onCartOpen }) {
   const { id } = useParams();
@@ -159,6 +159,9 @@ function ReviewSection({ productId }) {
   };
 
   useEffect(() => {
+    // Kicks off an async fetch that sets state on completion — not a value
+    // derivable at render time.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchReviews();
   }, [productId]);
 

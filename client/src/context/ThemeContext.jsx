@@ -1,12 +1,14 @@
-import { createContext, useContext, useState, useEffect } from "react";
-
-export const ThemeContext = createContext();
+import { useState, useEffect } from "react";
+import { ThemeContext } from "../hooks/useTheme";
 
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState("light");
 
   useEffect(() => {
     const saved = localStorage.getItem("graciaFabTheme");
+    // One-time sync from localStorage on mount — not a value derivable
+    // from props/state at render time.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (saved) setTheme(saved);
   }, []);
 
@@ -25,8 +27,3 @@ export function ThemeProvider({ children }) {
     </ThemeContext.Provider>
   );
 }
-
-export function useTheme() {
-  return useContext(ThemeContext);
-}
-export default ThemeContext;

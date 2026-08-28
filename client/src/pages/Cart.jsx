@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { useCart } from "../context/CartContext";
+import { useCart } from "../hooks/useCart";
 import "../styles/Cart.css";
 import SEO from "../components/SEO";
 

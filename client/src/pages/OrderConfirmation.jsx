@@ -3,7 +3,6 @@ import { useParams, Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "../styles/Orders.css";
-import SEO from "../components/SEO";
 import API_URL from "../config";
 
 function OrderConfirmation() {

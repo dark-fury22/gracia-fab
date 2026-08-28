@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import { useCart } from "../context/CartContext";
+import { useAuth } from "../hooks/useAuth";
+import { useCart } from "../hooks/useCart";
 import GraciaLogo from "./GraciaLogo";
 import ThemeToggle from "./ThemeToggle";
 import "./Navbar.css";
@@ -33,12 +33,15 @@ function Navbar({ onCartOpen }) {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  // Close menu on route change
-  useEffect(() => {
+  // Close menus on route change — adjusting state during render (rather
+  // than in an effect) as the pathname changes.
+  const [prevPathname, setPrevPathname] = useState(location.pathname);
+  if (location.pathname !== prevPathname) {
+    setPrevPathname(location.pathname);
     setMenuOpen(false);
     setLabOpen(false);
     setAccountOpen(false);
-  }, [location.pathname]);
+  }
 
   const handleLogout = () => {
     logout();

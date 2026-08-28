@@ -23,7 +23,7 @@ const BUDGETS = [
   "Premium (₦15k+)",
 ];
 
-function StepCard({ step, index }) {
+function StepCard({ step }) {
   return (
     <div className="rg-step-card">
       <div className="rg-step-number">{step.step}</div>

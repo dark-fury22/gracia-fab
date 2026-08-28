@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "../styles/Recommend.css";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 import SEO from "../components/SEO";
 import API_URL from "../config";
 
@@ -15,7 +15,6 @@ function Recommend() {
   const [results, setResults] = useState(null);
   const [error, setError] = useState("");
   const { user } = useAuth(); // ← add this line
-  const navigate = useNavigate(); // make sure this exists too
 
   <SEO
     title="AI Beauty Recommendations"
@@ -50,7 +49,7 @@ function Recommend() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.message);
       setResults(data.recommendations);
-    } catch (err) {
+    } catch {
       setError("Failed to get recommendations. Please try again.");
     } finally {
       setLoading(false);

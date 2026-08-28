@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import API_URL from "../config";
 
@@ -8,10 +8,6 @@ function WishlistButton({ productId }) {
   const navigate = useNavigate();
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (user) checkWishlist();
-  }, [user, productId]);
 
   const checkWishlist = async () => {
     try {
@@ -25,6 +21,13 @@ function WishlistButton({ productId }) {
       console.error(err);
     }
   };
+
+  useEffect(() => {
+    // Kicks off an async fetch that sets state on completion — not a value
+    // derivable at render time.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (user) checkWishlist();
+  }, [user, productId]);
 
   const toggleWishlist = async (e) => {
     e.preventDefault();

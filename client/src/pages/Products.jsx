@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import "../styles/Products.css";
-import SEO from "../components/SEO";
 import API_URL from "../config";
-import { useToast } from "../components/Toast";
 import ProductCard, { ProductCardSkeleton } from "../components/ProductCard";
 import SmartSearch from "../components/SmartSearch";
 import { useMemo } from "react";
@@ -22,7 +20,6 @@ function Products() {
   const [activeCategory, setActiveCategory] = useState("all");
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("");
-  const { addToast } = useToast();
   const [showSmartSearch, setShowSmartSearch] = useState(false);
   const [smartResults, setSmartResults] = useState(null);
   const [smartQuery, setSmartQuery] = useState("");
@@ -30,10 +27,6 @@ function Products() {
   const [hairFilters, setHairFilters] = useState([]);
   const [aiUnderstanding, setAiUnderstanding] = useState(null);
   const [isSmartMode, setIsSmartMode] = useState(false);
-
-  useEffect(() => {
-    fetchProducts();
-  }, [activeCategory, search, sort]);
 
   const fetchProducts = async () => {
     try {
@@ -51,12 +44,19 @@ function Products() {
       const data = await response.json();
 
       setProducts(Array.isArray(data) ? data : []);
-    } catch (err) {
+    } catch {
       setError("Failed to load products");
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    // Kicks off an async fetch that sets state on completion — not a value
+    // derivable at render time.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchProducts();
+  }, [activeCategory, search, sort]);
 
   const sortedProducts = useMemo(() => {
     if (!products.length) return [];

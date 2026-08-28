@@ -22,9 +22,16 @@ function BeautyChat() {
   const [unread, setUnread] = useState(0);
   const bottomRef = useRef(null);
 
+  // Reset the unread badge the moment the chat opens — adjusting state
+  // during render (rather than in an effect) as `open` changes.
+  const [prevOpen, setPrevOpen] = useState(open);
+  if (open !== prevOpen) {
+    setPrevOpen(open);
+    if (open) setUnread(0);
+  }
+
   useEffect(() => {
     if (open) {
-      setUnread(0);
       bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     }
   }, [open, messages]);

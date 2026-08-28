@@ -15,7 +15,14 @@ function LoyaltyWidget() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token) return setLoading(false);
+    if (!token) {
+      // No token means there's nothing to fetch — this is the "skip"
+      // branch of a fetch-orchestration effect, not a value derivable at
+      // render time (fetch success below also sets this asynchronously).
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setLoading(false);
+      return;
+    }
 
     fetch(`${API_URL}/api/loyalty`, {
       headers: { Authorization: `Bearer ${token}` },

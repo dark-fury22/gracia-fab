@@ -207,29 +207,12 @@ function SkinToneDetector() {
   const fileInputRef = useRef(null);
   const [photo, setPhoto] = useState(null);
   const [result, setResult] = useState(null);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [products, setProducts] = useState([]);
   const [step, setStep] = useState("upload"); // 'upload' | 'analysing' | 'result'
 
-  const handleFileSelect = useCallback((e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (!file.type.startsWith("image/")) {
-      setError("Please upload an image file (JPG, PNG, etc.)");
-      return;
-    }
-
-    const url = URL.createObjectURL(file);
-    setPhoto(url);
-    setError("");
-    runAnalysis(url);
-  }, []);
-
   const runAnalysis = useCallback(async (photoUrl) => {
     setStep("analysing");
-    setLoading(true);
     setError("");
 
     try {
@@ -255,13 +238,11 @@ function SkinToneDetector() {
       } catch {
         setProducts([]);
       }
-    } catch (err) {
+    } catch {
       setError(
         "Could not analyse image. Please try a clearer photo facing forward.",
       );
       setStep("upload");
-    } finally {
-      setLoading(false);
     }
   }, []);
 
@@ -355,7 +336,7 @@ function SkinToneDetector() {
 
               {/* Tone scale */}
               <div className="skin-tone-scale">
-                {SKIN_TONES.map((t, i) => (
+                {SKIN_TONES.map((t) => (
                   <div
                     key={t.id}
                     className={`skin-scale-dot ${t.id === result.toneId ? "active" : ""}`}

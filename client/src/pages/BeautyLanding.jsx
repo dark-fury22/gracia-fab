@@ -8,7 +8,7 @@ import API_URL from "../config";
 import "../styles/BeautyLanding.css";
 
 // SEO page definitions — add as many as you want
-export const LANDING_PAGES = {
+const LANDING_PAGES = {
   // SKINCARE
   "best-moisturiser-oily-skin-nigeria": {
     title: "Best Moisturiser for Oily Skin in Nigeria (2026)",
@@ -175,12 +175,6 @@ function BeautyLanding({ onCartOpen }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (!page) return;
-    fetchProducts();
-    window.scrollTo(0, 0);
-  }, [slug]);
-
   const fetchProducts = async () => {
     try {
       let url = `${API_URL}/api/products?`;
@@ -197,6 +191,15 @@ function BeautyLanding({ onCartOpen }) {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (!page) return;
+    // Kicks off an async fetch that sets state on completion — not a value
+    // derivable at render time.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchProducts();
+    window.scrollTo(0, 0);
+  }, [slug]);
 
   if (!page) {
     return (

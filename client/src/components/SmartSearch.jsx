@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
 import API_URL from "../config";
 import "./SmartSearch.css";
 
@@ -14,7 +13,6 @@ function useDebounce(value, delay) {
 }
 
 function SmartSearch({ onResults, onClose, fullPage = false }) {
-  const navigate = useNavigate();
   const inputRef = useRef(null);
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
@@ -38,6 +36,10 @@ function SmartSearch({ onResults, onClose, fullPage = false }) {
   // Autocomplete suggestions
   useEffect(() => {
     if (debouncedQuery.length < 2) {
+      // Not calling the API for a too-short query — this is the "skip"
+      // branch of a fetch-orchestration effect, not a value derivable at
+      // render time (fetch success below also sets this asynchronously).
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSuggestions([]);
       return;
     }

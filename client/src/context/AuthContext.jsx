@@ -1,8 +1,6 @@
-import { createContext, useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import API_URL from "../config";
-
-// Create the context
-const AuthContext = createContext();
+import { AuthContext } from "../hooks/useAuth";
 
 // Provider component — wraps the whole app
 export function AuthProvider({ children }) {
@@ -15,6 +13,9 @@ export function AuthProvider({ children }) {
     const userData = localStorage.getItem("user");
 
     if (token && userData) {
+      // One-time sync from localStorage on mount — not a value derivable
+      // from props/state at render time.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setUser(JSON.parse(userData));
     }
     setLoading(false);
@@ -105,10 +106,3 @@ export function AuthProvider({ children }) {
     </AuthContext.Provider>
   );
 }
-
-// Custom hook — makes using the context easy
-export function useAuth() {
-  return useContext(AuthContext);
-}
-
-export default AuthContext;
