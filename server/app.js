@@ -15,7 +15,6 @@ import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 import crypto from "crypto";
 import loyaltyRoutes from "./routes/loyaltyRoutes.js";
-import fetch from "node-fetch";
 import skinAnalysisRoutes from "./routes/skinAnalysisRoutes.js";
 import trackingRoutes from "./routes/trackingRoutes.js";
 import routineRoutes from "./routes/routineRoutes.js";
@@ -275,24 +274,6 @@ app.use("/api/routine", routineRoutes);
 
 app.get("/", (req, res) => {
   res.json({ message: "💄 BeautyAI API is running!" });
-});
-
-// TEMPORARY DEBUG ROUTE — remove after testing
-app.get("/api/debug-paystack/:ref", async (req, res) => {
-  try {
-    const response = await fetch(
-      `https://api.paystack.co/transaction/verify/${req.params.ref}`,
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
-        },
-      },
-    );
-    const data = await response.json();
-    res.json(data);
-  } catch (err) {
-    res.json({ error: err.message });
-  }
 });
 
 // Health check endpoint
