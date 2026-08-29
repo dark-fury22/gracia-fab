@@ -89,7 +89,7 @@ export const createProduct = async (req, res) => {
   try {
     const {
       name, description, price, image,
-      category, brand, countInStock,
+      category, brand, stock,
       tags, isFeatured
     } = req.body
 
@@ -100,7 +100,7 @@ export const createProduct = async (req, res) => {
       image,
       category,
       brand,
-      countInStock,
+      stock,
       tags: tags ? tags.split(',').map(t => t.trim()) : [],
       isFeatured: isFeatured || false,
       suitableFor: {}
@@ -123,7 +123,7 @@ export const updateProduct = async (req, res) => {
 
     const {
       name, description, price, image,
-      category, brand, countInStock,
+      category, brand, stock,
       tags, isFeatured
     } = req.body
 
@@ -133,7 +133,7 @@ export const updateProduct = async (req, res) => {
 product.image = image ?? product.image
     product.category = category || product.category
     product.brand = brand || product.brand
-    product.countInStock = countInStock ?? product.countInStock
+    product.stock = stock ?? product.stock
     product.tags = tags
       ? tags.split(',').map(t => t.trim())
       : product.tags
@@ -178,9 +178,6 @@ export const getAllUsers = async (req, res) => {
 export const uploadImage = async (req, res) => {
   try {
     const { imageBase64, mimeType } = req.body
-    if (!imageBase64) {
-      return res.status(400).json({ message: 'No image data provided' })
-    }
 
     // Determine extension from mimeType
     let extension = 'jpg'

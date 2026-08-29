@@ -261,10 +261,6 @@ export const semanticSearch = async (req, res) => {
   const { query } = req.body;
   const userId = req.user?._id;
 
-  if (!query || query.trim().length < 2) {
-    return res.status(400).json({ message: "Search query too short" });
-  }
-
   const start = Date.now();
 
   try {

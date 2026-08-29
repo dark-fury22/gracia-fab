@@ -4,14 +4,22 @@ import {
 } from '../controllers/authController.js'
 import { googleLogin, facebookLogin } from '../controllers/oauthController.js'
 import protect from '../middleware/authMiddleware.js'
+import validate from '../middleware/validate.js'
+import {
+  registerSchema,
+  loginSchema,
+  updateProfileSchema,
+  googleLoginSchema,
+  facebookLoginSchema,
+} from '../validators/authValidators.js'
 
 const router = express.Router()
 
-router.post('/register', registerUser)
-router.post('/login', loginUser)
+router.post('/register', validate(registerSchema), registerUser)
+router.post('/login', validate(loginSchema), loginUser)
 router.get('/profile', protect, getUserProfile)
-router.put('/profile', protect, updateUserProfile)
-router.post('/google', googleLogin)
-router.post('/facebook', facebookLogin)
+router.put('/profile', protect, validate(updateProfileSchema), updateUserProfile)
+router.post('/google', validate(googleLoginSchema), googleLogin)
+router.post('/facebook', validate(facebookLoginSchema), facebookLogin)
 
 export default router

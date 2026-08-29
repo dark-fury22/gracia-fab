@@ -13,7 +13,8 @@ A living backlog. Move items between sections as priorities shift; turn a "Now" 
 
 ## Next
 
-- [ ] Add request-body validation (e.g. `zod` or `express-validator`) to controllers that currently trust `req.body` directly.
+- [x] Add request-body validation — done with `zod`. A `validate(schema)` middleware (`server/middleware/validate.js`) parses `req.body` against a per-route schema in `server/validators/` and returns a structured 400 on failure; wired into all 11 route files that accept a body (auth, orders, admin, contact, loyalty, reviews, recommend, routine, search, skin-analysis, wishlist). Removed the now-redundant manual `if (!x) return 400` checks those schemas replace. Covered by `tests/validation.test.js`.
+- [x] **Bonus fix (found while validating admin product fields):** `adminController.js`'s create/update product and `AdminDashboard.jsx`'s product form both used `countInStock`, but the `Product` schema's field is `stock` — Mongoose silently dropped it, so admin-set stock never persisted (new products always got the schema default). Renamed to `stock` consistently.
 - [ ] Add structured logging (server currently uses ad hoc `console.log`/`console.error`).
 - [ ] Add a staging environment / preview deploys, separate from the single production environment currently used.
 

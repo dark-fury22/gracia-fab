@@ -50,19 +50,6 @@ export const createOrder = async (req, res) => {
   try {
     const { orderItems, deliveryAddress, deliveryPrice } = req.body;
 
-    // Validate order items
-    if (!orderItems || orderItems.length === 0) {
-      return res.status(400).json({
-        message: "No order items",
-      });
-    }
-
-    if (typeof deliveryPrice !== "number" || deliveryPrice < 0) {
-      return res.status(400).json({
-        message: "Invalid delivery price",
-      });
-    }
-
     // Recalculate prices from database
     let itemsPrice = 0;
 
@@ -220,13 +207,6 @@ export const verifyPayment = async (req, res) => {
   const { reference } = req.body;
 
   try {
-    // Validate reference
-    if (!reference) {
-      return res.status(400).json({
-        message: "Payment reference is required",
-      });
-    }
-
     // Check secret key
     if (!process.env.PAYSTACK_SECRET_KEY) {
       return res.status(500).json({

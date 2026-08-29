@@ -6,12 +6,6 @@ import Subscriber from '../models/Subscriber.js'
 export const submitContact = async (req, res) => {
   const { name, email, phone, subject, message } = req.body
 
-  if (!name || !email || !message) {
-    return res.status(400).json({
-      message: 'Name, email and message are required'
-    })
-  }
-
   try {
     await Contact.create({ name, email, phone, subject, message })
     console.log('📩 New message from:', name)
@@ -66,9 +60,6 @@ export const deleteContact = async (req, res) => {
 // @route POST /api/contact/subscribe
 export const subscribe = async (req, res) => {
   const { email } = req.body
-  if (!email || !email.includes('@')) {
-    return res.status(400).json({ message: 'Valid email is required' })
-  }
   try {
     const existing = await Subscriber.findOne({ email: email.toLowerCase() })
     if (existing) {

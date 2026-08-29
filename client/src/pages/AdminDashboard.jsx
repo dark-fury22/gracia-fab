@@ -44,7 +44,7 @@ function AdminDashboard() {
     image: "",
     category: "skincare",
     brand: "",
-    countInStock: "10",
+    stock: "10",
     tags: "",
     isFeatured: false,
   });
@@ -290,7 +290,7 @@ function AdminDashboard() {
         body: JSON.stringify({
           ...productForm,
           price: Number(productForm.price),
-          countInStock: Number(productForm.countInStock),
+          stock: Number(productForm.stock),
         }),
       });
 
@@ -344,7 +344,7 @@ function AdminDashboard() {
       image: product?.image,
       category: product.category,
       brand: product.brand,
-      countInStock: product.countInStock,
+      stock: product.stock,
       tags: product.tags?.join(", ") || "",
       isFeatured: product.isFeatured,
     });
@@ -359,7 +359,7 @@ function AdminDashboard() {
       image: "",
       category: "skincare",
       brand: "",
-      countInStock: "10",
+      stock: "10",
       tags: "",
       isFeatured: false,
     });
@@ -576,11 +576,11 @@ function AdminDashboard() {
                       <label>Stock Count</label>
                       <input
                         type="number"
-                        value={productForm.countInStock}
+                        value={productForm.stock}
                         onChange={(e) =>
                           setProductForm({
                             ...productForm,
-                            countInStock: e.target.value,
+                            stock: e.target.value,
                           })
                         }
                       />
@@ -727,7 +727,7 @@ function AdminDashboard() {
                         </span>
                       </td>
                       <td>{formatPrice(product?.price)}</td>
-                      <td>{product.countInStock}</td>
+                      <td>{product.stock}</td>
                       <td>{product.isFeatured ? "⭐ Yes" : "—"}</td>
                       <td>
                         <div className="admin-actions">

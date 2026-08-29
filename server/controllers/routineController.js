@@ -168,10 +168,6 @@ const routineSchema = {
 export const generateRoutine = async (req, res) => {
   const { skinType, ageRange, concerns, budget } = req.body;
 
-  if (!skinType) {
-    return res.status(400).json({ message: "Skin type is required" });
-  }
-
   try {
     // Get skincare products for context
     const products = await Product.find({ category: "skincare" })

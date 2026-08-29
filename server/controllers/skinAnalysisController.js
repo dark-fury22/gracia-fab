@@ -114,10 +114,6 @@ const skinAnalysisSchema = {
 export const analyseSkin = async (req, res) => {
   const { imageBase64, mimeType = "image/jpeg" } = req.body;
 
-  if (!imageBase64) {
-    return res.status(400).json({ message: "No image provided" });
-  }
-
   const gemini = getGemini();
   if (!gemini) {
     return res.status(503).json({
