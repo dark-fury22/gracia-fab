@@ -120,44 +120,23 @@ function App() {
             </PublicOnlyRoute>
           }
         />
-        {/* ── Protected routes ── */}
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <Home onCartOpen={openCart} />
-            </ProtectedRoute>
-          }
-        />
+        {/* ── Public browsing — anyone can shop and build a cart without an account ── */}
+        <Route path="/" element={<Home onCartOpen={openCart} />} />
         <Route
           path="/products"
-          element={
-            <ProtectedRoute>
-              <ProductsLayout onCartOpen={openCart} />
-            </ProtectedRoute>
-          }
+          element={<ProductsLayout onCartOpen={openCart} />}
         />
         <Route
           path="/products/:id"
-          element={
-            <ProtectedRoute>
-              <ProductDetail onCartOpen={openCart} />
-            </ProtectedRoute>
-          }
+          element={<ProductDetail onCartOpen={openCart} />}
         />
+        <Route path="/cart" element={<Cart />} />
+        {/* ── Protected routes ── */}
         <Route
           path="/recommend"
           element={
             <ProtectedRoute>
               <Recommend />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/cart"
-          element={
-            <ProtectedRoute>
-              <Cart />
             </ProtectedRoute>
           }
         />
