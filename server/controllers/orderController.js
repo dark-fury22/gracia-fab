@@ -89,12 +89,12 @@ export const createOrder = async (req, res) => {
         continue;
       }
 
-      if (!item.qty || item.qty < 1) {
+      if (!item.quantity || item.quantity < 1) {
         stockErrors.push(`Invalid quantity for ${product.name}`);
         continue;
       }
 
-      if (product.stock !== undefined && product.stock < item.qty) {
+      if (product.stock !== undefined && product.stock < item.quantity) {
         stockErrors.push(
           `"${product.name}" only has ${product.stock} left in stock`,
         );
@@ -111,14 +111,14 @@ export const createOrder = async (req, res) => {
     for (const item of orderItems) {
       const product = productMap.get(item.product.toString());
 
-      itemsPrice += product.price * item.qty;
+      itemsPrice += product.price * item.quantity;
 
       validatedItems.push({
         product: product._id,
         name: product.name,
         image: product.image,
         price: product.price,
-        qty: item.qty,
+        quantity: item.quantity,
       });
     }
 
@@ -148,10 +148,10 @@ export const createOrder = async (req, res) => {
       const updated = await Product.findOneAndUpdate(
         {
           _id: item.product,
-          stock: { $gte: item.qty },
+          stock: { $gte: item.quantity },
         },
         {
-          $inc: { stock: -item.qty },
+          $inc: { stock: -item.quantity },
         },
         { new: true },
       );
