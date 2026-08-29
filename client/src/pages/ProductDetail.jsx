@@ -79,6 +79,8 @@ function ProductDetail({ onCartOpen }) {
       </p>
     );
 
+  const outOfStock = product.isInStock === false || product.stock === 0;
+
   return (
     <>
       <Navbar onCartOpen={onCartOpen} />
@@ -93,9 +95,24 @@ function ProductDetail({ onCartOpen }) {
               alt={product.name}
               className="detail-image"
             />
+            <span className="detail-authentic-badge">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M20 6L9 17l-5-5" />
+              </svg>
+              100% Authentic
+            </span>
           </div>
           <div className="detail-info">
-            <span className="detail-category">{product.category}</span>
+            <div className="detail-category-row">
+              <span className="detail-category">{product.category}</span>
+              <span className="detail-dot" />
+              <span className={`detail-stock ${outOfStock ? "out" : ""}`}>
+                <svg width="7" height="7" viewBox="0 0 24 24" fill="currentColor">
+                  <circle cx="12" cy="12" r="12" />
+                </svg>
+                {outOfStock ? "Out of Stock" : "In Stock"}
+              </span>
+            </div>
             <h1>{product.name}</h1>
             <p className="detail-brand">by {product.brand}</p>
             <div className="detail-rating">
@@ -119,8 +136,16 @@ function ProductDetail({ onCartOpen }) {
                 ))}
               </div>
             )}
-            <button className="btn-add-cart" onClick={handleAddToCart}>
-              {added ? "✅ Added to Bag!" : "Add to Bag"}
+            <button
+              className="btn-add-cart"
+              onClick={handleAddToCart}
+              disabled={outOfStock}
+            >
+              {outOfStock
+                ? "Sold Out"
+                : added
+                  ? "✅ Added to Bag!"
+                  : "Add to Bag"}
             </button>
           </div>
         </div>

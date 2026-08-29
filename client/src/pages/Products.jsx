@@ -109,7 +109,10 @@ function Products() {
         <div className="sidebar-section">
           <h3>Categories</h3>
           {categories.map((cat) => (
-            <label key={cat} className="sidebar-option">
+            <label
+              key={cat}
+              className={`sidebar-option ${activeCategory === cat ? "active" : ""}`}
+            >
               <input
                 type="radio"
                 name="category"
@@ -242,14 +245,50 @@ function Products() {
           </div>
         )}
 
-        {error && <div className="error-banner">{error}</div>}
-
         {/* Grid */}
         {loading ? (
           <div className="products-grid">
             {Array.from({ length: 6 }).map((_, i) => (
               <ProductCardSkeleton key={i} />
             ))}
+          </div>
+        ) : error ? (
+          <div className="products-state-card">
+            <svg
+              width="56"
+              height="56"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.4"
+              className="products-state-icon"
+            >
+              <rect x="3" y="7" width="18" height="14" rx="2" />
+              <path d="M3 7l2-4h14l2 4" />
+              <path d="M9 11a3 3 0 0 0 6 0" />
+            </svg>
+            <h3>We couldn't load the shelves</h3>
+            <p>{error}. Give it another try.</p>
+            <button className="btn-products-retry" onClick={fetchProducts}>
+              Try Again
+            </button>
+          </div>
+        ) : displayedProducts.length === 0 ? (
+          <div className="products-state-card">
+            <svg
+              width="56"
+              height="56"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.4"
+              className="products-state-icon"
+            >
+              <circle cx="11" cy="11" r="7" />
+              <path d="M21 21l-4.3-4.3" />
+            </svg>
+            <h3>No products match yet</h3>
+            <p>Try a different category or clear your filters.</p>
           </div>
         ) : (
           <div className="products-grid">

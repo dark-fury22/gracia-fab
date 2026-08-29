@@ -15,6 +15,8 @@ function ProductCard({ product }) {
       minimumFractionDigits: 0,
     }).format(price);
 
+  const outOfStock = product.isInStock === false || product.stock === 0;
+
   return (
     <div className="product-card">
       <Link to={`/products/${product._id}`}>
@@ -29,7 +31,13 @@ function ProductCard({ product }) {
                 "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&h=400&fit=crop";
             }}
           />
-          {product.isFeatured && <span className="product-badge">NEW</span>}
+          {outOfStock ? (
+            <span className="product-badge product-badge-out">
+              Out of Stock
+            </span>
+          ) : (
+            product.isFeatured && <span className="product-badge">New</span>
+          )}
           <div className="product-wishlist-btn">
             <WishlistButton productId={product._id} />
           </div>
@@ -45,12 +53,13 @@ function ProductCard({ product }) {
           <span className="product-price">{formatPrice(product?.price)}</span>
           <button
             className="btn-add-to-cart"
+            disabled={outOfStock}
             onClick={() => {
               addToCart(product);
               addToast(`Added ${product.name} to cart 🛒`, "success");
             }}
           >
-            Add to cart
+            {outOfStock ? "Sold Out" : "Add to cart"}
           </button>
         </div>
       </div>

@@ -11,6 +11,12 @@ A living backlog. Move items between sections as priorities shift; turn a "Now" 
 - [x] Expand client test coverage — added `CartContext.test.jsx`, `Checkout.test.jsx`, and `ProductCard`'s interactive add-to-cart behavior.
 - [x] **Critical fix (found while writing order tests):** `createOrder` in [server/controllers/orderController.js](../server/controllers/orderController.js) read `item.qty` from incoming order items, but the client sends `item.quantity` and the `Order` schema requires `quantity` too — every real checkout attempt was failing with "Invalid quantity". Renamed to `quantity` consistently; covered by `tests/orders.test.js`.
 
+## Now
+
+- [x] Wire the shopping-flow redesign mockups (Products, Product Detail, Cart, Checkout) into real components — sidebar active-state highlight and illustrated error/empty states on Products, trust badge + stock status on Product Detail, a polished dashed-border empty state on Cart, and a step indicator (Delivery Details → Payment) plus a receipt-style order summary on Checkout. Verified with mocked API data via Playwright at desktop and mobile widths.
+- [x] **Bonus fix (found while restyling `ProductCard.css`):** `.product-price` was hardcoded to `color: var(--white)` with no theme guard — **price text was invisible on the light theme's white card background** across every product card in the app. Also `.product-badge` used an undefined `--gold` CSS variable (no fill), and several other rules (`--cream`, `--dark-3`, `--gold-light`) were undefined and silently falling back to inherited values. Rewrote using real, defined tokens (`--accent`, `--text`, `--surface-2`).
+- [ ] The same undefined-variable pattern (`--gold`, `--cream`, `--dark-3`, `--gold-light`) still exists in `CartDrawer.css`, `Features.css`, `Newsletter.css`, and `TrendingDeals.css` — out of scope for this pass (none of those are the 4 pages redesigned here) but worth the same cleanup.
+
 ## Next
 
 - [x] Add request-body validation — done with `zod`. A `validate(schema)` middleware (`server/middleware/validate.js`) parses `req.body` against a per-route schema in `server/validators/` and returns a structured 400 on failure; wired into all 11 route files that accept a body (auth, orders, admin, contact, loyalty, reviews, recommend, routine, search, skin-analysis, wishlist). Removed the now-redundant manual `if (!x) return 400` checks those schemas replace. Covered by `tests/validation.test.js`.

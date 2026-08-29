@@ -185,6 +185,26 @@ function Checkout({ onCartOpen }) {
       <div className="checkout-page">
         <h1>Checkout 📦</h1>
 
+        <div className="checkout-steps">
+          <div className={`checkout-step ${!orderReady ? "current" : "done"}`}>
+            <span className="checkout-step-num">
+              {orderReady ? (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                  <path d="M20 6L9 17l-5-5" />
+                </svg>
+              ) : (
+                "1"
+              )}
+            </span>
+            <span className="checkout-step-label">Delivery Details</span>
+          </div>
+          <div className="checkout-step-connector" />
+          <div className={`checkout-step ${orderReady ? "current" : ""}`}>
+            <span className="checkout-step-num">2</span>
+            <span className="checkout-step-label">Payment</span>
+          </div>
+        </div>
+
         <div className="checkout-layout">
           {/* Left — Form or Payment */}
           <div className="checkout-form-section">

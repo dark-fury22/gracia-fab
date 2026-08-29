@@ -12,6 +12,63 @@
   margin-bottom: 2rem;
 }
 
+.checkout-steps {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2.2rem;
+  max-width: 480px;
+}
+
+.checkout-step {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.checkout-step-num {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  color: var(--text-faint);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  flex-shrink: 0;
+  transition: all var(--duration) var(--ease);
+}
+
+.checkout-step-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-faint);
+  white-space: nowrap;
+}
+
+.checkout-step.current .checkout-step-num,
+.checkout-step.done .checkout-step-num {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: var(--shadow-sm);
+}
+[data-theme="light"] .checkout-step.current .checkout-step-num,
+[data-theme="light"] .checkout-step.done .checkout-step-num { color: #ffffff; }
+[data-theme="dark"] .checkout-step.current .checkout-step-num,
+[data-theme="dark"] .checkout-step.done .checkout-step-num { color: #000000; }
+
+.checkout-step.current .checkout-step-label,
+.checkout-step.done .checkout-step-label { color: var(--text); font-weight: 700; }
+
+.checkout-step-connector {
+  flex: 1;
+  height: 2px;
+  background: var(--border);
+  margin: 0 1rem;
+}
+
 .checkout-layout {
   display: grid;
   grid-template-columns: 1fr 380px;
@@ -128,7 +185,11 @@
   font-family: var(--font-mono);
 }
 
-.checkout-totals { margin-top: 1.2rem; }
+.checkout-totals {
+  margin-top: 1.2rem;
+  padding-top: 1.2rem;
+  border-top: 1.5px dashed var(--border);
+}
 
 .total-row {
   display: flex;
@@ -393,6 +454,11 @@
 
 @media (max-width: 480px) {
   .checkout-page { padding: 0.85rem; }
+
+  .checkout-steps { max-width: 100%; margin-bottom: 1.5rem; }
+  .checkout-step-num { width: 26px; height: 26px; font-size: 0.72rem; }
+  .checkout-step-label { font-size: 0.68rem; }
+  .checkout-step-connector { margin: 0 0.5rem; }
 
   .checkout-form-section { padding: 1rem 0.9rem; }
   .checkout-summary      { padding: 0.9rem; }
