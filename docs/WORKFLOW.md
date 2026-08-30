@@ -32,4 +32,5 @@ A PR should not be merged with a red CI run. CI does **not** deploy — Render a
 
 - **Server** — Render, config in [server/render.yaml](../server/render.yaml). Env vars are configured in the Render dashboard (see [server/.env.example](../server/.env.example) for the list).
 - **Client** — Vercel, config in [client/vercel.json](../client/vercel.json). Env vars are configured in the Vercel dashboard (see [client/.env.example](../client/.env.example)).
-- Both deploy automatically from `main`. There is currently a single production environment — no staging (tracked in [ROADMAP.md](ROADMAP.md)).
+- Two environments: **production** deploys automatically from `main`, **staging** deploys automatically from `staging` — each with its own database, Redis instance, and Paystack test-mode keys. Full setup and the environment-by-environment env var table are in [DEPLOYMENT.md](DEPLOYMENT.md).
+- To ship a change: land it on `staging` first, verify it there, then open a PR from `staging` into `main` to promote it to production.

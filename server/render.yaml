@@ -1,8 +1,10 @@
 services:
+  # ── Production — deploys from main ──
   - type: web
     name: gracia-fab-api
     env: node
     region: oregon
+    branch: main
     buildCommand: npm install
     startCommand: npm start
     envVars:
@@ -10,3 +12,22 @@ services:
         value: production
       - key: PORT
         value: 10000
+      # All other vars (MONGO_URI, JWT_SECRET, REDIS_URL, API keys, ...)
+      # are set directly in the Render dashboard — see docs/DEPLOYMENT.md.
+
+  # ── Staging — deploys from staging, own database + Redis instance ──
+  - type: web
+    name: gracia-fab-api-staging
+    env: node
+    region: oregon
+    branch: staging
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: staging
+      - key: PORT
+        value: 10000
+      # Same as production: set in the Render dashboard, with staging-only
+      # values for MONGO_URI, JWT_SECRET, REDIS_URL, PAYSTACK_SECRET_KEY
+      # and FRONTEND_URL — see docs/DEPLOYMENT.md.
