@@ -4,16 +4,17 @@ import { startWorkers } from "./queues/workers.js";
 import cron from "node-cron";
 import { sendMarketingEmails } from "./controllers/marketingController.js";
 import app from "./app.js";
+import logger from "./utils/logger.js";
 
 connectDB();
 startWorkers();
 
 cron.schedule("0 10 * * *", async () => {
-  console.log("📧 Running daily marketing email job...");
+  logger.info("Running daily marketing email job");
   await sendMarketingEmails();
 });
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  logger.info({ port: PORT }, "Server running");
 });

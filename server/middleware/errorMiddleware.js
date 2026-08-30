@@ -1,9 +1,11 @@
+import logger from "../utils/logger.js";
+
 // This function catches ALL errors in the app
 // Think of it as the "emergency cleanup crew"
 
 const errorHandler = (err, req, res, next) => {
   // Log the full error for YOU (developer) to see
-  console.error(`❌ ${req.method} ${req.path} — ${err.message}`);
+  logger.error({ err, method: req.method, path: req.path }, "Request error");
 
   // But send a clean response to the USER
   const statusCode = err.status || err.statusCode || 500;

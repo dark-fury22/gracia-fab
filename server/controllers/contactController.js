@@ -1,5 +1,6 @@
 import Contact from '../models/Contact.js'
 import Subscriber from '../models/Subscriber.js'
+import logger from '../utils/logger.js'
 
 // @desc  Submit contact form
 // @route POST /api/contact
@@ -8,7 +9,7 @@ export const submitContact = async (req, res) => {
 
   try {
     await Contact.create({ name, email, phone, subject, message })
-    console.log('📩 New message from:', name)
+    logger.info({ name }, 'New contact message received')
     res.status(201).json({
       success: true,
       message: "Message sent! We'll get back to you within 24 hours 💌"
@@ -69,7 +70,7 @@ export const subscribe = async (req, res) => {
       })
     }
     await Subscriber.create({ email })
-    console.log('💌 New subscriber:', email)
+    logger.info({ email }, 'New newsletter subscriber')
     res.status(201).json({
       success: true,
       message: "Subscribed! Welcome to the Gracia Fab family 🌸"

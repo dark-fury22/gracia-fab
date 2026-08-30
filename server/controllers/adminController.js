@@ -4,6 +4,7 @@ import Order from '../models/Order.js'
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import logger from '../utils/logger.js'
 
 // @desc   Get dashboard stats
 // @route  GET /api/admin/stats
@@ -204,11 +205,11 @@ export const uploadImage = async (req, res) => {
     const protocol = req.protocol
     const imageUrl = `${protocol}://${host}/uploads/${filename}`
 
-    console.log(`📤 Image uploaded and saved to ${uploadPath} -> ${imageUrl}`)
+    logger.info({ uploadPath, imageUrl }, 'Image uploaded')
 
     res.status(201).json({ success: true, url: imageUrl })
   } catch (error) {
-    console.error('❌ uploadImage error:', error.message)
+    logger.error({ err: error }, 'uploadImage error')
     res.status(500).json({ message: error.message })
   }
 }

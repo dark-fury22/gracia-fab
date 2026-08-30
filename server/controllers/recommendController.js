@@ -1,5 +1,6 @@
 import Groq from 'groq-sdk'
 import Product from '../models/Product.js'
+import logger from '../utils/logger.js'
 
 // Initialize lazily so dotenv loads first
 let groqClient = null
@@ -147,7 +148,7 @@ Respond ONLY with a valid JSON object matching this structure:
   ]
 }`
 
-    console.log('🤖 Calling Groq AI...')
+    logger.info('Calling Groq AI for recommendations')
 
     let recommendations = null
 
@@ -161,20 +162,20 @@ Respond ONLY with a valid JSON object matching this structure:
       })
 
       const rawText = completion.choices[0]?.message?.content || ''
-      console.log('✅ Groq responded')
+      logger.info('Groq responded')
 
       const parsed = JSON.parse(rawText.trim())
       if (parsed && Array.isArray(parsed.recommendations)) {
         recommendations = parsed.recommendations
-        console.log('✅ AI recommendations parsed successfully')
+        logger.info('AI recommendations parsed successfully')
       }
     } catch (aiError) {
-      console.log('⚠️ Groq AI failed, using rule-based fallback:', aiError.message)
+      logger.warn({ err: aiError }, 'Groq AI failed, using rule-based fallback')
     }
 
     // Fallback to rule-based if AI fails
     if (!recommendations || recommendations.length === 0) {
-      console.log('📊 Using rule-based recommendation engine')
+      logger.info('Using rule-based recommendation engine')
       const scored = allProducts
         .map(product => ({ product, score: scoreProduct(product, { skinType, skinConcerns, hairType, hairConcerns, lookingFor, budget, occasion }) }))
         .sort((a, b) => b.score - a.score)
@@ -221,7 +222,7 @@ Respond ONLY with a valid JSON object matching this structure:
     res.json({ success: true, recommendations: validResults, source: 'groq-ai' })
 
   } catch (error) {
-    console.error('Recommendation error:', error.message)
+    logger.error({ err: error }, 'Recommendation error')
     res.status(500).json({ message: 'Failed to get recommendations' })
   }
 }

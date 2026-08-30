@@ -2,6 +2,7 @@ import Product from "../models/Product.js";
 import User from "../models/User.js";
 import Order from "../models/Order.js";
 import Groq from "groq-sdk";
+import logger from "../utils/logger.js";
 
 // ─────────────────────────────────────────
 //  SMART QUERY PARSER (No API needed)
@@ -343,7 +344,7 @@ export const semanticSearch = async (req, res) => {
       responseMs: Date.now() - start,
     });
   } catch (err) {
-    console.error("Search error:", err.message);
+    logger.error({ err }, "Search error");
     res.status(500).json({ message: err.message });
   }
 };

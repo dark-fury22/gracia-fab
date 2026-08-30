@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import { emailQueue, addToQueue } from "../queues/index.js";
 import { emailTemplates } from "../services/emailService.js";
+import logger from "../utils/logger.js";
 
 // Generate JWT Token
 const generateToken = (id) => {
@@ -94,7 +95,7 @@ export const getUserProfile = async (req, res) => {
       savedRecommendations: user.savedRecommendations || [],
     });
   } catch (error) {
-    console.error("getUserProfile error:", error.message);
+    logger.error({ err: error }, "getUserProfile error");
     res.status(500).json({ message: error.message });
   }
 };

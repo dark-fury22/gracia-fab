@@ -1,5 +1,7 @@
 import express from "express";
 import cors from "cors";
+import pinoHttp from "pino-http";
+import logger from "./utils/logger.js";
 import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import recommendRoutes from "./routes/recommendRoutes.js";
@@ -26,6 +28,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+
+// ── Structured request logging — every request gets a log line with
+// method, path, status code and response time.
+app.use(pinoHttp({ logger }));
 
 // Ensure public/uploads folder exists
 const uploadsDir = path.join(__dirname, "public/uploads");
@@ -108,12 +114,12 @@ app.post(
       .digest("hex");
 
     if (hash !== signature) {
-      console.log("❌ Invalid Paystack webhook signature");
+      logger.warn("Invalid Paystack webhook signature");
       return res.status(400).json({ message: "Invalid signature" });
     }
 
     const event = JSON.parse(req.body);
-    console.log("📩 Paystack webhook event:", event.event);
+    logger.info({ event: event.event }, "Paystack webhook event received");
 
     // Step 2: Handle the payment success event
     if (event.event === "charge.success") {
@@ -139,10 +145,10 @@ app.post(
             paidAt: event.data.paid_at,
           };
           await order.save();
-          console.log(`✅ Order ${order._id} marked as paid via webhook`);
+          logger.info({ orderId: order._id }, "Order marked as paid via webhook");
         }
       } catch (err) {
-        console.error("Webhook processing error:", err.message);
+        logger.error({ err }, "Webhook processing error");
       }
     }
 
@@ -201,7 +207,7 @@ ${productList}`;
         const result = await chat.sendMessage(message);
         reply = result.response.text();
       } catch (geminiErr) {
-        console.log("Chat Gemini failed, using Groq:", geminiErr.message);
+        logger.warn({ err: geminiErr }, "Chat Gemini failed, falling back to Groq");
       }
     }
 
@@ -249,7 +255,7 @@ ${productList}`;
 
     res.json({ reply, products: recommendedProducts });
   } catch (err) {
-    console.error("Chat error:", err.message);
+    logger.error({ err }, "Chat error");
     res.json({
       reply: "I'm having a quick break! Try again in a moment 💄",
       products: [],

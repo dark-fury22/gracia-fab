@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import logger from "../utils/logger.js";
 
 // Create email transporter
 // Using Gmail — go to Google Account → Security → App Passwords
@@ -8,7 +9,7 @@ const getTransporter = () => {
   if (transporter) return transporter;
 
   if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-    console.log("⚠️  No email credentials — emails will be logged only");
+    logger.warn("No email credentials — emails will be logged only");
     return null;
   }
 
@@ -27,7 +28,7 @@ export const sendEmail = async ({ to, subject, html }) => {
   const transport = getTransporter();
 
   if (!transport) {
-    console.log(`📧 [No Email] To: ${to} | Subject: ${subject}`);
+    logger.info({ to, subject }, "No email transport configured — email not sent");
     return;
   }
 
@@ -38,9 +39,9 @@ export const sendEmail = async ({ to, subject, html }) => {
       subject,
       html,
     });
-    console.log(`✅ Email sent to ${to}`);
+    logger.info({ to }, "Email sent");
   } catch (err) {
-    console.error(`❌ Email failed to ${to}:`, err.message);
+    logger.error({ err, to }, "Email failed");
     throw err; // Rethrow so BullMQ can retry
   }
 };

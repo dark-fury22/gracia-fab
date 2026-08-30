@@ -1,4 +1,5 @@
 import User from "../models/User.js";
+import logger from "../utils/logger.js";
 
 // Points rules
 const POINTS_RULES = {
@@ -42,10 +43,10 @@ export const awardPoints = async (userId, points, reason) => {
     user.loyaltyTier = getTier(totalEarned);
     await user.save();
 
-    console.log(`🏆 ${points} points awarded to ${user.name}: ${reason}`);
+    logger.info({ points, user: user.name, reason }, "Points awarded");
     return user.loyaltyPoints;
   } catch (err) {
-    console.error("awardPoints error:", err.message);
+    logger.error({ err }, "awardPoints error");
   }
 };
 

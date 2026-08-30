@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import Product from "../models/Product.js";
+import logger from "../utils/logger.js";
 
 let geminiClient = null;
 const getGemini = () => {
@@ -126,7 +127,7 @@ export const analyseSkin = async (req, res) => {
 
   for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
     try {
-      console.log(`🔬 Skin analysis attempt ${attempt}/${MAX_RETRIES}...`);
+      logger.info({ attempt, maxRetries: MAX_RETRIES }, "Skin analysis attempt");
 
       const model = gemini.getGenerativeModel({
         model: "gemini-2.0-flash",
@@ -153,7 +154,7 @@ Provide analysis based on values:
 
       const raw = result.response.text();
       const analysis = JSON.parse(raw.trim());
-      console.log("✅ Analysis complete:", analysis.detectedSkinType);
+      logger.info({ skinType: analysis.detectedSkinType }, "Skin analysis complete");
 
       // Find matching products
       const skinType = analysis.detectedSkinType || "normal";
@@ -195,17 +196,15 @@ Provide analysis based on values:
 
       if (is429 && attempt < MAX_RETRIES) {
         const waitSec = attempt * 10; // 10s, 20s
-        console.log(
-          `⏳ Rate limited. Waiting ${waitSec}s before retry ${attempt + 1}...`,
+        logger.warn(
+          { waitSec, attempt: attempt + 1 },
+          "Skin analysis rate limited, waiting before retry",
         );
         await sleep(waitSec * 1000);
         continue; // retry
       }
 
-      console.error(
-        `❌ Skin analysis failed (attempt ${attempt}):`,
-        err.message,
-      );
+      logger.error({ err, attempt }, "Skin analysis failed");
 
       if (attempt === MAX_RETRIES) {
         if (is429) {

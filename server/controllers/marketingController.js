@@ -2,6 +2,7 @@ import User from "../models/User.js";
 import Product from "../models/Product.js";
 import Groq from "groq-sdk";
 import { addToQueue, emailQueue } from "../queues/index.js";
+import logger from "../utils/logger.js";
 
 let groqClient = null;
 const getGroq = () => {
@@ -67,7 +68,7 @@ export const sendMarketingEmails = async () => {
       ],
     }).limit(50);
 
-    console.log(`📧 Processing ${users.length} users for marketing emails`);
+    logger.info({ userCount: users.length }, "Processing users for marketing emails");
     let sent = 0;
 
     for (const user of users) {
@@ -162,14 +163,14 @@ export const sendMarketingEmails = async () => {
         await user.save();
         sent++;
       } catch (userErr) {
-        console.error(`Email failed for ${user.email}:`, userErr.message);
+        logger.error({ err: userErr, email: user.email }, "Marketing email failed for user");
       }
     }
 
-    console.log(`✅ Queued ${sent} marketing emails`);
+    logger.info({ sent }, "Queued marketing emails");
     return sent;
   } catch (err) {
-    console.error("Marketing email batch error:", err.message);
+    logger.error({ err }, "Marketing email batch error");
     throw err;
   }
 };

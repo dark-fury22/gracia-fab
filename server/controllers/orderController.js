@@ -10,39 +10,7 @@ import {
   addToQueue,
 } from "../queues/index.js";
 import { emailTemplates } from "../services/emailService.js";
-
-// WhatsApp notification helper
-const sendWhatsAppNotification = async (phone, message) => {
-  try {
-    if (!phone) {
-      console.log("No phone number provided");
-      return;
-    }
-
-    // Remove non-numeric characters
-    const formattedPhone = phone.replace(/\D/g, "");
-
-    // Basic validation
-    if (formattedPhone.length < 10) {
-      console.log("Invalid phone number");
-      return;
-    }
-
-    console.log(`📱 WhatsApp to ${formattedPhone}: ${message}`);
-
-    /*
-    FUTURE REAL INTEGRATION:
-
-    await fetch('https://api.twilio.com/...', {
-      method: 'POST',
-      headers: {...},
-      body: JSON.stringify({...})
-    })
-    */
-  } catch (err) {
-    console.error("WhatsApp notification failed:", err.message);
-  }
-};
+import logger from "../utils/logger.js";
 
 // @desc   Create new order
 // @route  POST /api/orders
@@ -189,11 +157,11 @@ export const createOrder = async (req, res) => {
       });
     }
 
-    console.log("📦 Order created:", order._id);
+    logger.info({ orderId: order._id }, "Order created");
 
     res.status(201).json(order);
   } catch (error) {
-    console.error("createOrder error:", error);
+    logger.error({ err: error }, "createOrder error");
 
     res.status(500).json({
       message: error.message,
@@ -257,7 +225,10 @@ export const verifyPayment = async (req, res) => {
 
     const paystackData = await paystackRes.json();
 
-    console.log("PAYSTACK RESPONSE:", paystackData);
+    logger.info(
+      { status: paystackData?.status, reference: paystackData?.data?.reference },
+      "Paystack verify response received",
+    );
 
     // Check Paystack response
     if (!paystackData.status) {
@@ -316,11 +287,11 @@ export const verifyPayment = async (req, res) => {
       reason: `Purchase #${order._id.toString().slice(-8).toUpperCase()}`,
     });
 
-    console.log("ORDER PAID:", updatedOrder._id);
+    logger.info({ orderId: updatedOrder._id }, "Order marked as paid");
 
     res.json(updatedOrder);
   } catch (error) {
-    console.error("VERIFY PAYMENT ERROR:", error);
+    logger.error({ err: error }, "verifyPayment error");
 
     res.status(500).json({
       message: error.message,
@@ -429,7 +400,7 @@ export const updateOrderStatus = async (req, res) => {
       }
     }
 
-    console.log(`📦 Order ${order._id} → ${status}`);
+    logger.info({ orderId: order._id, status }, "Order status updated");
     res.json(order);
   } catch (error) {
     // This catches invalid transitions too

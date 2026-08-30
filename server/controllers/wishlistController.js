@@ -1,4 +1,5 @@
 import User from "../models/User.js";
+import logger from "../utils/logger.js";
 
 // @desc   Get user wishlist
 // @route  GET /api/wishlist
@@ -15,7 +16,7 @@ export const getWishlist = async (req, res) => {
 
     res.json(user.wishlist || []);
   } catch (error) {
-    console.error("getWishlist error:", error.message);
+    logger.error({ err: error }, "getWishlist error");
     res.status(500).json({ message: error.message });
   }
 };
@@ -46,7 +47,7 @@ export const addToWishlist = async (req, res) => {
 
     res.json({ message: "Added to wishlist ❤️", wishlist: user.wishlist });
   } catch (error) {
-    console.error("addToWishlist error:", error.message);
+    logger.error({ err: error }, "addToWishlist error");
     res.status(500).json({ message: error.message });
   }
 };
@@ -68,7 +69,7 @@ export const removeFromWishlist = async (req, res) => {
     await user.save();
     res.json({ message: "Removed from wishlist", wishlist: user.wishlist });
   } catch (error) {
-    console.error("removeFromWishlist error:", error.message);
+    logger.error({ err: error }, "removeFromWishlist error");
     res.status(500).json({ message: error.message });
   }
 };
@@ -79,8 +80,10 @@ export const saveRecommendation = async (req, res) => {
   try {
     const { profile, productIds, products } = req.body;
 
-    console.log("💾 Saving recommendation for user:", req.user._id);
-    console.log("📦 Product IDs received:", productIds);
+    logger.info(
+      { userId: req.user._id, productIds },
+      "Saving recommendation for user",
+    );
 
     const user = await User.findById(req.user._id);
     if (!user) return res.status(404).json({ message: "User not found" });
@@ -109,7 +112,7 @@ export const saveRecommendation = async (req, res) => {
     }
 
     await user.save();
-    console.log("✅ Recommendation saved successfully");
+    logger.info("Recommendation saved successfully");
 
     res.status(201).json({
       success: true,
@@ -117,7 +120,7 @@ export const saveRecommendation = async (req, res) => {
       count: user.savedRecommendations.length,
     });
   } catch (error) {
-    console.error("❌ saveRecommendation error:", error.message);
+    logger.error({ err: error }, "saveRecommendation error");
     res.status(500).json({ message: error.message });
   }
 };
@@ -153,7 +156,7 @@ export const getSavedRecommendations = async (req, res) => {
 
     res.json(recs);
   } catch (error) {
-    console.error("getSavedRecommendations error:", error.message);
+    logger.error({ err: error }, "getSavedRecommendations error");
     res.status(500).json({ message: error.message });
   }
 };

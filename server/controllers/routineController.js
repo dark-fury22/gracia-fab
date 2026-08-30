@@ -2,6 +2,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import Groq from "groq-sdk";
 import Product from "../models/Product.js";
 import User from "../models/User.js";
+import logger from "../utils/logger.js";
 
 // ── Lazy clients ──────────────────────────
 let geminiClient = null;
@@ -43,18 +44,19 @@ const callAI = async (prompt, schema = null, retries = 2) => {
         const model = gemini.getGenerativeModel(config);
         const result = await model.generateContent(prompt);
         const text = result.response.text();
-        console.log("✅ Gemini responded for routine");
+        logger.info("Gemini responded for routine");
         return text;
       } catch (err) {
         if (err.message?.includes("429") || err.status === 429) {
           // Rate limited — wait and retry
           const waitMs = (attempt + 1) * 5000; // 5s, 10s, 15s
-          console.log(
-            `⏳ Gemini rate limited. Waiting ${waitMs / 1000}s before retry ${attempt + 1}/${retries}...`,
+          logger.warn(
+            { waitMs, attempt: attempt + 1, retries },
+            "Gemini rate limited, waiting before retry",
           );
           if (attempt < retries) await sleep(waitMs);
         } else {
-          console.log("Gemini error, trying Groq:", err.message);
+          logger.warn({ err }, "Gemini error, trying Groq");
           break; // Non-rate-limit error → fall through to Groq immediately
         }
       }
@@ -65,7 +67,7 @@ const callAI = async (prompt, schema = null, retries = 2) => {
   const groq = getGroq();
   if (groq) {
     try {
-      console.log("🔄 Using Groq fallback for routine...");
+      logger.info("Using Groq fallback for routine");
       const config = {
         model: "llama-3.1-8b-instant",
         temperature: 0.4,
@@ -78,7 +80,7 @@ const callAI = async (prompt, schema = null, retries = 2) => {
       const completion = await groq.chat.completions.create(config);
       return completion.choices[0]?.message?.content || "";
     } catch (groqErr) {
-      console.error("Groq also failed:", groqErr.message);
+      logger.error({ err: groqErr }, "Groq also failed");
       throw new Error("Both AI services failed. Please try again in a moment.");
     }
   }
@@ -226,10 +228,10 @@ Response format must match the requested routine schema. Set productId and produ
       (routine.weeklyTreatments || []).map(enrichStep),
     );
 
-    console.log("✅ Routine generated successfully");
+    logger.info("Routine generated successfully");
     res.json({ routine, profile: { skinType, ageRange, concerns } });
   } catch (err) {
-    console.error("❌ generateRoutine error:", err.message);
+    logger.error({ err }, "generateRoutine error");
 
     if (err.message?.includes("rate") || err.message?.includes("429")) {
       return res.status(429).json({

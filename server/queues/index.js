@@ -1,5 +1,6 @@
 import { Queue } from "bullmq";
 import IORedis from "ioredis";
+import logger from "../utils/logger.js";
 
 // ── Create Redis connection
 // If no Redis URL, use a mock that just logs
@@ -9,7 +10,7 @@ const getConnection = () => {
   if (connection) return connection;
 
   if (!process.env.REDIS_URL) {
-    console.log("⚠️  No REDIS_URL found — queue jobs will be logged only");
+    logger.warn("No REDIS_URL found — queue jobs will be logged only");
     return null;
   }
 
@@ -19,10 +20,8 @@ const getConnection = () => {
     tls: {}, // Upstash requires TLS
   });
 
-  connection.on("connect", () => console.log("✅ Redis connected"));
-  connection.on("error", (err) =>
-    console.error("❌ Redis error:", err.message),
-  );
+  connection.on("connect", () => logger.info("Redis connected"));
+  connection.on("error", (err) => logger.error({ err }, "Redis error"));
 
   return connection;
 };
@@ -54,15 +53,15 @@ export const pointsQueue = createQueue("points");
 //    If queue is null, just run the job immediately
 export const addToQueue = async (queue, jobName, data, opts = {}) => {
   if (!queue) {
-    console.log(`📋 [No Queue] ${jobName}:`, JSON.stringify(data).slice(0, 80));
+    logger.info({ jobName, data }, "No queue configured — job not enqueued");
     return null;
   }
   try {
     const job = await queue.add(jobName, data, opts);
-    console.log(`📬 Queued "${jobName}" → job #${job.id}`);
+    logger.info({ jobName, jobId: job.id }, "Job queued");
     return job;
   } catch (err) {
-    console.error(`Queue add error for "${jobName}":`, err.message);
+    logger.error({ err, jobName }, "Queue add error");
     return null;
   }
 };

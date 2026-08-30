@@ -1,4 +1,5 @@
 import twilio from "twilio";
+import logger from "../utils/logger.js";
 
 // Initialize only if credentials exist
 let client = null;
@@ -27,8 +28,9 @@ const formatNigerianNumber = (phone) => {
 export const sendWhatsApp = async (phone, message) => {
   const wa = getClient();
   if (!wa) {
-    console.log(
-      `📱 WhatsApp (not configured) → ${phone}: ${message.slice(0, 50)}...`,
+    logger.info(
+      { phone, preview: message.slice(0, 50) },
+      "WhatsApp not configured — message not sent",
     );
     return;
   }
@@ -40,9 +42,9 @@ export const sendWhatsApp = async (phone, message) => {
       to,
       body: message,
     });
-    console.log(`✅ WhatsApp sent to ${phone}`);
+    logger.info({ phone }, "WhatsApp sent");
   } catch (err) {
-    console.error(`❌ WhatsApp failed to ${phone}:`, err.message);
+    logger.error({ err, phone }, "WhatsApp failed");
     // Don't crash the app — just log and continue
   }
 };

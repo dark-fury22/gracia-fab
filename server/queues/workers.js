@@ -9,12 +9,13 @@ import { sendEmail } from "../services/emailService.js";
 
 // Loyalty controller
 import { awardPoints } from "../controllers/loyaltyController.js";
+import logger from "../utils/logger.js";
 
 let workers = [];
 
 export const startWorkers = () => {
   if (!process.env.REDIS_URL) {
-    console.log("⚠️  No Redis — workers not started (jobs will be skipped)");
+    logger.warn("No Redis — workers not started (jobs will be skipped)");
     return;
   }
 
@@ -30,7 +31,7 @@ export const startWorkers = () => {
     "whatsapp",
     async (job) => {
       const { phone, message, type } = job.data;
-      console.log(`📱 Processing WhatsApp job #${job.id}: ${type}`);
+      logger.info({ jobId: job.id, type }, "Processing WhatsApp job");
       await sendWhatsApp(phone, message);
     },
     {
@@ -40,10 +41,10 @@ export const startWorkers = () => {
   );
 
   whatsappWorker.on("completed", (job) =>
-    console.log(`✅ WhatsApp job #${job.id} sent successfully`),
+    logger.info({ jobId: job.id }, "WhatsApp job sent successfully"),
   );
   whatsappWorker.on("failed", (job, err) =>
-    console.error(`❌ WhatsApp job #${job?.id} failed: ${err.message}`),
+    logger.error({ err, jobId: job?.id }, "WhatsApp job failed"),
   );
 
   // ── Email Worker
@@ -51,17 +52,17 @@ export const startWorkers = () => {
     "email",
     async (job) => {
       const { to, subject, html, type } = job.data;
-      console.log(`📧 Processing email job #${job.id}: ${type} → ${to}`);
+      logger.info({ jobId: job.id, type, to }, "Processing email job");
       await sendEmail({ to, subject, html });
     },
     { connection, concurrency: 5 },
   );
 
   emailWorker.on("completed", (job) =>
-    console.log(`✅ Email job #${job.id} sent`),
+    logger.info({ jobId: job.id }, "Email job sent"),
   );
   emailWorker.on("failed", (job, err) =>
-    console.error(`❌ Email job #${job?.id} failed: ${err.message}`),
+    logger.error({ err, jobId: job?.id }, "Email job failed"),
   );
 
   // ── Points Worker
@@ -69,20 +70,18 @@ export const startWorkers = () => {
     "points",
     async (job) => {
       const { userId, points, reason } = job.data;
-      console.log(
-        `🏆 Processing points job #${job.id}: +${points} for user ${userId}`,
-      );
+      logger.info({ jobId: job.id, points, userId }, "Processing points job");
       await awardPoints(userId, points, reason);
     },
     { connection, concurrency: 10 },
   );
 
   pointsWorker.on("failed", (job, err) =>
-    console.error(`❌ Points job #${job?.id} failed: ${err.message}`),
+    logger.error({ err, jobId: job?.id }, "Points job failed"),
   );
 
   workers = [whatsappWorker, emailWorker, pointsWorker];
-  console.log("🚀 Queue workers started (WhatsApp, Email, Points)");
+  logger.info("Queue workers started (WhatsApp, Email, Points)");
 };
 
 export const stopWorkers = async () => {

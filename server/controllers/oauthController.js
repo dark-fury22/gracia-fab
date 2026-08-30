@@ -1,6 +1,7 @@
 import { OAuth2Client } from 'google-auth-library'
 import jwt from 'jsonwebtoken'
 import User from '../models/User.js'
+import logger from '../utils/logger.js'
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
 
@@ -42,7 +43,7 @@ export const googleLogin = async (req, res) => {
     })
 
   } catch (error) {
-    console.error('Google auth error:', error.message)
+    logger.error({ err: error }, 'Google auth error')
     res.status(401).json({ message: 'Google authentication failed: ' + error.message })
   }
 }
@@ -83,7 +84,7 @@ export const facebookLogin = async (req, res) => {
     })
 
   } catch (error) {
-    console.error('Facebook auth error:', error.message)
+    logger.error({ err: error }, 'Facebook auth error')
     res.status(401).json({ message: 'Facebook authentication failed' })
   }
 }
