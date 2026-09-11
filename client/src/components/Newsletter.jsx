@@ -39,11 +39,14 @@ function Newsletter() {
   return (
     <section className="newsletter">
       <div className="newsletter-inner">
+        <div className="newsletter-watermark" aria-hidden="true">
+          GRACIA FAB
+        </div>
         <div className="newsletter-content">
-          <h2>Subscribe Newsletter 💌</h2>
+          <span className="newsletter-eyebrow">VIP PRIVILEGES</span>
+          <h2>Join the Glow Society</h2>
           <p>
-            Get the latest beauty tips, product launches and exclusive offers
-            straight to your inbox.
+            Unlock private wig drops, exclusive insider promotions, and personalized AI beauty guides delivered straight to your inbox.
           </p>
         </div>
 

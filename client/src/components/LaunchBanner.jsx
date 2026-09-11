@@ -4,6 +4,14 @@ import "./LaunchBanner.css";
 function LaunchBanner() {
   return (
     <section className="launch-banner">
+      <img
+        className="launch-bg-img"
+        src="https://i.pinimg.com/736x/99/fe/33/99fe338260c364d0bff6d73aa6ee389b.jpg"
+        alt=""
+        aria-hidden="true"
+      />
+      <div className="launch-scrim" />
+
       <div className="launch-inner">
         <div className="launch-content">
           <span className="launch-eyebrow">Ultimate Bundles</span>
@@ -21,20 +29,6 @@ function LaunchBanner() {
           <Link to="/products?category=bridal" className="launch-btn">
             Check details →
           </Link>
-        </div>
-
-        <div className="launch-visual">
-          <div className="launch-product-orbit">
-            <img
-              src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=500&h=500&fit=crop"
-              alt="Beauty Product"
-              className="launch-product-img"
-            />
-            <div className="launch-orbit-ring" />
-            <div className="launch-orbit-dot launch-dot-1">✦</div>
-            <div className="launch-orbit-dot launch-dot-2">💎</div>
-            <div className="launch-orbit-dot launch-dot-3">🌸</div>
-          </div>
         </div>
       </div>
     </section>

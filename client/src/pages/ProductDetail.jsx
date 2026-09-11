@@ -71,10 +71,26 @@ function ProductDetail({ onCartOpen }) {
   };
 
   if (loading)
-    return <p style={{ textAlign: "center", marginTop: "5rem" }}>Loading...</p>;
+    return (
+      <p
+        style={{
+          textAlign: "center",
+          marginTop: "5rem",
+          color: "var(--text-muted)",
+        }}
+      >
+        Loading…
+      </p>
+    );
   if (!product)
     return (
-      <p style={{ textAlign: "center", marginTop: "5rem" }}>
+      <p
+        style={{
+          textAlign: "center",
+          marginTop: "5rem",
+          color: "var(--text-muted)",
+        }}
+      >
         Product not found
       </p>
     );
@@ -145,7 +161,7 @@ function ProductDetail({ onCartOpen }) {
                 ? "Sold Out"
                 : added
                   ? "✅ Added to Bag!"
-                  : "Add to Bag"}
+                  : "Add to Bag →"}
             </button>
           </div>
         </div>

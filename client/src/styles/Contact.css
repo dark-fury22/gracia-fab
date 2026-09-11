@@ -7,7 +7,7 @@
 }
 
 [data-theme="light"] .contact-header-section {
-  background: linear-gradient(135deg, #FFF0F5 0%, #FFFFFF 100%);
+  background: linear-gradient(135deg, var(--blush) 0%, var(--surface) 100%);
 }
 
 [data-theme="dark"] .contact-header-section {
@@ -33,7 +33,7 @@
   line-height: 1.1;
 }
 
-.contact-header-section h1 em { color: var(--accent); }
+.contact-header-section h1 em { color: var(--accent); font-style: italic; }
 
 .contact-header-section p {
   font-size: 0.9rem;
@@ -58,6 +58,7 @@
   border: 1px solid var(--border-soft);
   border-radius: var(--radius-xl);
   padding: 2.5rem;
+  box-shadow: var(--shadow-sm);
 }
 
 .contact-form-card h2 {
@@ -104,8 +105,8 @@
 [data-theme="light"] .contact-field input,
 [data-theme="light"] .contact-field select,
 [data-theme="light"] .contact-field textarea {
-  background: #FFF5F8;
-  border-color: rgba(232,69,122,0.12);
+  background: var(--surface-2);
+  border-color: var(--border-soft);
 }
 
 .contact-field input::placeholder,
@@ -149,22 +150,27 @@
 
 .contact-info-card {
   background: var(--surface);
-  border: 1px solid var(--border-soft);
+  border: none;
   border-radius: var(--radius-lg);
   padding: 1.5rem;
-  transition: transform var(--duration-lg) var(--ease),
-    border-color var(--duration) var(--ease);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--duration-lg) var(--ease);
 }
 
 .contact-info-card:hover {
   transform: translateY(-3px);
-  border-color: var(--accent);
 }
 
 .contact-info-icon {
-  font-size: 1.5rem;
-  display: block;
-  margin-bottom: 0.75rem;
+  font-size: 1.2rem;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--blush);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.85rem;
 }
 
 .contact-info-card h3 {
@@ -302,7 +308,6 @@
 
 .contact-info-link:hover {
   transform: translateY(-4px);
-  border-color: var(--accent) !important;
   box-shadow: var(--shadow-md);
 }
 

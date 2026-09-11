@@ -1,0 +1,974 @@
+/* ═════════════════════════════════════════════════════════════════════════
+   GRACIA FAB — "BEAUTY REDEFINED" SERVICES & SKINCARE (Matching Sample)
+   ═════════════════════════════════════════════════════════════════════════ */
+
+.services-page {
+  background: var(--bg, #FBF3E7);
+  color: var(--text, #1A1412);
+  overflow-x: hidden;
+}
+
+/* ═════════════════════════════════════════════════════════════════════
+   1. FLUTED GLASSMORPHIC HERO
+   ═════════════════════════════════════════════════════════════════════ */
+.beauty-redefined-hero {
+  position: relative;
+  min-height: 85vh;
+  background: linear-gradient(110deg, #3A121F 0%, #52182B 35%, #7D2644 65%, #A83C62 100%);
+  color: #FFFFFF;
+  padding: 2.5rem 3rem 5rem;
+  overflow: hidden;
+}
+
+/* Vertical fluted architectural wall pattern */
+.fluted-wall-texture {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.02) 0px,
+    rgba(255, 255, 255, 0.02) 28px,
+    rgba(0, 0, 0, 0.16) 28px,
+    rgba(0, 0, 0, 0.16) 56px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Radiant rose-magenta glow spot */
+.hero-magenta-glow {
+  position: absolute;
+  top: 15%;
+  right: 15%;
+  width: 650px;
+  height: 650px;
+  background: radial-gradient(circle, rgba(238, 114, 157, 0.42) 0%, rgba(168, 60, 98, 0.15) 55%, transparent 75%);
+  filter: blur(40px);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.beauty-hero-container {
+  position: relative;
+  max-width: 1360px;
+  margin: 0 auto;
+  z-index: 2;
+}
+
+/* Top bar with capsule navigation pill & lotus */
+.beauty-hero-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 3.5rem;
+}
+
+.beauty-capsule-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(45, 18, 28, 0.6);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  padding: 0.35rem 0.5rem;
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.capsule-nav-item {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.84rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  padding: 0.45rem 1.1rem;
+  border-radius: 20px;
+  transition: all 0.2s ease;
+}
+
+.capsule-nav-item:hover {
+  color: #FFFFFF;
+}
+
+.capsule-nav-item.active {
+  background: rgba(255, 255, 255, 0.22);
+  color: #FFFFFF;
+  font-weight: 700;
+}
+
+.beauty-lotus-emblem {
+  color: #F8B4CB;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 0 10px rgba(248, 180, 203, 0.5));
+}
+
+/* Main Content Split */
+.beauty-hero-content-split {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+.beauty-hero-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.beauty-redefined-title {
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: clamp(3.4rem, 6.5vw, 5.6rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: #FFFFFF;
+  margin: 0 0 1.4rem 0;
+}
+
+.title-gradient-glow {
+  background: linear-gradient(135deg, #FFFFFF 0%, #F8B4CB 50%, #EE729D 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 18px rgba(238, 114, 157, 0.45));
+}
+
+.beauty-redefined-tagline {
+  font-family: 'DM Sans', sans-serif;
+  font-size: clamp(1.1rem, 2vw, 1.4rem);
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0 0 2.5rem 0;
+  max-width: 480px;
+  line-height: 1.5;
+}
+
+/* Action Row: Pill Button + Social Proof */
+.beauty-hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 3.5rem;
+  flex-wrap: wrap;
+}
+
+.btn-discover-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.2rem;
+  background: linear-gradient(135deg, #DE5788 0%, #C93E72 100%);
+  color: #FFFFFF;
+  text-decoration: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  padding: 0.75rem 0.85rem 0.75rem 1.8rem;
+  border-radius: 40px;
+  box-shadow: 0 8px 25px rgba(222, 87, 136, 0.45);
+  transition: all 0.25s ease;
+}
+
+.btn-discover-more:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(222, 87, 136, 0.6);
+}
+
+.discover-arrow-circle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  color: #C93E72;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.beauty-social-proof {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.avatar-cluster {
+  display: flex;
+  align-items: center;
+}
+
+.avatar-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #FFFFFF;
+  margin-left: -10px;
+}
+
+.avatar-img:first-child {
+  margin-left: 0;
+}
+
+.social-proof-text {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.35;
+}
+
+/* Floating Glassmorphic Cards Matching Sample */
+.beauty-hero-floating-cards {
+  display: flex;
+  align-items: stretch;
+  gap: 1.4rem;
+}
+
+.glass-card-products {
+  position: relative;
+  width: 170px;
+  height: 170px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.glass-card-product-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.glass-card-shine {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.glass-card-stat {
+  position: relative;
+  min-width: 220px;
+  background: rgba(55, 20, 32, 0.55);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 1.4rem 1.6rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+}
+
+.stat-pill-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(255, 255, 255, 0.14);
+  padding: 0.35rem 0.8rem;
+  border-radius: 20px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: #FFFFFF;
+  width: fit-content;
+}
+
+.stat-number {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  line-height: 1;
+  margin-top: 0.4rem;
+}
+
+.stat-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.85);
+  margin-top: 0.2rem;
+}
+
+.stat-action-arrow {
+  position: absolute;
+  bottom: 1.2rem;
+  left: 1.4rem;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  color: #7D2644;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: bold;
+  text-decoration: none;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.stat-action-arrow:hover {
+  transform: translateX(3px);
+  background: #FFFFFF;
+}
+
+/* Right Model Visual */
+.beauty-hero-right {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.radiant-model-frame {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  height: 640px;
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
+}
+
+.radiant-model-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
+.model-soft-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, transparent 55%, rgba(45, 15, 25, 0.35) 100%);
+  pointer-events: none;
+}
+
+/* ═════════════════════════════════════════════════════════════════════
+   2. SERVICES SUITE SECTION
+   ═════════════════════════════════════════════════════════════════════ */
+.services-suite-section {
+  padding: 6.5rem 3rem;
+  background: #F8EFE4;
+}
+
+[data-theme="dark"] .services-suite-section {
+  background: #201416;
+}
+
+.services-suite-container {
+  max-width: 1320px;
+  margin: 0 auto;
+}
+
+.services-suite-header {
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto 4rem;
+}
+
+.services-eyebrow {
+  display: inline-block;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #C1652F;
+  margin-bottom: 0.8rem;
+}
+
+.services-suite-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(2.2rem, 3.8vw, 3.2rem);
+  font-weight: 600;
+  color: #1A1412;
+  margin: 0 0 0.8rem 0;
+}
+
+[data-theme="dark"] .services-suite-title {
+  color: #FBF3E7;
+}
+
+.services-suite-sub {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1.05rem;
+  color: #6E5D57;
+  line-height: 1.65;
+}
+
+[data-theme="dark"] .services-suite-sub {
+  color: #BDB3AE;
+}
+
+.services-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.8rem;
+}
+
+.service-feature-card {
+  position: relative;
+  background: #FFFFFF;
+  border-radius: 18px;
+  padding: 2.4rem 1.8rem;
+  border: 1px solid rgba(122, 36, 50, 0.08);
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+[data-theme="dark"] .service-feature-card {
+  background: #2A1D20;
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+.service-feature-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 36px rgba(122, 36, 50, 0.12);
+}
+
+.service-feature-card.highlighted {
+  border: 1.5px solid #C1652F;
+  background: #FFFDF9;
+}
+
+[data-theme="dark"] .service-feature-card.highlighted {
+  background: #332025;
+}
+
+.service-card-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #C1652F;
+  margin-bottom: 0.5rem;
+}
+
+.service-card-icon {
+  font-size: 2.2rem;
+  margin-bottom: 1rem;
+}
+
+.service-card-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1A1412;
+  margin: 0 0 0.8rem 0;
+  line-height: 1.3;
+}
+
+[data-theme="dark"] .service-card-title {
+  color: #FBF3E7;
+}
+
+.service-card-desc {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem;
+  color: #6E5D57;
+  line-height: 1.6;
+  margin: 0 0 1.5rem 0;
+  flex: 1;
+}
+
+[data-theme="dark"] .service-card-desc {
+  color: #BDB3AE;
+}
+
+.service-card-meta {
+  display: flex;
+  justify-content: space-between;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: #7A2432;
+  padding-bottom: 1.2rem;
+  border-bottom: 1px solid rgba(122, 36, 50, 0.08);
+  margin-bottom: 1.2rem;
+}
+
+[data-theme="dark"] .service-card-meta {
+  color: #E8A882;
+}
+
+.service-card-link {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #7A2432;
+  text-decoration: none;
+  transition: color 0.2s ease, transform 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+}
+
+.service-card-link:hover {
+  color: #C1652F;
+  transform: translateX(3px);
+}
+
+/* ═════════════════════════════════════════════════════════════════════
+   3. CLINICAL METRICS SECTION
+   ═════════════════════════════════════════════════════════════════════ */
+.clinical-metrics-section {
+  background: #1A1214;
+  color: #FFFFFF;
+  padding: 4.5rem 3rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.clinical-metrics-container {
+  max-width: 1240px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2.5rem;
+  text-align: center;
+}
+
+.metric-val {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.4rem, 4vw, 3.5rem);
+  font-weight: 700;
+  color: #F8B4CB;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.metric-txt {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  color: #BDB3AE;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ═════════════════════════════════════════════════════════════════════
+   4. CURATED CLINICAL SKINCARE SHELF
+   ═════════════════════════════════════════════════════════════════════ */
+.skincare-shelf-section {
+  padding: 6.5rem 3rem;
+  background: var(--bg, #FBF3E7);
+}
+
+.skincare-shelf-container {
+  max-width: 1320px;
+  margin: 0 auto;
+}
+
+.skincare-shelf-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 3.5rem;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.skincare-shelf-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.2rem, 3.5vw, 3rem);
+  font-weight: 600;
+  color: #1A1412;
+  margin: 0.5rem 0 0 0;
+}
+
+[data-theme="dark"] .skincare-shelf-title {
+  color: #FBF3E7;
+}
+
+.shelf-view-all {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #7A2432;
+  text-decoration: none;
+}
+
+.shelf-view-all:hover {
+  color: #C1652F;
+}
+
+.skincare-products-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+}
+
+.clinical-item-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.clinical-item-media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #F3D9DC;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+}
+
+.clinical-item-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.clinical-item-card:hover .clinical-item-media img {
+  transform: scale(1.06);
+}
+
+.clinical-add-btn {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(26, 20, 18, 0.92);
+  backdrop-filter: blur(8px);
+  color: #FFFFFF;
+  border: none;
+  padding: 0.85rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transform: translateY(100%);
+  transition: transform 0.3s ease, background-color 0.2s ease;
+}
+
+.clinical-item-card:hover .clinical-add-btn {
+  transform: translateY(0);
+}
+
+.clinical-add-btn:hover {
+  background: #7A2432;
+}
+
+.clinical-item-info {
+  padding: 1rem 0.2rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.clinical-item-benefit {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.74rem;
+  color: #C1652F;
+  font-weight: 600;
+}
+
+.clinical-item-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #1A1412;
+  margin: 0;
+  line-height: 1.35;
+}
+
+[data-theme="dark"] .clinical-item-title {
+  color: #FBF3E7;
+}
+
+.clinical-item-price-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.2rem;
+}
+
+.clinical-item-price {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #7A2432;
+}
+
+[data-theme="dark"] .clinical-item-price {
+  color: #E8A882;
+}
+
+.clinical-item-stars {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #C1652F;
+}
+
+/* ═════════════════════════════════════════════════════════════════════
+   5. CONSULTATION BOOKING SECTION
+   ═════════════════════════════════════════════════════════════════════ */
+.booking-section {
+  background: #1A1214;
+  color: #FFFFFF;
+  padding: 6.5rem 3rem;
+}
+
+.booking-container {
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+.booking-inner-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  gap: 5rem;
+  align-items: center;
+}
+
+.services-eyebrow-light {
+  display: inline-block;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #F8B4CB;
+  margin-bottom: 0.8rem;
+}
+
+.booking-col-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.2rem, 3.6vw, 3rem);
+  font-weight: 600;
+  color: #FFFFFF;
+  margin: 0 0 1.2rem 0;
+  line-height: 1.2;
+}
+
+.booking-col-desc {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1.05rem;
+  color: #BDB3AE;
+  line-height: 1.7;
+  margin-bottom: 2.5rem;
+}
+
+.booking-perks {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.perk-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.perk-item span {
+  color: #C1652F;
+  font-size: 1.1rem;
+  line-height: 1.4;
+}
+
+.perk-item p {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.92rem;
+  color: #DDD2CC;
+  margin: 0;
+}
+
+.booking-form-col {
+  background: #241618;
+  padding: 3rem;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+}
+
+.form-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin: 0 0 1.8rem 0;
+}
+
+.booking-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.form-row-dual {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.form-group label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #DDD2CC;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #FFFFFF;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: #DE5788;
+}
+
+.form-group select option {
+  background: #241618;
+  color: #FFFFFF;
+}
+
+.btn-submit-booking {
+  background: linear-gradient(135deg, #DE5788 0%, #C93E72 100%);
+  color: #FFFFFF;
+  border: none;
+  padding: 0.95rem 2rem;
+  border-radius: 30px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 0.6rem;
+  transition: all 0.25s ease;
+  box-shadow: 0 6px 20px rgba(222, 87, 136, 0.35);
+}
+
+.btn-submit-booking:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(222, 87, 136, 0.5);
+}
+
+.booking-success-box {
+  text-align: center;
+  padding: 2.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.success-icon {
+  font-size: 2.8rem;
+}
+
+.booking-success-box h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+.booking-success-box p {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  color: #BDB3AE;
+  line-height: 1.6;
+  max-width: 420px;
+  margin: 0;
+}
+
+.btn-book-another {
+  background: transparent;
+  color: #F8B4CB;
+  border: 1px solid rgba(248, 180, 203, 0.4);
+  padding: 0.65rem 1.6rem;
+  border-radius: 24px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 0.8rem;
+}
+
+/* ═════════════════════════════════════════════════════════════════════
+   RESPONSIVENESS
+   ═════════════════════════════════════════════════════════════════════ */
+@media (max-width: 1100px) {
+  .services-cards-grid,
+  .skincare-products-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .clinical-metrics-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .beauty-hero-content-split,
+  .booking-inner-grid {
+    grid-template-columns: 1fr;
+    gap: 3.5rem;
+  }
+
+  .beauty-redefined-hero {
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  .radiant-model-frame {
+    height: 440px;
+    margin: 0 auto;
+  }
+
+  .services-suite-section,
+  .clinical-metrics-section,
+  .skincare-shelf-section,
+  .booking-section {
+    padding: 4.5rem 1.5rem;
+  }
+
+  .booking-form-col {
+    padding: 2rem 1.5rem;
+  }
+
+  .form-row-dual {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .beauty-hero-floating-cards {
+    flex-direction: column;
+  }
+
+  .glass-card-products {
+    width: 100%;
+    height: 180px;
+  }
+
+  .services-cards-grid,
+  .skincare-products-grid,
+  .clinical-metrics-container {
+    grid-template-columns: 1fr;
+  }
+}

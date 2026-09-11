@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import PhotoUpload from "../components/PhotoUpload";
+import SEO from "../components/SEO";
 import API_URL from "../config";
 import "../styles/SkinAnalysis.css";
 
@@ -183,6 +184,11 @@ function SkinAnalysis({ onCartOpen }) {
 
   return (
     <>
+      <SEO
+        title="AI Skin Analysis"
+        description="Upload a selfie and let Gracia Fab's AI analyse your skin concerns and recommend the right products."
+        url="/skin-analysis"
+      />
       <Navbar onCartOpen={onCartOpen} />
       <div className="skin-analysis-page">
         {/* Hero header */}

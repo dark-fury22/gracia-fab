@@ -1,0 +1,110 @@
+.dual-banners-section {
+  padding: 5.5rem 2rem 0;
+  background: var(--bg);
+  position: relative;
+  overflow: hidden;
+}
+
+.dual-banners-inner {
+  max-width: 1200px;
+  margin: 0 auto 3rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+  position: relative;
+  z-index: 2;
+}
+
+.dual-card {
+  padding: 3rem 2.5rem;
+  border-radius: var(--radius-xl);
+  background: var(--surface);
+  border: 1.5px solid var(--border-soft);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  transition: transform var(--duration) var(--ease), box-shadow var(--duration) var(--ease), border-color var(--duration);
+}
+
+.dual-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--accent);
+}
+
+.dual-card-eyebrow {
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+  margin-bottom: 0.8rem;
+  display: block;
+}
+
+.dual-card h3 {
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  color: var(--text);
+  margin-bottom: 0.85rem;
+}
+
+.dual-card p {
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  flex: 1;
+}
+
+.dual-card-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.85rem 1.6rem;
+  background: var(--accent);
+  color: #FFFFFF;
+  border-radius: var(--radius-md);
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-decoration: none;
+  align-self: flex-start;
+  transition: all var(--duration) var(--ease);
+}
+
+.dual-card-btn:hover {
+  background: var(--accent-hover);
+  transform: translateX(3px);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ── Signature Arched Graphic Motif (Sample Benchmark) ── */
+.dual-arch-wrap {
+  width: 100%;
+  max-width: 860px;
+  height: 90px;
+  margin: 0 auto;
+  overflow: hidden;
+  position: relative;
+}
+
+.dual-arch-shape {
+  width: 100%;
+  height: 180px;
+  background: var(--accent);
+  border-radius: 50% 50% 0 0;
+  opacity: 0.85;
+}
+
+[data-theme="dark"] .dual-arch-shape {
+  background: var(--accent);
+  opacity: 0.45;
+}
+
+@media (max-width: 800px) {
+  .dual-banners-inner {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .dual-card {
+    padding: 2.2rem 1.75rem;
+  }
+}

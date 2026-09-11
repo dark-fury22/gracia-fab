@@ -62,7 +62,7 @@
 }
 
 .deal-skeleton {
-  height: 400px;
+  aspect-ratio: 3 / 4;
   background: var(--surface-2);
   border-radius: var(--radius-xl);
   animation: shimmer 1.5s infinite;
@@ -80,21 +80,16 @@
   100% { background-position: -200% 0; }
 }
 
-/* Deal Card */
+/* Deal Card — full-bleed image with overlaid caption (Regirl-style) */
 .deal-card {
-  background: var(--surface);
-  border: 1px solid var(--border-soft);
-  border-radius: var(--radius-xl);
-  padding: 1.5rem;
   position: relative;
+  border-radius: var(--radius-xl);
   overflow: hidden;
+  aspect-ratio: 3 / 4;
+  cursor: pointer;
   transition: transform var(--duration-lg) var(--ease),
     box-shadow var(--duration-lg) var(--ease);
-  cursor: pointer;
-}
-
-[data-theme="light"] .deal-card {
-  box-shadow: 0 4px 20px rgba(232,69,122,0.06);
+  box-shadow: var(--shadow-sm);
 }
 
 .deal-card:hover {
@@ -116,38 +111,9 @@
   z-index: 2;
 }
 
-[data-theme="dark"] .deal-badge {
-  color: var(--black);
-}
-
-/* Circular image */
-.deal-img-wrapper {
-  width: 180px;
-  height: 180px;
-  border-radius: 50%;
-  overflow: hidden;
-  margin: 1.5rem auto 1.5rem;
-  border: 4px solid var(--surface-2);
-  transition: border-color var(--duration) var(--ease),
-    transform var(--duration-lg) var(--ease);
-}
-
-[data-theme="light"] .deal-img-wrapper {
-  border-color: var(--peach, #EDAF97);
-  box-shadow: 0 8px 24px rgba(254,147,140,0.2);
-}
-
-[data-theme="dark"] .deal-img-wrapper {
-  border-color: rgba(252,163,17,0.2);
-  box-shadow: 0 8px 24px rgba(252,163,17,0.1);
-}
-
-.deal-card:hover .deal-img-wrapper {
-  transform: scale(1.04);
-  border-color: var(--accent);
-}
-
 .deal-img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -156,44 +122,48 @@
 
 .deal-card:hover .deal-img { transform: scale(1.08); }
 
-.deal-info { text-align: center; }
+.deal-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 45%, rgba(36,19,16,0.85) 100%);
+}
+
+.deal-info {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 1.25rem;
+  z-index: 2;
+}
 
 .deal-category {
-  font-size: 0.65rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: rgba(255,255,255,0.75);
 }
 
 .deal-info h3 {
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: 700;
-  color: var(--text);
-  margin: 0.4rem 0 0.5rem;
+  color: #FFFFFF;
+  margin: 0.3rem 0 0.6rem;
   font-family: var(--font-display);
   font-style: italic;
-}
-
-.deal-desc {
-  font-size: 0.78rem;
-  color: var(--text-muted);
-  line-height: 1.6;
-  margin-bottom: 1rem;
 }
 
 .deal-bottom {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: 0.85rem;
-  border-top: 1px solid var(--border-soft);
 }
 
 .deal-price {
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 700;
-  color: var(--accent);
+  color: #FFFFFF;
   font-family: var(--font-mono);
 }
 
@@ -201,10 +171,11 @@
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: var(--accent);
+  background: var(--accent-2);
   border: none;
   font-size: 1.1rem;
   font-weight: 700;
+  color: #FFFFFF;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -213,9 +184,6 @@
   flex-shrink: 0;
 }
 
-[data-theme="light"] .deal-cart-btn { color: white; }
-[data-theme="dark"] .deal-cart-btn { color: var(--black); }
-
 .deal-cart-btn:hover {
   background: var(--accent-hover);
   transform: scale(1.1);
@@ -223,11 +191,12 @@
 
 @media (max-width: 768px) {
   .trending-deals { padding: 3rem 1.5rem; }
-  .trending-grid { grid-template-columns: 1fr; gap: 1rem; }
+  .trending-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
   .trending-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
-  .deal-img-wrapper { width: 140px; height: 140px; }
 }
 
 @media (max-width: 480px) {
-  .trending-grid { grid-template-columns: repeat(2, 1fr); }
+  .trending-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+  .deal-info { padding: 0.85rem; }
+  .deal-info h3 { font-size: 0.92rem; }
 }

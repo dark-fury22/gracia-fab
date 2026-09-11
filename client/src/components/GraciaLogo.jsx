@@ -1,18 +1,57 @@
 import { useTheme } from "../hooks/useTheme";
 
-function GraciaLogo({ size = "md", showText = true }) {
+function GraciaLogo({ size = "md", showText = true, variant = "default" }) {
   const { theme } = useTheme();
   const sizes = {
-    xs: { icon: 32, text: 0 },
-    sm: { icon: 38, text: 11 },
-    md: { icon: 48, text: 13 },
-    lg: { icon: 64, text: 17 },
+    xs: { icon: 28, text: 12, wordmark: 16 },
+    sm: { icon: 34, text: 13, wordmark: 20 },
+    md: { icon: 44, text: 15, wordmark: 25 },
+    lg: { icon: 56, text: 18, wordmark: 32 },
   };
 
   const s = sizes[size] || sizes.md;
-  const accent = theme === "dark" ? "#FCA311" : "#FE938C";
-  const alt = theme === "dark" ? "#E59310" : "#C49792";
-  const text1 = theme === "dark" ? "#FFFFFF" : "#2C1810";
+  const accent = theme === "dark" ? "#FCA311" : "#7A2432";
+  const alt = theme === "dark" ? "#E59310" : "#C1652F";
+  const text1 = theme === "dark" ? "#FFFFFF" : "#241310";
+
+  if (variant === "editorial") {
+    return (
+      <div
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 2,
+          flexShrink: 0,
+          textDecoration: "none",
+          userSelect: "none",
+        }}
+      >
+        <span
+          style={{
+            fontFamily: "'Playfair Display', Georgia, serif",
+            fontWeight: 700,
+            fontSize: s.wordmark,
+            color: accent,
+            letterSpacing: "-0.01em",
+            lineHeight: 1,
+          }}
+        >
+          Gracia Fab
+        </span>
+        <span
+          style={{
+            color: accent,
+            fontSize: s.wordmark * 0.6,
+            lineHeight: 1,
+            marginBottom: s.wordmark * 0.35,
+            fontWeight: 700,
+          }}
+        >
+          ✦
+        </span>
+      </div>
+    );
+  }
 
   return (
     <div

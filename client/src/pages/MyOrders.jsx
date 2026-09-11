@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import SEO from "../components/SEO";
 import { useAuth } from "../hooks/useAuth";
 import "../styles/Orders.css";
 import API_URL from "../config";
@@ -52,6 +53,11 @@ function MyOrders() {
 
   return (
     <>
+      <SEO
+        title="My Orders"
+        description="Track and view your Gracia Fab order history."
+        url="/my-orders"
+      />
       <Navbar />
       <div className="orders-page">
         <h1>My Orders 📦</h1>

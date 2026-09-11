@@ -10,7 +10,9 @@ import CartDrawer from "./components/CartDrawer";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import VerifyCode from "./pages/VerifyCode";
 import About from "./pages/About";
+import Services from "./pages/Services";
 import Contact from "./pages/Contact";
 import ProductsLayout from "./pages/ProductsLayout";
 import ProductDetail from "./pages/ProductDetail";
@@ -26,11 +28,11 @@ import BackToTop from "./components/BackToTop";
 import InstallPrompt from "./components/InstallPrompt";
 import BeautyLanding from "./pages/BeautyLanding";
 import SkinToneDetector from "./components/SkinToneDetector";
-import VirtualTryOn from "./components/VirtualTryOn";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import SkinAnalysis from "./pages/SkinAnalysis";
 import RoutineGenerator from "./pages/RoutineGenerator";
+import AiConciergeChat from "./components/AiConciergeChat";
 
 // Wrapper pages
 function SkinToneDetectorPage({ onCartOpen }) {
@@ -38,16 +40,6 @@ function SkinToneDetectorPage({ onCartOpen }) {
     <>
       <Navbar onCartOpen={onCartOpen} />
       <SkinToneDetector />
-      <Footer />
-    </>
-  );
-}
-
-function VirtualTryOnPage({ onCartOpen }) {
-  return (
-    <>
-      <Navbar onCartOpen={onCartOpen} />
-      <VirtualTryOn />
       <Footer />
     </>
   );
@@ -111,6 +103,10 @@ function App() {
               <Login />
             </PublicOnlyRoute>
           }
+        />
+        <Route
+          path="/verify-code"
+          element={<VerifyCode />}
         />
         <Route
           path="/register"
@@ -180,21 +176,14 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route path="/about" element={<About onCartOpen={openCart} />} />
         <Route
-          path="/about"
-          element={
-            <ProtectedRoute>
-              <About onCartOpen={openCart} />
-            </ProtectedRoute>
-          }
+          path="/services"
+          element={<Services onCartOpen={openCart} />}
         />
         <Route
           path="/contact"
-          element={
-            <ProtectedRoute>
-              <Contact onCartOpen={openCart} />
-            </ProtectedRoute>
-          }
+          element={<Contact onCartOpen={openCart} />}
         />
         <Route
           path="/beauty/:slug"
@@ -223,14 +212,6 @@ function App() {
           }
         />
         <Route
-          path="/virtual-tryon"
-          element={
-            <ProtectedRoute>
-              <VirtualTryOnPage onCartOpen={openCart} />
-            </ProtectedRoute>
-          }
-        />
-        <Route
           path="/skin-analysis"
           element={
             <ProtectedRoute>
@@ -251,6 +232,7 @@ function App() {
       </Routes>
       <BackToTop />
       <InstallPrompt />
+      <AiConciergeChat onCartOpen={openCart} />
     </Router>
   );
 }

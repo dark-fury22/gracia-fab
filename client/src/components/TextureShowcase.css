@@ -1,0 +1,171 @@
+.texture-section {
+  padding: 5.5rem 2rem;
+  background: var(--bg);
+}
+
+.texture-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.texture-header {
+  text-align: center;
+  max-width: 620px;
+  margin: 0 auto 3.5rem;
+}
+
+.texture-eyebrow {
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.texture-header h2 {
+  font-size: clamp(1.8rem, 3.2vw, 2.6rem);
+  color: var(--text);
+  margin-bottom: 0.8rem;
+}
+
+.texture-header p {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
+
+.texture-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.texture-card {
+  background: var(--surface);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  border: 1.5px solid var(--border-soft);
+  transition: transform var(--duration) var(--ease), box-shadow var(--duration) var(--ease), border-color var(--duration);
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.texture-card:hover,
+.texture-card.active {
+  transform: translateY(-6px);
+  border-color: var(--accent);
+  box-shadow: var(--shadow-md);
+}
+
+.texture-img-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3/4;
+  overflow: hidden;
+  background: var(--bg-2);
+}
+
+.texture-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s var(--ease) !important;
+}
+
+.texture-card:hover .texture-img-wrap img {
+  transform: scale(1.05);
+}
+
+.texture-badge {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: rgba(36, 19, 16, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #FFFFFF;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.4rem 0.85rem;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.texture-overlay {
+  position: absolute;
+  bottom: 0;
+  inset-inline: 0;
+  padding: 1.2rem;
+  background: linear-gradient(0deg, rgba(36, 19, 16, 0.85) 0%, transparent 100%);
+  color: #FFFFFF;
+  display: flex;
+  align-items: flex-end;
+}
+
+.texture-spec {
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: #FBF3E7;
+}
+
+.texture-info {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.texture-info h3 {
+  font-size: 1.35rem;
+  color: var(--text);
+  margin-bottom: 0.25rem;
+}
+
+.texture-tagline {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 0.65rem;
+}
+
+.texture-desc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.55;
+  margin-bottom: 1.25rem;
+  flex: 1;
+}
+
+.texture-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.2rem;
+  background: var(--surface-2);
+  color: var(--text);
+  border: 1.5px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all var(--duration) var(--ease);
+}
+
+.texture-card:hover .texture-btn {
+  background: var(--accent);
+  color: #FFFFFF;
+  border-color: var(--accent);
+}
+
+@media (max-width: 900px) {
+  .texture-grid {
+    grid-template-columns: 1fr;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+}

@@ -1,20 +1,28 @@
 .launch-banner {
-  padding: 5rem 3rem;
   position: relative;
+  padding: 6rem 3rem;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  min-height: 60vh;
 }
 
-[data-theme="light"] .launch-banner {
-  background: linear-gradient(
-    135deg,
-    #FFF0ED 0%,
-    #FDEAE6 50%,
-    #FFF3F0 100%
-  );
+.launch-bg-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(1.05) brightness(0.8);
+}
+
+.launch-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(36,19,16,0.82) 0%, rgba(36,19,16,0.55) 45%, rgba(36,19,16,0.25) 100%);
 }
 
 [data-theme="dark"] .launch-banner {
-  background: var(--surface);
   border-top: 1px solid var(--border-soft);
   border-bottom: 1px solid var(--border-soft);
 }
@@ -22,11 +30,12 @@
 .launch-inner {
   max-width: 1200px;
   margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4rem;
-  align-items: center;
+  width: 100%;
+  position: relative;
+  z-index: 2;
 }
+
+.launch-content { max-width: 480px; }
 
 .launch-eyebrow {
   display: block;
@@ -34,29 +43,29 @@
   font-weight: 700;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: #EDAF97;
   margin-bottom: 0.85rem;
 }
 
 .launch-content h2 {
-  font-size: clamp(2rem, 3.5vw, 2.8rem);
-  color: var(--text);
+  font-size: clamp(2.2rem, 4vw, 3.2rem);
+  color: #FFFFFF;
   margin-bottom: 0.5rem;
-  line-height: 1.15;
+  line-height: 1.1;
 }
 
 .launch-accent {
   font-size: 1.2rem;
   font-weight: 700;
-  color: var(--accent);
+  color: #EDAF97;
   font-family: var(--font-display);
   font-style: italic;
   margin-bottom: 1rem;
 }
 
 .launch-desc {
-  font-size: 0.88rem;
-  color: var(--text-muted);
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.78);
   line-height: 1.75;
   max-width: 420px;
   margin-bottom: 2rem;
@@ -66,93 +75,23 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  background: var(--surface);
-  color: var(--text);
-  border: 2px solid var(--accent);
-  padding: 0.82rem 1.75rem;
+  background: #C1652F;
+  color: #FFFFFF;
+  border: none;
+  padding: 0.88rem 2rem;
   border-radius: 30px;
   font-size: 0.85rem;
-  font-weight: 600;
+  font-weight: 700;
   transition: all var(--duration) var(--ease);
+  box-shadow: 0 8px 26px rgba(0,0,0,0.35);
 }
 
 .launch-btn:hover {
-  background: var(--accent);
-  color: var(--white);
+  background: #A6531F;
   transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
 }
-
-/* Visual */
-.launch-visual {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.launch-product-orbit {
-  position: relative;
-  width: 320px;
-  height: 320px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.launch-product-img {
-  width: 220px;
-  height: 220px;
-  border-radius: 50%;
-  object-fit: cover;
-  position: relative;
-  z-index: 2;
-  transition: none;
-}
-
-[data-theme="light"] .launch-product-img {
-  box-shadow: 0 16px 48px rgba(254,147,140,0.3);
-}
-
-[data-theme="dark"] .launch-product-img {
-  box-shadow: 0 16px 48px rgba(252,163,17,0.15);
-  filter: brightness(0.9);
-}
-
-.launch-orbit-ring {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  border: 1.5px dashed;
-  opacity: 0.3;
-  animation: spin 20s linear infinite;
-}
-
-[data-theme="light"] .launch-orbit-ring {
-  border-color: var(--coral);
-}
-
-[data-theme="dark"] .launch-orbit-ring {
-  border-color: var(--amber);
-}
-
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-
-.launch-orbit-dot {
-  position: absolute;
-  font-size: 1.2rem;
-  z-index: 3;
-  animation: spin 20s linear infinite;
-}
-
-.launch-dot-1 { top: 0; left: 50%; transform: translateX(-50%); }
-.launch-dot-2 { bottom: 10%; right: 5%; }
-.launch-dot-3 { top: 15%; left: 0; }
 
 @media (max-width: 768px) {
-  .launch-banner { padding: 3rem 1.5rem; }
-  .launch-inner { grid-template-columns: 1fr; gap: 2.5rem; }
-  .launch-visual { display: none; }
+  .launch-banner { padding: 4rem 1.5rem; min-height: 50vh; }
+  .launch-content { max-width: 100%; }
 }

@@ -1,149 +1,307 @@
-.footer {
-  margin-top: 5rem;
-  border-top: 1px solid var(--border-soft);
+/* ═══════════════════════════════════════════════════════════════════
+   YSL BEAUTY — 5-COLUMN BLACK LUXURY FOOTER
+   Matches Sample 5 footer presentation
+   ═══════════════════════════════════════════════════════════════════ */
+
+.ysl-footer {
+  background: #000000 !important;
+  color: #FFFFFF !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 4.5rem;
+  font-family: var(--font-body);
 }
 
-[data-theme="light"] .footer { background: #2C1810; }
-[data-theme="dark"] .footer { background: #000000; }
-
-.footer-top {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
-  gap: 3rem;
-  padding: 4rem 3rem;
-  max-width: 1400px;
+.ysl-footer-top {
+  max-width: 1440px;
   margin: 0 auto;
+  padding: 0 3.5rem 4rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1.6fr;
+  gap: 3rem;
 }
 
-.footer-brand h3 {
-  font-family: var(--font-display);
-  font-size: 1.8rem;
-  font-style: italic;
+.ysl-footer-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.ysl-footer-col-title {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
   color: #FFFFFF;
-  margin-bottom: 0.85rem;
-  background: none;
-  -webkit-text-fill-color: #FFFFFF;
+  margin-bottom: 1.5rem;
+  line-height: 1.3;
 }
 
-.footer-brand p {
-  font-size: 0.82rem;
-  line-height: 1.75;
-  color: rgba(255,255,255,0.55);
-  max-width: 260px;
+.ysl-footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.ysl-footer-links a {
+  font-size: 0.76rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.65);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  line-height: 1.4;
+}
+
+.ysl-footer-links a:hover {
+  color: #FFFFFF;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ── Column 5: Sign Up Form & Privileges ── */
+.ysl-footer-signup-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.ysl-footer-signup-desc {
+  font-size: 0.76rem;
+  color: rgba(255, 255, 255, 0.65);
+  line-height: 1.55;
+  margin-bottom: 1.25rem;
+}
+
+.ysl-signup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
   margin-bottom: 1.5rem;
 }
 
-.footer-socials {
-  display: flex;
-  gap: 0.75rem;
+.ysl-input-group {
+  width: 100%;
 }
 
-.footer-socials a {
-  width: 36px;
-  height: 36px;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 50%;
+.ysl-footer-input {
+  width: 100%;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  color: #FFFFFF;
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  padding: 0.75rem 1rem;
+  outline: none;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.ysl-footer-input:focus {
+  border-color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.ysl-footer-input::placeholder {
+  color: rgba(255, 255, 255, 0.45);
+  font-weight: 300;
+}
+
+.ysl-consent-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.55);
+  line-height: 1.45;
+  cursor: pointer;
+  margin-top: 0.2rem;
+}
+
+.ysl-consent-checkbox {
+  margin-top: 2px;
+  accent-color: #FFFFFF;
+  cursor: pointer;
+}
+
+.ysl-consent-label a {
+  color: #FFFFFF;
+  text-decoration: underline;
+}
+
+.ysl-footer-submit-btn {
+  background: #FFFFFF;
+  color: #000000;
+  border: 1px solid #FFFFFF;
+  padding: 0.75rem 1.5rem;
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  margin-top: 0.4rem;
+  transition: all 0.2s ease;
+}
+
+.ysl-footer-submit-btn:hover {
+  background: transparent;
+  color: #FFFFFF;
+}
+
+.ysl-signup-success {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 1rem 1.25rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  line-height: 1.5;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.ysl-check-icon {
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+/* Concierge Hotline */
+.ysl-footer-hotline {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 1.4rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 1.2rem;
+}
+
+.ysl-hotline-label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.ysl-hotline-number {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: #FFFFFF;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.ysl-hotline-number:hover {
+  opacity: 0.8;
+}
+
+/* Social Row */
+.ysl-footer-social-row {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.ysl-footer-social-row a {
+  color: rgba(255, 255, 255, 0.7);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.9rem;
-  transition: all var(--duration) var(--ease);
-  text-decoration: none;
+  transition: color 0.2s ease, transform 0.2s ease;
 }
 
-.footer-socials a:hover {
-  background: var(--accent);
-  border-color: var(--accent);
+.ysl-footer-social-row a:hover {
+  color: #FFFFFF;
   transform: translateY(-2px);
 }
 
-.footer-col h4 {
-  font-family: var(--font-body);
-  font-size: 0.65rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  color: var(--accent);
-  margin-bottom: 1.4rem;
-}
-
-.footer-col a {
-  display: block;
-  font-size: 0.82rem;
-  color: rgba(255,255,255,0.5);
-  margin-bottom: 0.7rem;
-  transition: color var(--duration) var(--ease);
-  text-decoration: none;
-}
-
-.footer-col a:hover { color: #FFFFFF; }
-
-.footer-bottom {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.4rem 3rem;
-  border-top: 1px solid rgba(255,255,255,0.08);
-  max-width: 1400px;
+/* ── Bottom Strip: Country, Copyright, Payments ── */
+.ysl-footer-bottom {
+  max-width: 1440px;
   margin: 0 auto;
-  font-size: 0.72rem;
-  color: rgba(255,255,255,0.35);
-  letter-spacing: 0.04em;
-}
-
-.footer-payments {
+  padding: 2rem 3.5rem 3rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.ysl-footer-country {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ysl-flag {
+  font-size: 0.95rem;
+}
+
+.ysl-country-name {
+  font-weight: 600;
+  color: #FFFFFF;
+}
+
+.ysl-country-change {
+  text-decoration: underline;
+  cursor: pointer;
+  margin-left: 0.4rem;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.62rem;
+}
+
+.ysl-footer-copy {
+  text-transform: uppercase;
+}
+
+.ysl-footer-payment-badges {
+  display: flex;
+  align-items: center;
   gap: 0.6rem;
-  font-size: 1.1rem;
+  flex-wrap: wrap;
 }
 
-/* ── Tablet ── */
-@media (max-width: 1024px) {
-  .footer-top {
-    grid-template-columns: 1fr 1fr;
+.ysl-pay-badge {
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  padding: 0.25rem 0.6rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════════════ */
+@media (max-width: 1200px) {
+  .ysl-footer-top {
+    grid-template-columns: 1fr 1fr 1fr;
     gap: 2.5rem;
-    padding: 3rem 2rem;
   }
-
-  .footer-brand {
+  .ysl-footer-signup-col {
     grid-column: 1 / -1;
+    max-width: 580px;
   }
-
-  .footer-brand p { max-width: 100%; }
 }
 
-/* ── Mobile ── */
 @media (max-width: 768px) {
-  .footer-top {
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-    padding: 2.5rem 1.5rem;
-  }
-
-  .footer-brand {
-    grid-column: 1 / -1;
-  }
-
-  .footer-brand h3 { font-size: 1.5rem; }
-
-  .footer-col h4 { margin-bottom: 1rem; }
-
-  .footer-col a { font-size: 0.8rem; margin-bottom: 0.6rem; }
-
-  .footer-bottom {
-    flex-direction: column;
-    gap: 0.75rem;
-    text-align: center;
-    padding: 1.2rem 1.5rem;
-  }
-}
-
-/* ── Small Mobile ── */
-@media (max-width: 480px) {
-  .footer-top {
+  .ysl-footer { padding-top: 3rem; }
+  .ysl-footer-top {
     grid-template-columns: 1fr;
-    gap: 1.5rem;
-    padding: 2rem 1.2rem;
+    padding: 0 1.5rem 2.5rem;
+    gap: 2rem;
+  }
+  .ysl-footer-bottom {
+    padding: 1.5rem 1.5rem 2.5rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
   }
 }

@@ -14,14 +14,7 @@ function Recommend() {
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState(null);
   const [error, setError] = useState("");
-  const { user } = useAuth(); // ← add this line
-
-  <SEO
-    title="AI Beauty Recommendations"
-    description="Get personalized beauty recommendations from Gracia Fab's AI advisor. Tell us about your skin, hair and goals for custom product picks."
-    keywords="AI beauty advisor Nigeria, personalized skincare, hair recommendations"
-    url="/recommend"
-  />;
+  const { user } = useAuth();
 
   const [formData, setFormData] = useState({
     skinType: "",
@@ -111,6 +104,12 @@ function Recommend() {
 
   return (
     <>
+      <SEO
+        title="AI Beauty Recommendations"
+        description="Get personalized beauty recommendations from Gracia Fab's AI advisor. Tell us about your skin, hair and goals for custom product picks."
+        keywords="AI beauty advisor Nigeria, personalized skincare, hair recommendations"
+        url="/recommend"
+      />
       <Navbar />
       <div className="recommend-page">
         {/* Header */}

@@ -45,106 +45,96 @@ function Register() {
     }
   };
 
-  <SEO
-    title="Create Account"
-    description="Join Gracia Fab today and discover personalized AI beauty recommendations for skincare, haircare, wigs and bridal looks."
-    url="/register"
-  />;
   return (
-    <div className="auth-fullscreen">
-      {/* Background image */}
-      <div
-        className="auth-bg"
-        style={{
-          backgroundImage: `url('https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=1400&h=900&fit=crop')`,
-        }}
+    <div className="auth-page">
+      <SEO
+        title="Create Account"
+        description="Join Gracia Fab today and discover personalized AI beauty recommendations for skincare, haircare, wigs and bridal looks."
+        url="/register"
       />
 
-      <div className="auth-overlay" />
-
-      {/* Navbar */}
-      <div className="auth-topbar">
-        <Link to="/" className="auth-brand">
+      <div className="auth-shell">
+        <Link to="/" className="auth-logo-link">
           <GraciaLogo size="lg" />
         </Link>
-        <div className="auth-topbar-links">
-          <Link to="/login">Login</Link>
-          <Link to="/products">Shop</Link>
-          <Link to="/register" className="active">
-            Register
-          </Link>
-          <Link to="/contact">Contact</Link>
-        </div>
-      </div>
 
-      {/* Form */}
-      <div className="auth-center">
-        <form className="auth-glass-form" onSubmit={handleSubmit}>
-          {error && <div className="auth-fullscreen-error">⚠️ {error}</div>}
+        <h1 className="auth-heading">Create account</h1>
+        <p className="auth-subheading">Join free and get your AI beauty picks</p>
 
-          <div className="auth-glass-field">
-            <span className="auth-field-icon">✨</span>
+        <form className="auth-form" onSubmit={handleSubmit}>
+          {error && <div className="auth-error">⚠️ {error}</div>}
+
+          <SocialLogin />
+
+          <div className="auth-divider">
+            <span>or</span>
+          </div>
+
+          <div className="form-group">
+            <label>Full name</label>
             <input
               type="text"
               name="name"
-              placeholder="Full Name"
+              placeholder="Your name"
               value={formData.name}
               onChange={handleChange}
             />
           </div>
 
-          <div className="auth-glass-field">
-            <span className="auth-field-icon">👤</span>
+          <div className="form-group">
+            <label>Email</label>
             <input
               type="email"
               name="email"
-              placeholder="Email Address"
+              placeholder="you@email.com"
               value={formData.email}
               onChange={handleChange}
             />
           </div>
 
-          <div className="auth-glass-field">
-            <span className="auth-field-icon">🔒</span>
+          <div className="form-group">
+            <label>Password</label>
             <input
               type="password"
               name="password"
-              placeholder="Password"
+              placeholder="••••••••"
               value={formData.password}
               onChange={handleChange}
             />
           </div>
 
-          <div className="auth-glass-field">
-            <span className="auth-field-icon">🔐</span>
+          <div className="form-group">
+            <label>Confirm password</label>
             <input
               type="password"
               name="confirmPassword"
-              placeholder="Confirm Password"
+              placeholder="••••••••"
               value={formData.confirmPassword}
               onChange={handleChange}
             />
           </div>
 
-          <button type="submit" className="auth-glass-btn" disabled={loading}>
-            {loading ? "Creating Account..." : "GET STARTED"}
+          <button
+            type="submit"
+            className="auth-submit btn-primary-action"
+            disabled={loading}
+          >
+            {loading ? "Creating account…" : "Create account →"}
           </button>
-
-          <p className="auth-glass-footer">
-            Already have an account? <Link to="/login">Sign in</Link>
-          </p>
-          <SocialLogin />
         </form>
+
+        <p className="auth-toggle">
+          Already have an account? <Link to="/login">Sign in</Link>
+        </p>
       </div>
 
-      {/* Bottom bar */}
-      <div className="auth-bottombar">
-        <div className="auth-bottom-links">
-          <Link to="/about">About Us</Link>
-          <Link to="/">Privacy Policy</Link>
-          <Link to="/">Terms Of Use</Link>
-        </div>
-        <p>© 2026 Gracia Fab. All Rights Reserved.</p>
+      <div className="auth-legal">
+        <p>
+          By continuing, you agree to our <Link to="/">Terms of service</Link>
+        </p>
+        <Link to="/" className="auth-privacy-link">
+          Privacy policy
+        </Link>
       </div>
     </div>
   );

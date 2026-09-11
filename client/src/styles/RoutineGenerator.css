@@ -19,7 +19,7 @@
   border-radius: 20px;
   margin-bottom: 1rem;
 }
-.rg-header h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); font-style: italic; color: var(--text); margin-bottom: 0.75rem; }
+.rg-header h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); color: var(--text); margin-bottom: 0.75rem; }
 .rg-header p  { font-size: 0.9rem; color: var(--text-muted); max-width: 500px; margin: 0 auto; }
 
 .rg-form-card {
@@ -101,7 +101,7 @@
 
 /* Results */
 .rg-result-header { text-align: center; margin-bottom: 2rem; }
-.rg-result-header h1 { font-size: 2rem; font-style: italic; color: var(--text); margin-bottom: 0.5rem; }
+.rg-result-header h1 { font-size: 2rem; color: var(--text); margin-bottom: 0.5rem; }
 .rg-result-header p  { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.75rem; }
 .rg-result-header p strong { color: var(--accent); }
 .rg-result-meta { display: flex; justify-content: center; gap: 1.5rem; font-size: 0.8rem; color: var(--text-muted); }

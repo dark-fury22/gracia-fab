@@ -10,6 +10,7 @@ function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [formData, setFormData] = useState({ email: "", password: "" });
+  const [remindDrops, setRemindDrops] = useState(true);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -34,88 +35,103 @@ function Login() {
     }
   };
 
-  <SEO
-    title="About Us"
-    description="Learn about Gracia Fab — Nigeria's premier AI-powered beauty brand celebrating individuality through clean, cruelty-free beauty products."
-    keywords="about Gracia Fab, Nigerian beauty brand, clean beauty Nigeria"
-    url="/about"
-  />;
-
   return (
-    <div className="auth-fullscreen">
-      {/* Background image */}
-      <div
-        className="auth-bg"
-        style={{
-          backgroundImage: `url('https://images.unsplash.com/photo-1487412912498-0447578fcca8?w=1400&h=900&fit=crop')`,
-        }}
+    <div className="auth-page">
+      <SEO
+        title="Sign In"
+        description="Sign in to your Gracia Fab account for personalized AI beauty recommendations."
+        url="/login"
       />
 
-      {/* Dark overlay */}
-      <div className="auth-overlay" />
-
-      {/* Navbar */}
-      <div className="auth-topbar">
-        <Link to="/" className="auth-brand">
-          <GraciaLogo size="lg" />
+      <div className="auth-shell">
+        <Link to="/" className="auth-logo-link" title="Return to Gracia Fab home">
+          <GraciaLogo size="lg" variant="editorial" />
         </Link>
-        <div className="auth-topbar-links">
-          <Link to="/login" className="active">
-            Login
-          </Link>
-          <Link to="/products">Shop</Link>
-          <Link to="/register">Register</Link>
-          <Link to="/contact">Contact</Link>
-        </div>
-      </div>
 
-      {/* Form */}
-      <div className="auth-center">
-        <form className="auth-glass-form" onSubmit={handleSubmit}>
-          {error && <div className="auth-fullscreen-error">⚠️ {error}</div>}
+        <h1 className="auth-heading">Sign in</h1>
+        <p className="auth-subheading">Sign in or create an account</p>
 
-          <div className="auth-glass-field">
-            <span className="auth-field-icon">👤</span>
-            <input
-              type="email"
-              name="email"
-              placeholder="Email Address"
-              value={formData.email}
-              onChange={handleChange}
-              autoComplete="off"
-            />
+        <form className="auth-form" onSubmit={handleSubmit}>
+          {error && <div className="auth-error">⚠️ {error}</div>}
+
+          <SocialLogin />
+
+          <div className="auth-divider">
+            <span>or</span>
           </div>
 
-          <div className="auth-glass-field">
-            <span className="auth-field-icon">🔒</span>
+          <div className="form-group auth-input-wrap">
+            <label htmlFor="auth-email">Email</label>
+            <div className="auth-input-with-action">
+              <input
+                id="auth-email"
+                type="email"
+                name="email"
+                placeholder="you@email.com"
+                value={formData.email}
+                onChange={handleChange}
+                autoComplete="email"
+                required
+              />
+              <button
+                type="submit"
+                className="auth-inline-arrow"
+                disabled={loading || !formData.email}
+                aria-label="Submit email"
+                title="Continue"
+              >
+                →
+              </button>
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="auth-password">Password</label>
             <input
+              id="auth-password"
               type="password"
               name="password"
-              placeholder="Password"
+              placeholder="••••••••"
               value={formData.password}
               onChange={handleChange}
+              autoComplete="current-password"
+              required
             />
           </div>
 
-          <button type="submit" className="auth-glass-btn" disabled={loading}>
-            {loading ? "Signing in..." : "GET STARTED"}
-          </button>
+          <label className="auth-checkbox-label">
+            <input
+              type="checkbox"
+              checked={remindDrops}
+              onChange={(e) => setRemindDrops(e.target.checked)}
+              className="auth-custom-checkbox"
+            />
+            <span className="auth-checkbox-text">
+              Remind me about insider discounts & stylish drops 🔥
+            </span>
+          </label>
 
-          <p className="auth-glass-footer">
-            Don't have an account? <Link to="/register">Sign up free</Link>
-          </p>
-          <SocialLogin />
+          <button
+            type="submit"
+            className="auth-submit btn-primary-action"
+            disabled={loading}
+          >
+            {loading ? "Signing in…" : "Sign in →"}
+          </button>
         </form>
+
+        <p className="auth-toggle">
+          Don't have an account? <Link to="/register">Sign up free</Link>
+        </p>
       </div>
 
-      {/* Bottom bar */}
-      <div className="auth-bottombar">
-        <div className="auth-bottom-links">
-          <Link to="/about">About Us</Link>
-          <Link to="/">Privacy Policy</Link>
-          <Link to="/">Terms Of Use</Link>
-        </div>
-        <p>© 2024 Gracia Fab. All Rights Reserved.</p>
+      <div className="auth-legal">
+        <p>
+          By continuing, you agree to our <Link to="/">Terms of service</Link>
+        </p>
+        <Link to="/" className="auth-privacy-link">
+          Privacy policy
+        </Link>
       </div>
     </div>
   );

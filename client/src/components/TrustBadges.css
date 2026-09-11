@@ -8,9 +8,9 @@
 [data-theme="light"] .trust-badges {
   background: linear-gradient(
     90deg,
-    #FFF0ED 0%,
-    #FFF8F7 50%,
-    #FFF0ED 100%
+    var(--blush) 0%,
+    var(--surface-2) 50%,
+    var(--blush) 100%
   );
   border-color: var(--border-soft);
 }
@@ -35,7 +35,18 @@
   padding: 0.5rem;
 }
 
-.trust-icon { font-size: 1.4rem; flex-shrink: 0; }
+.trust-icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
 .trust-title {
   font-size: 0.82rem;

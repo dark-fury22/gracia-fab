@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import SEO from "../components/SEO";
 import API_URL from "../config";
 import "../styles/RoutineGenerator.css";
 
@@ -130,6 +131,11 @@ function RoutineGenerator({ onCartOpen }) {
 
   return (
     <>
+      <SEO
+        title="AI Routine Generator"
+        description="Build a personalised morning and night skincare routine with Gracia Fab's AI, matched to products from our store."
+        url="/routine-generator"
+      />
       <Navbar onCartOpen={onCartOpen} />
       <div className="routine-generator">
         {!result ? (

@@ -45,7 +45,6 @@ function ProductCard({ product }) {
       </Link>
 
       <div className="product-info">
-        <p className="product-brand">{product.brand}</p>
         <Link to={`/products/${product._id}`}>
           <h3 className="product-name">{product.name}</h3>
         </Link>
@@ -54,12 +53,13 @@ function ProductCard({ product }) {
           <button
             className="btn-add-to-cart"
             disabled={outOfStock}
+            aria-label={outOfStock ? "Sold out" : "Add to cart"}
             onClick={() => {
               addToCart(product);
               addToast(`Added ${product.name} to cart 🛒`, "success");
             }}
           >
-            {outOfStock ? "Sold Out" : "Add to cart"}
+            {outOfStock ? "✕" : "+"}
           </button>
         </div>
       </div>
