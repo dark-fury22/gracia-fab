@@ -114,6 +114,11 @@ orderSchema.methods.advanceStatus = function (newStatus, note = "") {
   return this;
 };
 
+// Supports "my orders" (filter by user, newest first) and admin/status
+// dashboards without a full collection scan.
+orderSchema.index({ user: 1, createdAt: -1 });
+orderSchema.index({ status: 1 });
+
 const Order = mongoose.model("Order", orderSchema);
 
 export default Order;

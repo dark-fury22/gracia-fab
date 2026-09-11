@@ -1,4 +1,5 @@
 import express from "express";
+import mongoose from "mongoose";
 import protect from "../middleware/authMiddleware.js";
 import User from "../models/User.js";
 
@@ -8,7 +9,9 @@ const router = express.Router();
 // Called when user views a product
 router.post("/view", protect, async (req, res) => {
   const { productId, category } = req.body;
-  if (!productId) return res.json({ ok: true });
+  if (!productId || !mongoose.Types.ObjectId.isValid(productId)) {
+    return res.json({ ok: true });
+  }
 
   try {
     const user = await User.findById(req.user._id);

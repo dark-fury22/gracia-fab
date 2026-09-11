@@ -20,15 +20,11 @@ export const updateProfileSchema = z.object({
 });
 
 export const googleLoginSchema = z.object({
-  email: z.string().trim().toLowerCase().email("Invalid email address"),
-  name: z.string().trim().optional(),
-  sub: z.string().optional(),
-  picture: z.string().optional(),
+  access_token: z.string().min(1, "Google access token is required"),
 });
 
 export const facebookLoginSchema = z.object({
   accessToken: z.string().min(1, "Access token is required"),
   userID: z.string().min(1, "User ID is required"),
   name: z.string().trim().optional(),
-  email: z.string().trim().toLowerCase().email().optional(),
 });

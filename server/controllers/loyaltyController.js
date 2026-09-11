@@ -29,24 +29,34 @@ const getTier = (totalPoints) => {
 // @desc  Award points to user
 export const awardPoints = async (userId, points, reason) => {
   try {
-    const user = await User.findById(userId);
+    // $inc/$push are atomic at the document level, so concurrent purchases
+    // (e.g. two orders paid for at once) can't clobber each other the way a
+    // find -> mutate -> save round trip would.
+    const user = await User.findByIdAndUpdate(
+      userId,
+      {
+        $inc: { loyaltyPoints: points },
+        $push: { pointsHistory: { points, reason, type: "earn" } },
+      },
+      { new: true },
+    );
     if (!user) return;
 
-    user.loyaltyPoints += points;
-    user.pointsHistory.push({ points, reason, type: "earn" });
-
-    // Update tier
     const totalEarned = user.pointsHistory
       .filter((h) => h.type === "earn")
       .reduce((sum, h) => sum + h.points, 0);
 
-    user.loyaltyTier = getTier(totalEarned);
-    await user.save();
+    const tier = getTier(totalEarned);
+    if (tier !== user.loyaltyTier) {
+      user.loyaltyTier = tier;
+      await user.save();
+    }
 
     logger.info({ points, user: user.name, reason }, "Points awarded");
     return user.loyaltyPoints;
   } catch (err) {
     logger.error({ err }, "awardPoints error");
+    throw err; // Rethrow so BullMQ can retry the points job
   }
 };
 
@@ -99,15 +109,6 @@ export const redeemPoints = async (req, res) => {
   const REDEEM_RATE = 500 / 100;
 
   try {
-    const user = await User.findById(req.user._id);
-    if (!user) return res.status(404).json({ message: "User not found" });
-
-    if (user.loyaltyPoints < pointsToRedeem) {
-      return res.status(400).json({
-        message: `You only have ${user.loyaltyPoints} points`,
-      });
-    }
-
     if (pointsToRedeem < 100) {
       return res.status(400).json({
         message: "Minimum redemption is 100 points (= ₦500)",
@@ -115,14 +116,34 @@ export const redeemPoints = async (req, res) => {
     }
 
     const discount = pointsToRedeem * REDEEM_RATE;
-    user.loyaltyPoints -= pointsToRedeem;
-    user.pointsHistory.push({
-      points: -pointsToRedeem,
-      reason: `Redeemed for ₦${discount.toLocaleString()} discount`,
-      type: "redeem",
-    });
 
-    await user.save();
+    // Conditioned on loyaltyPoints >= pointsToRedeem so the check-then-act
+    // is atomic — two concurrent redemptions can't both pass a stale read
+    // and drive the balance negative.
+    const user = await User.findOneAndUpdate(
+      { _id: req.user._id, loyaltyPoints: { $gte: pointsToRedeem } },
+      {
+        $inc: { loyaltyPoints: -pointsToRedeem },
+        $push: {
+          pointsHistory: {
+            points: -pointsToRedeem,
+            reason: `Redeemed for ₦${discount.toLocaleString()} discount`,
+            type: "redeem",
+          },
+        },
+      },
+      { new: true },
+    );
+
+    if (!user) {
+      const existing = await User.findById(req.user._id).select(
+        "loyaltyPoints",
+      );
+      if (!existing) return res.status(404).json({ message: "User not found" });
+      return res.status(400).json({
+        message: `You only have ${existing.loyaltyPoints} points`,
+      });
+    }
 
     res.json({
       success: true,

@@ -45,7 +45,7 @@ export const sendWhatsApp = async (phone, message) => {
     logger.info({ phone }, "WhatsApp sent");
   } catch (err) {
     logger.error({ err, phone }, "WhatsApp failed");
-    // Don't crash the app — just log and continue
+    throw err; // Rethrow so BullMQ can retry
   }
 };
 

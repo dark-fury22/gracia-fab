@@ -102,5 +102,6 @@ const productSchema = new mongoose.Schema(
 productSchema.index({ category: 1 });
 productSchema.index({ tags: 1 });
 productSchema.index({ name: "text", description: "text" });
+productSchema.index({ isFeatured: 1 });
 
 export default mongoose.model("Product", productSchema);

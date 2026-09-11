@@ -22,6 +22,19 @@ const protect = async (req, res, next) => {
         return res.status(401).json({ message: 'Not authorized, user not found' })
       }
 
+      // Reject tokens issued before the password last changed, so a token
+      // that leaked before a password reset can't keep working afterward.
+      // The 1s buffer covers the same request that changes the password and
+      // then immediately signs a fresh token: JWT `iat` has second-level
+      // resolution and can truncate to just before passwordChangedAt's
+      // millisecond value, which would otherwise reject a brand-new token.
+      if (
+        req.user.passwordChangedAt &&
+        decoded.iat * 1000 < req.user.passwordChangedAt.getTime() - 1000
+      ) {
+        return res.status(401).json({ message: 'Password was changed, please log in again' })
+      }
+
       next()
     } catch (error) {
       res.status(401).json({ message: 'Not authorized, token failed' })

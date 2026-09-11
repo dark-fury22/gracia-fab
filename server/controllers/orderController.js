@@ -211,6 +211,20 @@ export const verifyPayment = async (req, res) => {
       });
     }
 
+    // A Paystack reference is a one-time proof of payment for one
+    // transaction — without this check, a reference from an order a user
+    // already legitimately paid for could be replayed here to mark a
+    // *different*, unpaid order (of the same total) as paid for free.
+    const referenceInUse = await Order.findOne({
+      "paymentResult.reference": reference,
+      _id: { $ne: order._id },
+    });
+    if (referenceInUse) {
+      return res.status(400).json({
+        message: "This payment reference has already been used",
+      });
+    }
+
     // Verify payment with Paystack
     const paystackRes = await fetch(
       `https://api.paystack.co/transaction/verify/${encodeURIComponent(reference)}`,

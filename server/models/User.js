@@ -23,6 +23,14 @@ const userSchema = new mongoose.Schema(
       minlength: 6,
     },
 
+    // Set whenever the password changes (see the pre-save hook below), so
+    // authMiddleware can reject a JWT that was issued before the change —
+    // otherwise a token stolen before a password reset would stay valid
+    // for its full 30-day lifetime.
+    passwordChangedAt: {
+      type: Date,
+    },
+
     avatar: {
       type: String,
       default: "",
@@ -139,6 +147,12 @@ userSchema.pre("save", async function (next) {
   const salt = await bcrypt.genSalt(10);
 
   this.password = await bcrypt.hash(this.password, salt);
+
+  // Only for an actual change, not the initial password set at registration
+  // (a brand-new user has no pre-existing token that needs invalidating).
+  if (!this.isNew) {
+    this.passwordChangedAt = new Date();
+  }
 
   next();
 });

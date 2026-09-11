@@ -1,22 +1,25 @@
 import Product from '../models/Product.js'
+import { asSafeString, escapeRegex } from '../utils/queryHelpers.js'
 
 // @desc  Get all products
 // @route GET /api/products
 export const getProducts = async (req, res) => {
   try {
-    const { category, search } = req.query
+    const category = asSafeString(req.query.category)
+    const search = asSafeString(req.query.search)
 
     let filter = {}
 
     if (category) filter.category = category
     if (search) {
+      const pattern = escapeRegex(search).slice(0, 100)
       filter.$or = [
-        { name: { $regex: search, $options: 'i' } },
-        { tags: { $regex: search, $options: 'i' } }
+        { name: { $regex: pattern, $options: 'i' } },
+        { tags: { $regex: pattern, $options: 'i' } }
       ]
     }
 
-    const products = await Product.find(filter)
+    const products = await Product.find(filter).lean()
     res.json(products)
   } catch (error) {
     res.status(500).json({ message: error.message })
@@ -42,7 +45,7 @@ export const getProductById = async (req, res) => {
 // @route GET /api/products/featured
 export const getFeaturedProducts = async (req, res) => {
   try {
-    const products = await Product.find({ isFeatured: true }).limit(6)
+    const products = await Product.find({ isFeatured: true }).limit(6).lean()
     res.json(products)
   } catch (error) {
     res.status(500).json({ message: error.message })

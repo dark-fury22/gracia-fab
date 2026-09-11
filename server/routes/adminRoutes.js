@@ -2,7 +2,6 @@ import express from 'express'
 import {
   getDashboardStats,
   getAllOrders,
-  updateOrderStatus,
   getAllProducts,
   createProduct,
   updateProduct,
@@ -10,6 +9,7 @@ import {
   getAllUsers,
   uploadImage
 } from '../controllers/adminController.js'
+import { updateOrderStatus } from '../controllers/orderController.js'
 import protect from '../middleware/authMiddleware.js'
 import admin from '../middleware/adminMiddleware.js'
 import validate from '../middleware/validate.js'

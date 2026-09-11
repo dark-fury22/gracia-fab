@@ -12,11 +12,35 @@ const generateToken = (id) => {
 // @desc  Google OAuth login
 // @route POST /api/auth/google
 export const googleLogin = async (req, res) => {
-  const { email, name, sub: googleId, picture } = req.body
+  const { access_token: accessToken } = req.body
 
   try {
+    if (!accessToken) {
+      return res.status(400).json({ message: 'Google access token is required' })
+    }
+
+    // Verify the token was actually issued to THIS app (rejects a valid
+    // Google token minted for some unrelated app/client) before trusting
+    // anything about the caller's identity.
+    const tokenInfo = await googleClient.getTokenInfo(accessToken)
+    if (tokenInfo.aud !== process.env.GOOGLE_CLIENT_ID) {
+      return res.status(401).json({ message: 'Google authentication failed' })
+    }
+
+    // Fetch the profile directly from Google using the verified token —
+    // never trust identity fields supplied by the client itself.
+    const profileRes = await fetch(
+      'https://www.googleapis.com/oauth2/v3/userinfo',
+      { headers: { Authorization: `Bearer ${accessToken}` } }
+    )
+    if (!profileRes.ok) {
+      return res.status(401).json({ message: 'Google authentication failed' })
+    }
+    const profile = await profileRes.json()
+    const { email, name, sub: googleId, picture } = profile
+
     if (!email) {
-      return res.status(400).json({ message: 'Email is required' })
+      return res.status(400).json({ message: 'Google account has no email' })
     }
 
     let user = await User.findOne({ email })
@@ -44,13 +68,13 @@ export const googleLogin = async (req, res) => {
 
   } catch (error) {
     logger.error({ err: error }, 'Google auth error')
-    res.status(401).json({ message: 'Google authentication failed: ' + error.message })
+    res.status(401).json({ message: 'Google authentication failed' })
   }
 }
 // @desc  Facebook OAuth login
 // @route POST /api/auth/facebook
 export const facebookLogin = async (req, res) => {
-  const { accessToken, userID, name, email } = req.body
+  const { accessToken, userID, name } = req.body
 
   try {
     // Verify with Facebook
@@ -62,7 +86,10 @@ export const facebookLogin = async (req, res) => {
       return res.status(401).json({ message: 'Facebook authentication failed' })
     }
 
-    const userEmail = email || `${userID}@facebook.com`
+    // Only ever trust the email Facebook itself returned for this token —
+    // never a client-supplied email field, which would let anyone log in
+    // as any account just by naming a different email in the request.
+    const userEmail = fbData.email || `${userID}@facebook.com`
 
     let user = await User.findOne({ email: userEmail })
 

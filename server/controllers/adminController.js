@@ -5,6 +5,14 @@ import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import logger from '../utils/logger.js'
+import { ALLOWED_UPLOAD_MIME_TYPES } from '../validators/adminValidators.js'
+
+const MIME_TO_EXTENSION = {
+  'image/jpeg': 'jpg',
+  'image/png': 'png',
+  'image/webp': 'webp',
+  'image/gif': 'gif',
+}
 
 // @desc   Get dashboard stats
 // @route  GET /api/admin/stats
@@ -46,28 +54,6 @@ export const getAllOrders = async (req, res) => {
       .populate('user', 'name email')
       .sort({ createdAt: -1 })
     res.json(orders)
-  } catch (error) {
-    res.status(500).json({ message: error.message })
-  }
-}
-
-// @desc   Update order status
-// @route  PUT /api/admin/orders/:id
-export const updateOrderStatus = async (req, res) => {
-  try {
-    const order = await Order.findById(req.params.id)
-    if (!order) {
-      return res.status(404).json({ message: 'Order not found' })
-    }
-
-    order.status = req.body.status || order.status
-    if (req.body.status === 'delivered') {
-      order.isDelivered = true
-      order.deliveredAt = Date.now()
-    }
-
-    const updatedOrder = await order.save()
-    res.json(updatedOrder)
   } catch (error) {
     res.status(500).json({ message: error.message })
   }
@@ -180,11 +166,13 @@ export const uploadImage = async (req, res) => {
   try {
     const { imageBase64, mimeType } = req.body
 
-    // Determine extension from mimeType
-    let extension = 'jpg'
-    if (mimeType) {
-      const match = mimeType.match(/\/([a-zA-Z0-9+]+)$/)
-      if (match) extension = match[1]
+    // mimeType is already restricted to ALLOWED_UPLOAD_MIME_TYPES by
+    // uploadImageSchema, so this lookup can't produce an attacker-chosen
+    // extension (e.g. .svg, which could embed a script and serve as
+    // stored XSS when the uploaded file's URL is opened directly).
+    const extension = MIME_TO_EXTENSION[mimeType]
+    if (!extension) {
+      return res.status(400).json({ message: 'Unsupported image type' })
     }
 
     // Create unique filename

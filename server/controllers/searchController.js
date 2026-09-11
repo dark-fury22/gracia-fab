@@ -3,6 +3,7 @@ import User from "../models/User.js";
 import Order from "../models/Order.js";
 import Groq from "groq-sdk";
 import logger from "../utils/logger.js";
+import { escapeRegex } from "../utils/queryHelpers.js";
 
 // ─────────────────────────────────────────
 //  SMART QUERY PARSER (No API needed)
@@ -283,15 +284,19 @@ export const semanticSearch = async (req, res) => {
           .limit(10)
           .lean();
 
-        const purchasedCats = new Set();
-        for (const o of orders) {
-          for (const item of o.orderItems || []) {
-            const p = await Product.findById(item.product)
-              .select("category")
-              .lean();
-            if (p) purchasedCats.add(p.category);
-          }
-        }
+        const productIds = [
+          ...new Set(
+            orders.flatMap((o) =>
+              (o.orderItems || []).map((item) => String(item.product)),
+            ),
+          ),
+        ];
+        const purchasedProducts = await Product.find({
+          _id: { $in: productIds },
+        })
+          .select("category")
+          .lean();
+        const purchasedCats = new Set(purchasedProducts.map((p) => p.category));
 
         userProfile = {
           skinType: user?.skinType,
@@ -323,7 +328,9 @@ export const semanticSearch = async (req, res) => {
         query
           .split(" ")
           .filter((w) => w.length > 2)
-          .join("|"),
+          .map(escapeRegex)
+          .join("|")
+          .slice(0, 200),
         "i",
       );
       const fallback = await Product.find({
@@ -354,7 +361,7 @@ export const getSearchSuggestions = async (req, res) => {
   if (!q || q.length < 2) return res.json([]);
 
   try {
-    const rx = new RegExp(q, "i");
+    const rx = new RegExp(escapeRegex(q).slice(0, 100), "i");
     const products = await Product.find({
       $or: [{ name: rx }, { category: rx }, { brand: rx }],
     })
