@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useCart } from "../hooks/useCart";
 import "./AiConciergeChat.css";
 
 const QUICK_PROMPTS = [
@@ -13,23 +12,13 @@ const QUICK_PROMPTS = [
 const KNOWLEDGE_BASE = [
   {
     keywords: ["hyperpigmentation", "dark spots", "vitamin c", "serum", "brighten", "even skin"],
-    reply: "For melanin-rich skin facing hyperpigmentation or sun spots in Nigeria's climate, our AI recommends the **Pure Shots Vitamin C & Niacinamide Radiance Serum**. It inhibits excess melanin production without bleaching agents, restoring natural luminosity in 14 days.",
-    product: {
-      _id: "skin-serum-vit-c",
-      name: "Pure Shots Vitamin C Radiance Serum",
-      price: 28000,
-      image: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=400&auto=format&fit=crop&q=80",
-    },
+    reply: "For melanin-rich skin facing hyperpigmentation or sun spots in Nigeria's climate, we recommend a Vitamin C or Niacinamide brightening serum — they even out tone without bleaching agents.",
+    link: { text: "Shop Brightening Skincare →", url: "/products?category=skincare" },
   },
   {
     keywords: ["wig", "hair", "raw", "virgin", "glueless", "beginner", "bone straight", "frontal"],
-    reply: "For everyday effortless luxury, we recommend our **Jett Clean 12A+ Bone Straight Glueless Unit**. Hand-tied on 0.08mm invisible HD lace with pre-bleached knots—wear it straight out of the box with zero glue or salon appointment required.",
-    product: {
-      _id: "prod-jett-clean-26",
-      name: "Jett Clean 12A+ Bone Straight 26\"",
-      price: 310000,
-      image: "https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?w=400&auto=format&fit=crop&q=80",
-    },
+    reply: "For everyday effortless wear, look for our glueless, HD lace raw units with pre-bleached knots — no glue or salon appointment required.",
+    link: { text: "Shop Raw Wigs →", url: "/products?category=wig" },
   },
   {
     keywords: ["delivery", "shipping", "lagos", "nationwide", "timeline", "dispatch", "paystack"],
@@ -41,31 +30,25 @@ const KNOWLEDGE_BASE = [
     link: { text: "Launch Skin Tone Detector →", url: "/skin-tone" },
   },
   {
-    keywords: ["black opium", "perfume", "fragrance", "pink glaze", "scent"],
-    reply: "Our flagship **Black Opium Pink Glaze Eau de Parfum** features a glazed wild strawberry accord colliding with dark roasted coffee beans and white peony. Formulated with 24% oil concentration for intense sillage that lasts 12+ hours.",
-    product: {
-      _id: "bo-pink-glaze-50",
-      name: "Black Opium Pink Glaze 50ML",
-      price: 155000,
-      image: "https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?w=400&auto=format&fit=crop&q=80",
-    },
+    keywords: ["bridal", "wedding", "bride"],
+    reply: "For your big day, we recommend starting a bridal skincare and beauty routine 4–8 weeks ahead — our AI Beauty Advisor can build one matched to your skin, hair and wedding date.",
+    link: { text: "Get Matched →", url: "/recommend" },
   },
 ];
 
-function AiConciergeChat({ onCartOpen }) {
+function AiConciergeChat() {
   const [isOpen, setIsOpen] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
   const [messages, setMessages] = useState([
     {
       sender: "ai",
-      text: "Hello, I am your Gracia Fab AI Beauty Advisor. How may I assist you with fragrances, melanin skincare, or raw virgin hair today?",
+      text: "Hello, I am your Gracia Fab AI Beauty Advisor. How may I assist you with skincare, haircare, wigs, or bridal beauty today?",
     },
   ]);
   const [inputVal, setInputVal] = useState("");
   const [isTyping, setIsTyping] = useState(false);
 
   const messagesEndRef = useRef(null);
-  const { addToCart } = useCart();
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -92,7 +75,7 @@ function AiConciergeChat({ onCartOpen }) {
 
       if (!match) {
         match = {
-          reply: "Thank you for asking! Based on our haute beauty repertoire, I can curate custom formulations for your skin concerns, hair texture, or gift selection. Feel free to ask about our Black Opium perfumes, 12A+ raw wigs, or clinical skincare.",
+          reply: "Thank you for asking! I can help match you to the right skincare, haircare, wig or bridal beauty products. Feel free to ask about hyperpigmentation, raw wigs, skin tone matching, or bridal prep.",
         };
       }
 
@@ -101,22 +84,11 @@ function AiConciergeChat({ onCartOpen }) {
         {
           sender: "ai",
           text: match.reply,
-          product: match.product,
           link: match.link,
         },
       ]);
       setIsTyping(false);
     }, 600);
-  };
-
-  const handleAddProductToCart = (prod) => {
-    addToCart({
-      _id: prod._id,
-      name: prod.name,
-      price: prod.price,
-      image: prod.image,
-    });
-    if (onCartOpen) onCartOpen();
   };
 
   return (
@@ -207,27 +179,6 @@ function AiConciergeChat({ onCartOpen }) {
                   >
                     <div className="ysl-chat-bubble">
                       <p>{msg.text}</p>
-
-                      {/* Product Recommendation Card inside Chat */}
-                      {msg.product && (
-                        <div className="ysl-chat-product-card">
-                          <img
-                            src={msg.product.image}
-                            alt={msg.product.name}
-                            className="ysl-chat-prod-img"
-                          />
-                          <div className="ysl-chat-prod-info">
-                            <strong>{msg.product.name}</strong>
-                            <span>₦{msg.product.price.toLocaleString()}</span>
-                            <button
-                              className="ysl-chat-add-btn"
-                              onClick={() => handleAddProductToCart(msg.product)}
-                            >
-                              Add to Bag
-                            </button>
-                          </div>
-                        </div>
-                      )}
 
                       {/* Quick Link */}
                       {msg.link && (

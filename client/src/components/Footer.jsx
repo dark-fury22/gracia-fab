@@ -47,12 +47,11 @@ function Footer() {
           <h3 className="ysl-footer-col-title">EXCLUSIVE BEAUTY</h3>
           <ul className="ysl-footer-links">
             <li><Link to="/about">About Gracia Fab</Link></li>
-            <li><Link to="/services">Haute Beauty Services</Link></li>
             <li><Link to="/recommend">AI Beauty Advisor</Link></li>
             <li><Link to="/skin-analysis">AI Skin Analysis</Link></li>
             <li><Link to="/routine-generator">Routine Generator</Link></li>
             <li><Link to="/skin-tone">Skin Tone Detector</Link></li>
-            <li><Link to="/products?filter=exclusives">Online Exclusives</Link></li>
+            <li><Link to="/products?sort=rating">Top Rated Products</Link></li>
           </ul>
         </div>
 
@@ -60,12 +59,10 @@ function Footer() {
         <div className="ysl-footer-col">
           <h3 className="ysl-footer-col-title">SHOP</h3>
           <ul className="ysl-footer-links">
-            <li><Link to="/products?category=fragrance">Fragrances</Link></li>
-            <li><Link to="/products?category=makeup">Makeup</Link></li>
             <li><Link to="/products?category=skincare">Melanin Skincare</Link></li>
-            <li><Link to="/products?category=giftset">Gift Sets &amp; Vaults</Link></li>
+            <li><Link to="/products?category=haircare">Haircare</Link></li>
             <li><Link to="/products?category=wig">HD Lace Frontal Wigs</Link></li>
-            <li><Link to="/products?category=haircare">Raw Virgin Bundles</Link></li>
+            <li><Link to="/products?category=bridal">Bridal Beauty</Link></li>
             <li><Link to="/products">View All Products</Link></li>
           </ul>
         </div>

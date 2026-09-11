@@ -5,261 +5,102 @@ import { useCart } from "../hooks/useCart";
 import ThemeToggle from "./ThemeToggle";
 import "./Navbar.css";
 
-// ── YSL BENCHMARK MEGA-MENU DATA (Matching Screenshots 1, 2, 3, 4) ──
+// ── Mega-menu data for Gracia Fab's real product categories ──
 const MEGA_MENUS = {
-  fragrance: {
-    columns: [
-      {
-        title: "WOMEN'S FRAGRANCES",
-        links: [
-          { label: "Libre", url: "/products?category=fragrance&line=libre" },
-          { label: "Black Opium", url: "/products?category=fragrance&line=black-opium" },
-          { label: "Mon Paris", url: "/products?category=fragrance&line=mon-paris" },
-          { label: "Fragrance Sets for Women", url: "/products?category=giftset" },
-          { label: "VIEW ALL WOMEN'S FRAGRANCES", url: "/products?category=fragrance", isAll: true },
-        ],
-      },
-      {
-        title: "MEN'S FRAGRANCES",
-        links: [
-          { label: "MYSLF", url: "/products?category=fragrance&line=myslf" },
-          { label: "Y", url: "/products?category=fragrance&line=y" },
-          { label: "L'Homme", url: "/products?category=fragrance&line=lhomme" },
-          { label: "Fragrance Sets for Men", url: "/products?category=giftset" },
-          { label: "VIEW ALL MEN'S FRAGRANCES", url: "/products?category=fragrance", isAll: true },
-        ],
-      },
-      {
-        title: "LE VESTIAIRE DES PARFUMS",
-        links: [
-          { label: "Fragrances", url: "/products?category=fragrance" },
-          { label: "Candles", url: "/products?category=fragrance" },
-          { label: "Gift Sets", url: "/products?category=giftset" },
-          { label: "Bath & Body", url: "/products?category=skincare" },
-          { label: "VIEW ALL LE VESTIAIRE DES PARFUMS", url: "/products?category=fragrance", isAll: true },
-        ],
-      },
-    ],
-    cards: [
-      {
-        title: "LIBRE",
-        image: "https://images.unsplash.com/photo-1541643600914-78b084683601?w=500&auto=format&fit=crop&q=80",
-        url: "/products?category=fragrance",
-      },
-      {
-        title: "MYSLF",
-        image: "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=500&auto=format&fit=crop&q=80",
-        url: "/products?category=fragrance",
-      },
-      {
-        title: "LE VESTIAIRE DES PARFUMS",
-        image: "https://images.unsplash.com/photo-1594035910387-fea47794261f?w=500&auto=format&fit=crop&q=80",
-        url: "/products?category=fragrance",
-      },
-    ],
-  },
-  makeup: {
-    columns: [
-      {
-        title: "LIP",
-        links: [
-          { label: "Lipstick", url: "/products?category=makeup" },
-          { label: "Lip Gloss", url: "/products?category=makeup" },
-          { label: "Liquid Lipstick", url: "/products?category=makeup" },
-          { label: "Lip Balm", url: "/products?category=makeup" },
-          { label: "Lip Stain", url: "/products?category=makeup" },
-          { label: "Lip Liner", url: "/products?category=makeup" },
-          { label: "Custom Lip Creator", url: "/skin-tone" },
-          { label: "VIEW ALL LIP", url: "/products?category=makeup", isAll: true },
-        ],
-      },
-      {
-        title: "EYE",
-        links: [
-          { label: "Mascara", url: "/products?category=makeup" },
-          { label: "Eyeshadow", url: "/products?category=makeup" },
-          { label: "Eyeliner", url: "/products?category=makeup" },
-          { label: "Eyebrow", url: "/products?category=makeup" },
-          { label: "VIEW ALL EYE", url: "/products?category=makeup", isAll: true },
-        ],
-      },
-      {
-        title: "FACE",
-        links: [
-          { label: "Blush & Bronzer", url: "/products?category=makeup" },
-          { label: "Concealer", url: "/products?category=makeup" },
-          { label: "Highlighter", url: "/products?category=makeup" },
-          { label: "Foundation & Tinted Moisturizer", url: "/products?category=makeup" },
-          { label: "Primer & Setting Powder", url: "/products?category=makeup" },
-          { label: "VIEW ALL FACE", url: "/products?category=makeup", isAll: true },
-        ],
-      },
-    ],
-    cards: [
-      {
-        title: "LOVESHINE LIP OIL STICK",
-        image: "https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=500&auto=format&fit=crop&q=80",
-        url: "/products?category=makeup",
-      },
-      {
-        title: "SOFT GLOW CUSHION FOUNDATION",
-        image: "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=500&auto=format&fit=crop&q=80",
-        url: "/products?category=makeup",
-      },
-      {
-        title: "LASH LATEX MASCARA",
-        image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=500&auto=format&fit=crop&q=80",
-        url: "/products?category=makeup",
-      },
-    ],
-  },
   skincare: {
     columns: [
       {
-        title: "SKINCARE BY CATEGORY",
+        title: "SKINCARE",
         links: [
-          { label: "Cleansers & Toners", url: "/products?category=skincare" },
-          { label: "Eye & Lip Care", url: "/products?category=skincare" },
-          { label: "Moisturizers", url: "/products?category=skincare" },
-          { label: "Primers", url: "/products?category=skincare" },
-          { label: "Serums", url: "/products?category=skincare" },
-          { label: "VIEW ALL SKINCARE BY CATEGORY", url: "/products?category=skincare", isAll: true },
-        ],
-      },
-      {
-        title: "SKINCARE BY CONCERN",
-        links: [
-          { label: "Fine Lines & Wrinkles", url: "/products?category=skincare" },
-          { label: "Brightening", url: "/products?category=skincare" },
-          { label: "Hydration", url: "/products?category=skincare" },
-          { label: "Dark Spots", url: "/products?category=skincare" },
-          { label: "Firming", url: "/products?category=skincare" },
-          { label: "VIEW ALL SKINCARE BY CONCERN", url: "/products?category=skincare", isAll: true },
-        ],
-      },
-      {
-        title: "SKINCARE BY COLLECTION",
-        links: [
-          { label: "NU", url: "/products?category=skincare" },
-          { label: "Pure Shots", url: "/products?category=skincare" },
-          { label: "Or Rouge", url: "/products?category=skincare" },
-          { label: "VIEW ALL SKINCARE BY COLLECTION", url: "/products?category=skincare", isAll: true },
+          { label: "Shop All Skincare", url: "/products?category=skincare" },
+          { label: "AI Skin Analysis (Selfie)", url: "/skin-analysis" },
+          { label: "Custom Routine Generator", url: "/routine-generator" },
+          { label: "VIEW ALL SKINCARE", url: "/products?category=skincare", isAll: true },
         ],
       },
     ],
     cards: [
       {
-        title: "PURE SHOTS NIGHT REBOOT",
+        title: "CLINICAL SKINCARE",
         image: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=500&auto=format&fit=crop&q=80",
         url: "/products?category=skincare",
       },
       {
-        title: "CERAMIDE BARRIER RESTORATIVE",
+        title: "MOISTURIZERS & SERUMS",
         image: "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=500&auto=format&fit=crop&q=80",
         url: "/products?category=skincare",
       },
-      {
-        title: "OR ROUGE HAUTE ELIXIR",
-        image: "https://images.unsplash.com/photo-1608248597359-bb4387532d56?w=500&auto=format&fit=crop&q=80",
-        url: "/products?category=skincare",
-      },
     ],
   },
-  giftsets: {
+  haircare: {
     columns: [
       {
-        title: "GIFT SETS BY CATEGORY",
+        title: "HAIRCARE",
         links: [
-          { label: "Fragrance Gift Sets", url: "/products?category=giftset" },
-          { label: "Makeup Gift Sets", url: "/products?category=giftset" },
-          { label: "Skincare Vaults", url: "/products?category=giftset" },
-          { label: "Luxury Minis", url: "/products?category=giftset" },
-          { label: "VIEW ALL GIFT SETS", url: "/products?category=giftset", isAll: true },
-        ],
-      },
-      {
-        title: "BEST SELLERS",
-        links: [
-          { label: "Black Opium Vault", url: "/products?category=giftset" },
-          { label: "Libre Golden Discovery Set", url: "/products?category=giftset" },
-          { label: "Pure Shots Clinical Duo", url: "/products?category=giftset" },
-          { label: "VIEW ALL BEST SELLERS", url: "/products?category=giftset", isAll: true },
-        ],
-      },
-      {
-        title: "THE ART OF GIFTING",
-        links: [
-          { label: "Complimentary Lacquer Box", url: "/products?category=giftset" },
-          { label: "Personalized Calligraphy Card", url: "/products?category=giftset" },
-          { label: "Bespoke Ribbon Dressing", url: "/products?category=giftset" },
-          { label: "EXPLORE GIFTING", url: "/products?category=giftset", isAll: true },
-        ],
-      },
-    ],
-    cards: [
-      {
-        title: "BLACK OPIUM GIFT VAULT",
-        image: "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=500&auto=format&fit=crop&q=80",
-        url: "/products?category=giftset",
-      },
-      {
-        title: "GOLDEN DISCOVERY DUO",
-        image: "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=500&auto=format&fit=crop&q=80",
-        url: "/products?category=giftset",
-      },
-      {
-        title: "CLINICAL GLOW SET",
-        image: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=500&auto=format&fit=crop&q=80",
-        url: "/products?category=giftset",
-      },
-    ],
-  },
-  services: {
-    columns: [
-      {
-        title: "AI BEAUTY LAB",
-        links: [
+          { label: "Shop All Haircare", url: "/products?category=haircare" },
           { label: "AI Beauty Advisor", url: "/recommend" },
-          { label: "AI Selfie Skin Analysis", url: "/skin-analysis" },
-          { label: "Custom Routine Generator", url: "/routine-generator" },
-          { label: "African Skin Tone Detector", url: "/skin-tone" },
-          { label: "LAUNCH BEAUTY LAB", url: "/recommend", isAll: true },
-        ],
-      },
-      {
-        title: "STUDIO SERVICES",
-        links: [
-          { label: "Bespoke Bridal Fitting (Lagos)", url: "/services" },
-          { label: "Custom Wig Ventilation & HD Lace", url: "/services" },
-          { label: "Private Haute Fragrance Consultation", url: "/services" },
-          { label: "BOOK CONSULTATION", url: "/services", isAll: true },
-        ],
-      },
-      {
-        title: "VIRTUAL CONCIERGE",
-        links: [
-          { label: "Live AI Consultation", url: "/recommend" },
-          { label: "Concierge Telephone Hotline", url: "/contact" },
-          { label: "Shade Match Guarantee", url: "/services" },
-          { label: "CHAT NOW", url: "/contact", isAll: true },
+          { label: "VIEW ALL HAIRCARE", url: "/products?category=haircare", isAll: true },
         ],
       },
     ],
     cards: [
       {
-        title: "AI CLINICAL SKIN SCAN",
-        image: "https://images.unsplash.com/photo-1589710751893-f9a6770ad71b?w=500&auto=format&fit=crop&q=80",
-        url: "/skin-analysis",
+        title: "HAIRCARE ESSENTIALS",
+        image: "https://images.unsplash.com/photo-1589156280159-27698a70f29e?w=500&auto=format&fit=crop&q=80",
+        url: "/products?category=haircare",
       },
       {
-        title: "BRIDAL GLAM FITTING",
-        image: "https://images.unsplash.com/photo-1519741497674-611481863552?w=500&auto=format&fit=crop&q=80",
-        url: "/services",
+        title: "SCALP & GROWTH CARE",
+        image: "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=500&auto=format&fit=crop&q=80",
+        url: "/products?category=haircare",
+      },
+    ],
+  },
+  wig: {
+    columns: [
+      {
+        title: "WIGS",
+        links: [
+          { label: "Shop All Wigs", url: "/products?category=wig" },
+          { label: "Skin Tone Detector", url: "/skin-tone" },
+          { label: "VIEW ALL WIGS", url: "/products?category=wig", isAll: true },
+        ],
+      },
+    ],
+    cards: [
+      {
+        title: "RAW WIGS & FRONTALS",
+        image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80",
+        url: "/products?category=wig",
       },
       {
-        title: "CUSTOM WIG VENTILATION",
+        title: "BOBS & COLORWAYS",
         image: "https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?w=500&auto=format&fit=crop&q=80",
-        url: "/services",
+        url: "/products?category=wig",
+      },
+    ],
+  },
+  bridal: {
+    columns: [
+      {
+        title: "BRIDAL",
+        links: [
+          { label: "Shop All Bridal", url: "/products?category=bridal" },
+          { label: "AI Beauty Advisor", url: "/recommend" },
+          { label: "VIEW ALL BRIDAL", url: "/products?category=bridal", isAll: true },
+        ],
+      },
+    ],
+    cards: [
+      {
+        title: "BRIDAL BEAUTY",
+        image: "https://images.unsplash.com/photo-1519741497674-611481863552?w=500&auto=format&fit=crop&q=80",
+        url: "/products?category=bridal",
+      },
+      {
+        title: "WEDDING DAY GLOW",
+        image: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=500&auto=format&fit=crop&q=80",
+        url: "/products?category=bridal",
       },
     ],
   },
@@ -275,7 +116,7 @@ function Navbar({ onCartOpen }) {
   const [accountOpen, setAccountOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [activeMega, setActiveMega] = useState(null); // 'fragrance' | 'makeup' | 'skincare' | 'giftsets' | 'services'
+  const [activeMega, setActiveMega] = useState(null); // 'skincare' | 'haircare' | 'wig' | 'bridal'
 
   const accountRef = useRef(null);
   const searchInputRef = useRef(null);
@@ -372,7 +213,7 @@ function Navbar({ onCartOpen }) {
           <Link to="/" className="ysl-brand-wordmark" title="Gracia Fab Maison">
             GRACIA FAB
           </Link>
-          <span className="ysl-brand-submark">PARIS · LAGOS</span>
+          <span className="ysl-brand-submark">LAGOS · ABUJA</span>
         </div>
 
         {/* Right Utilities: Account, Beauty Club, My Cart */}
@@ -460,24 +301,6 @@ function Navbar({ onCartOpen }) {
       <nav className="ysl-category-nav" aria-label="Product categories">
         <div className="ysl-category-links">
           <Link
-            to="/products?category=fragrance"
-            className={`ysl-cat-link ${activeMega === "fragrance" ? "active" : ""}`}
-            onMouseEnter={() => handleCategoryHover("fragrance")}
-            onClick={() => setActiveMega(activeMega === "fragrance" ? null : "fragrance")}
-          >
-            FRAGRANCE
-          </Link>
-
-          <Link
-            to="/products?category=makeup"
-            className={`ysl-cat-link ${activeMega === "makeup" ? "active" : ""}`}
-            onMouseEnter={() => handleCategoryHover("makeup")}
-            onClick={() => setActiveMega(activeMega === "makeup" ? null : "makeup")}
-          >
-            MAKEUP
-          </Link>
-
-          <Link
             to="/products?category=skincare"
             className={`ysl-cat-link ${activeMega === "skincare" ? "active" : ""}`}
             onMouseEnter={() => handleCategoryHover("skincare")}
@@ -487,21 +310,30 @@ function Navbar({ onCartOpen }) {
           </Link>
 
           <Link
-            to="/products?category=giftset"
-            className={`ysl-cat-link ${activeMega === "giftsets" ? "active" : ""}`}
-            onMouseEnter={() => handleCategoryHover("giftsets")}
-            onClick={() => setActiveMega(activeMega === "giftsets" ? null : "giftsets")}
+            to="/products?category=haircare"
+            className={`ysl-cat-link ${activeMega === "haircare" ? "active" : ""}`}
+            onMouseEnter={() => handleCategoryHover("haircare")}
+            onClick={() => setActiveMega(activeMega === "haircare" ? null : "haircare")}
           >
-            GIFTS &amp; SETS
+            HAIRCARE
           </Link>
 
           <Link
-            to="/services"
-            className={`ysl-cat-link ${activeMega === "services" ? "active" : ""}`}
-            onMouseEnter={() => handleCategoryHover("services")}
-            onClick={() => setActiveMega(activeMega === "services" ? null : "services")}
+            to="/products?category=wig"
+            className={`ysl-cat-link ${activeMega === "wig" ? "active" : ""}`}
+            onMouseEnter={() => handleCategoryHover("wig")}
+            onClick={() => setActiveMega(activeMega === "wig" ? null : "wig")}
           >
-            SERVICES
+            WIGS
+          </Link>
+
+          <Link
+            to="/products?category=bridal"
+            className={`ysl-cat-link ${activeMega === "bridal" ? "active" : ""}`}
+            onMouseEnter={() => handleCategoryHover("bridal")}
+            onClick={() => setActiveMega(activeMega === "bridal" ? null : "bridal")}
+          >
+            BRIDAL
           </Link>
 
           <Link
@@ -513,11 +345,11 @@ function Navbar({ onCartOpen }) {
           </Link>
 
           <Link
-            to="/products?filter=exclusives"
+            to="/products?sort=rating"
             className="ysl-cat-link"
             onMouseEnter={() => setActiveMega(null)}
           >
-            EXCLUSIVE OFFERS
+            TOP RATED
           </Link>
         </div>
 
@@ -605,7 +437,7 @@ function Navbar({ onCartOpen }) {
                 ref={searchInputRef}
                 type="text"
                 className="ysl-search-input"
-                placeholder="Search fragrances, melanin skincare, virgin hair, gift sets..."
+                placeholder="Search skincare, haircare, wigs, bridal beauty..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -626,20 +458,11 @@ function Navbar({ onCartOpen }) {
               <button
                 type="button"
                 onClick={() => {
-                  navigate("/products?search=Black+Opium");
+                  navigate("/products?search=Serum");
                   setSearchOpen(false);
                 }}
               >
-                Black Opium
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  navigate("/products?search=Vitamin+C");
-                  setSearchOpen(false);
-                }}
-              >
-                Melanin Serum
+                Skincare Serums
               </button>
               <button
                 type="button"
@@ -653,11 +476,20 @@ function Navbar({ onCartOpen }) {
               <button
                 type="button"
                 onClick={() => {
-                  navigate("/products?search=Gift+Vault");
+                  navigate("/products?search=Bridal");
                   setSearchOpen(false);
                 }}
               >
-                Gift Vaults
+                Bridal Beauty
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  navigate("/products?search=Haircare");
+                  setSearchOpen(false);
+                }}
+              >
+                Haircare
               </button>
             </div>
           </div>
@@ -679,20 +511,17 @@ function Navbar({ onCartOpen }) {
           </div>
 
           <div className="ysl-mobile-categories">
-            <Link to="/products?category=fragrance" onClick={() => setMenuOpen(false)}>
-              FRAGRANCE
-            </Link>
-            <Link to="/products?category=makeup" onClick={() => setMenuOpen(false)}>
-              MAKEUP
-            </Link>
             <Link to="/products?category=skincare" onClick={() => setMenuOpen(false)}>
               SKINCARE
             </Link>
-            <Link to="/products?category=giftset" onClick={() => setMenuOpen(false)}>
-              GIFTS &amp; SETS
+            <Link to="/products?category=haircare" onClick={() => setMenuOpen(false)}>
+              HAIRCARE
             </Link>
-            <Link to="/services" onClick={() => setMenuOpen(false)}>
-              SERVICES
+            <Link to="/products?category=wig" onClick={() => setMenuOpen(false)}>
+              WIGS
+            </Link>
+            <Link to="/products?category=bridal" onClick={() => setMenuOpen(false)}>
+              BRIDAL
             </Link>
             <Link to="/recommend" onClick={() => setMenuOpen(false)}>
               BEAUTY CLUB

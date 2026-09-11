@@ -12,7 +12,6 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import VerifyCode from "./pages/VerifyCode";
 import About from "./pages/About";
-import Services from "./pages/Services";
 import Contact from "./pages/Contact";
 import ProductsLayout from "./pages/ProductsLayout";
 import ProductDetail from "./pages/ProductDetail";
@@ -179,10 +178,6 @@ function App() {
           }
         />
         <Route path="/about" element={<About onCartOpen={openCart} />} />
-        <Route
-          path="/services"
-          element={<Services onCartOpen={openCart} />}
-        />
         <Route
           path="/contact"
           element={<Contact onCartOpen={openCart} />}

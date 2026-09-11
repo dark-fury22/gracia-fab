@@ -602,6 +602,24 @@
   color: #FFFFFF;
 }
 
+.btn-maison-add-to-bag:disabled {
+  background: #999999;
+  color: #EEEEEE;
+  cursor: not-allowed;
+}
+
+.maison-card-badge.out-of-stock {
+  background: #7A2432;
+}
+
+.maison-empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3rem 1rem;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text-secondary, #666666);
+}
+
 /* In-Grid Editorial Reel Card (YSL Sample) */
 .maison-ingrid-editorial-card {
   position: relative;
