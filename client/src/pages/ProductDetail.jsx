@@ -100,7 +100,7 @@ function ProductDetail({ onCartOpen }) {
   return (
     <>
       <Navbar onCartOpen={onCartOpen} />
-      <div className="detail-page">
+      <div className="detail-page" role="main">
         <button className="btn-back" onClick={() => navigate("/products")}>
           ← Back to Products
         </button>
@@ -290,6 +290,7 @@ function ReviewSection({ productId }) {
             <label>Skin Type (optional)</label>
             <select
               value={form.skinType}
+              aria-label="Skin type (optional)"
               onChange={(e) => setForm({ ...form, skinType: e.target.value })}
             >
               <option value="">Select</option>

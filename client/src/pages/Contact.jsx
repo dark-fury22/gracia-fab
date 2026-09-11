@@ -54,7 +54,7 @@ function Contact({ onCartOpen }) {
     <>
       <SEO title="Contact Us" url="/contact" />
       <Navbar onCartOpen={onCartOpen} />
-      <div className="contact-page">
+      <div className="contact-page" role="main">
         {/* Header */}
         <section className="contact-header-section">
           <div className="contact-header-inner">
@@ -118,6 +118,7 @@ function Contact({ onCartOpen }) {
                     <label>Subject</label>
                     <select
                       name="subject"
+                      aria-label="Subject"
                       value={formData.subject}
                       onChange={handleChange}
                     >

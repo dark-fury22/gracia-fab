@@ -182,7 +182,7 @@ function Checkout({ onCartOpen }) {
     <>
       <SEO title="Checkout" url="/checkout" />
       <Navbar onCartOpen={onCartOpen} />
-      <div className="checkout-page">
+      <div className="checkout-page" role="main">
         <h1>Checkout 📦</h1>
 
         <div className="checkout-steps">
@@ -262,6 +262,7 @@ function Checkout({ onCartOpen }) {
                       <label>State</label>
                       <select
                         name="state"
+                        aria-label="State"
                         value={formData.state}
                         onChange={handleChange}
                       >

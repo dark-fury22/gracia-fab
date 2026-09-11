@@ -59,7 +59,7 @@ function MyOrders() {
         url="/my-orders"
       />
       <Navbar />
-      <div className="orders-page">
+      <div className="orders-page" role="main">
         <h1>My Orders 📦</h1>
 
         {loading ? (

@@ -82,7 +82,7 @@ function Wishlist() {
         url="/wishlist"
       />
       <Navbar />
-      <div className="wishlist-page">
+      <div className="wishlist-page" role="main">
         <div className="wishlist-header">
           <h1>My Saved Items 💖</h1>
           <p>Your favourite products and recommendations in one place</p>

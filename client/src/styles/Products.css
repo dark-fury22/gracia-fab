@@ -265,6 +265,87 @@
   cursor: pointer;
 }
 
+.maison-smart-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  max-width: 1400px;
+  margin: 0 auto 1.5rem;
+  padding: 0.85rem 1.5rem;
+  background: #F5F0EC;
+  border: 1px solid #D8D8D8;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  color: #1A1412;
+}
+
+[data-theme="dark"] .maison-smart-banner {
+  background: #1A1412;
+  border-color: #333;
+  color: #EEE;
+}
+
+.maison-smart-banner strong {
+  font-weight: 700;
+}
+
+.maison-smart-banner-clear {
+  background: none;
+  border: 1px solid #1A1412;
+  color: #1A1412;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 0.4rem 0.9rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+[data-theme="dark"] .maison-smart-banner-clear {
+  border-color: #EEE;
+  color: #EEE;
+}
+
+.maison-smart-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 2000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 8vh 1.5rem 1.5rem;
+}
+
+.maison-smart-modal {
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+  background: #FFFFFF;
+  padding: 2.5rem 2rem 2rem;
+}
+
+[data-theme="dark"] .maison-smart-modal {
+  background: #1A1412;
+}
+
+.maison-smart-modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  color: #1A1412;
+}
+
+[data-theme="dark"] .maison-smart-modal-close {
+  color: #EEE;
+}
+
 .maison-ai-advisor-btn {
   background: #000000;
   color: #FFFFFF;
@@ -479,7 +560,7 @@
 .maison-single-size-label {
   font-family: 'DM Sans', sans-serif;
   font-size: 0.76rem;
-  color: #888888;
+  color: #6E6E6E;
 }
 
 .maison-card-price-row {

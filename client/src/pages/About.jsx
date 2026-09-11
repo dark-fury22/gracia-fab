@@ -15,7 +15,7 @@ function About({ onCartOpen }) {
       />
       <Navbar onCartOpen={onCartOpen} />
 
-      <div className="craft-page">
+      <div className="craft-page" role="main">
         {/* ── 1. Dark Cinematic Espresso Hero (Sample 2) ── */}
         <section className="craft-hero">
           <div className="craft-hero-inner">

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import API_URL from "../config";
 import "./Footer.css";
 
 function Footer() {
@@ -7,15 +8,33 @@ function Footer() {
   const [phone, setPhone] = useState("");
   const [agreed, setAgreed] = useState(true);
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [signupError, setSignupError] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (email) {
+    if (!email) return;
+
+    setSignupError("");
+    setSubmitting(true);
+    try {
+      const res = await fetch(`${API_URL}/api/contact/subscribe`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Subscription failed.");
+
       setSubmitted(true);
-      setTimeout(() => {
-        setEmail("");
-        setPhone("");
-      }, 3000);
+      setEmail("");
+      setPhone("");
+    } catch (err) {
+      setSignupError(
+        err.message || "Something went wrong. Please try again.",
+      );
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -25,7 +44,7 @@ function Footer() {
       <div className="ysl-footer-top">
         {/* Column 1: Exclusive Beauty */}
         <div className="ysl-footer-col">
-          <h4 className="ysl-footer-col-title">EXCLUSIVE BEAUTY</h4>
+          <h3 className="ysl-footer-col-title">EXCLUSIVE BEAUTY</h3>
           <ul className="ysl-footer-links">
             <li><Link to="/about">About Gracia Fab</Link></li>
             <li><Link to="/services">Haute Beauty Services</Link></li>
@@ -39,7 +58,7 @@ function Footer() {
 
         {/* Column 2: Shop */}
         <div className="ysl-footer-col">
-          <h4 className="ysl-footer-col-title">SHOP</h4>
+          <h3 className="ysl-footer-col-title">SHOP</h3>
           <ul className="ysl-footer-links">
             <li><Link to="/products?category=fragrance">Fragrances</Link></li>
             <li><Link to="/products?category=makeup">Makeup</Link></li>
@@ -53,7 +72,7 @@ function Footer() {
 
         {/* Column 3: Customer Care */}
         <div className="ysl-footer-col">
-          <h4 className="ysl-footer-col-title">CUSTOMER CARE</h4>
+          <h3 className="ysl-footer-col-title">CUSTOMER CARE</h3>
           <ul className="ysl-footer-links">
             <li><Link to="/contact">Contact Concierge</Link></li>
             <li><Link to="/my-orders">Track Your Order</Link></li>
@@ -67,7 +86,7 @@ function Footer() {
 
         {/* Column 4: Legal & Privacy */}
         <div className="ysl-footer-col">
-          <h4 className="ysl-footer-col-title">LEGAL &amp; PRIVACY</h4>
+          <h3 className="ysl-footer-col-title">LEGAL &amp; PRIVACY</h3>
           <ul className="ysl-footer-links">
             <li><Link to="/terms">Terms of Sale</Link></li>
             <li><Link to="/privacy">Privacy Notice</Link></li>
@@ -80,7 +99,7 @@ function Footer() {
 
         {/* Column 5: Sign Up (Dual Field + Phone + Consent) */}
         <div className="ysl-footer-col ysl-footer-signup-col">
-          <h4 className="ysl-footer-col-title">SIGN UP FOR EXCLUSIVE PRIVILEGES</h4>
+          <h3 className="ysl-footer-col-title">SIGN UP FOR EXCLUSIVE PRIVILEGES</h3>
           <p className="ysl-footer-signup-desc">
             Be the first to know about private vault drops, luxury gifts, and personalized AI beauty consultations.
           </p>
@@ -92,6 +111,10 @@ function Footer() {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="ysl-signup-form">
+              {signupError && (
+                <div className="ysl-signup-error">⚠️ {signupError}</div>
+              )}
+
               <div className="ysl-input-group">
                 <input
                   type="email"
@@ -127,8 +150,12 @@ function Footer() {
                 </span>
               </label>
 
-              <button type="submit" className="ysl-footer-submit-btn">
-                SUBMIT
+              <button
+                type="submit"
+                className="ysl-footer-submit-btn"
+                disabled={submitting}
+              >
+                {submitting ? "SUBMITTING…" : "SUBMIT"}
               </button>
             </form>
           )}

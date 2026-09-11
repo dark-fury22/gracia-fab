@@ -103,6 +103,17 @@
   margin-bottom: 0.5rem;
 }
 
+.account-alert-error {
+  background: var(--error-bg);
+  color: var(--error);
+  border: 1px solid var(--error);
+  padding: 0.75rem 1.2rem;
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
 .profile-view {
   display: flex;
   flex-direction: column;
@@ -356,6 +367,28 @@
   margin-top: 1rem;
 }
 
+.account-btn-primary {
+  padding: 0.7rem 1.6rem;
+  background: var(--accent);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  cursor: pointer;
+  transition: all var(--duration) var(--ease);
+  margin-top: 0.5rem;
+}
+
+.account-btn-primary:hover {
+  opacity: 0.9;
+}
+
+.account-btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .account-btn-signout {
   padding: 0.65rem 1.4rem;
   background: var(--surface);
@@ -378,7 +411,7 @@
   background: none;
   border: none;
   font-size: 0.82rem;
-  color: var(--text-faint);
+  color: var(--text-muted);
   cursor: pointer;
   text-decoration: underline;
   text-underline-offset: 2px;

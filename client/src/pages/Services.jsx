@@ -90,7 +90,7 @@ function Services({ onCartOpen }) {
       />
       <Navbar onCartOpen={onCartOpen} />
 
-      <div className="services-page">
+      <div className="services-page" role="main">
         {/* ═════════════════════════════════════════════════════════════════════
             1. "BEAUTY REDEFINED" FLUTED GLASSMORPHIC HERO (Matching Sample)
            ═════════════════════════════════════════════════════════════════════ */}
@@ -469,6 +469,7 @@ function Services({ onCartOpen }) {
                         <label>Service Type</label>
                         <select
                           value={bookingForm.service}
+                          aria-label="Service type"
                           onChange={(e) =>
                             setBookingForm({ ...bookingForm, service: e.target.value })
                           }
@@ -484,6 +485,7 @@ function Services({ onCartOpen }) {
                         <input
                           type="date"
                           required
+                          aria-label="Preferred date"
                           value={bookingForm.date}
                           onChange={(e) =>
                             setBookingForm({ ...bookingForm, date: e.target.value })

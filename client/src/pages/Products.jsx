@@ -1,7 +1,6 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import "../styles/Products.css";
-import API_URL from "../config";
 import SmartSearch from "../components/SmartSearch";
 import WishlistButton from "../components/WishlistButton";
 import { useCart } from "../hooks/useCart";
@@ -413,7 +412,7 @@ function Products() {
   };
 
   // Filter pipeline
-  const displayedProducts = useMemo(() => {
+  const filteredProducts = useMemo(() => {
     let list = [...MAISON_PRODUCTS];
 
     if (activeTab !== "all") {
@@ -441,8 +440,17 @@ function Products() {
     return list;
   }, [activeTab, subFilter, search, sort, selectedVariants]);
 
+  const displayedProducts =
+    isSmartMode && smartResults ? smartResults : filteredProducts;
+
+  const clearSmartSearch = () => {
+    setSmartResults(null);
+    setSmartQuery("");
+    setIsSmartMode(false);
+  };
+
   return (
-    <div className="maison-catalog-page">
+    <div className="maison-catalog-page" role="main">
       {/* ── 1. Spotlight Hero Banner (Sample 5 - Black Opium Style) ── */}
       <section className="maison-spotlight-hero">
         <div className="maison-spotlight-inner">
@@ -471,7 +479,7 @@ function Products() {
       </section>
 
       {/* ── 2. Maison Category Navigation Bar (YSL Top Tabs) ── */}
-      <nav className="maison-tabs-bar">
+      <nav className="maison-tabs-bar" aria-label="Product collection tabs">
         <div className="maison-tabs-container">
           {MAISON_TABS.map((tab) => (
             <button
@@ -539,6 +547,7 @@ function Products() {
               value={sort}
               onChange={(e) => setSort(e.target.value)}
               className="maison-sort-select"
+              aria-label="Sort products"
             >
               <option value="">Sort: Featured</option>
               <option value="price_asc">Price: Low to High</option>
@@ -556,10 +565,21 @@ function Products() {
         </div>
       </section>
 
+      {isSmartMode && smartResults && (
+        <div className="maison-smart-banner">
+          <span>
+            ✦ AI results for <strong>"{smartQuery}"</strong> — {smartResults.length} found
+          </span>
+          <button className="maison-smart-banner-clear" onClick={clearSmartSearch}>
+            ✕ Clear
+          </button>
+        </div>
+      )}
+
       {/* ── 4. 4-Column Luxury Grid with Sizes, Shade Swatches & In-Grid Editorial Card ── */}
       <section className="maison-grid-section">
         <div className="maison-grid-container">
-          {displayedProducts.map((product, index) => {
+          {displayedProducts.map((product) => {
             const variant = selectedVariants[product._id] || { sizeIdx: 0, shadeIdx: 0 };
             const currentPrice = getCardPrice(product);
 
@@ -616,6 +636,7 @@ function Products() {
                     <div className="maison-size-selector">
                       <select
                         value={variant.sizeIdx}
+                        aria-label={`Select size for ${product.name}`}
                         onChange={(e) => handleSizeChange(product._id, Number(e.target.value))}
                         className="maison-dropdown-select"
                       >
@@ -770,15 +791,34 @@ function Products() {
       </section>
 
       {/* ── SmartSearch AI Modal ── */}
-      <SmartSearch
-        isOpen={showSmartSearch}
-        onClose={() => setShowSmartSearch(false)}
-        onResults={(results, query) => {
-          setSmartResults(results);
-          setSmartQuery(query);
-          setIsSmartMode(true);
-        }}
-      />
+      {showSmartSearch && (
+        <div
+          className="maison-smart-modal-overlay"
+          onClick={() => setShowSmartSearch(false)}
+        >
+          <div
+            className="maison-smart-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="maison-smart-modal-close"
+              onClick={() => setShowSmartSearch(false)}
+              aria-label="Close AI search"
+            >
+              ✕
+            </button>
+            <SmartSearch
+              onClose={() => setShowSmartSearch(false)}
+              onResults={(results, query) => {
+                setSmartResults(results);
+                setSmartQuery(query);
+                setIsSmartMode(true);
+                setShowSmartSearch(false);
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

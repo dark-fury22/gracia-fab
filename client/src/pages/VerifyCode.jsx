@@ -7,18 +7,26 @@ import "./VerifyCode.css";
 function VerifyCode() {
   const navigate = useNavigate();
   const location = useLocation();
-  const email = location.state?.email || "est0295@gmail.com";
+  const email = location.state?.email;
   const [digits, setDigits] = useState(["", "", "", "", "", ""]);
   const [verifying, setVerifying] = useState(false);
   const [error, setError] = useState("");
   const inputRefs = useRef([]);
 
   useEffect(() => {
+    // This page only makes sense when we know whose code we're verifying —
+    // without that, there's nothing legitimate to show.
+    if (!email) {
+      navigate("/login", { replace: true });
+      return;
+    }
     // Focus first input on mount
     if (inputRefs.current[0]) {
       inputRefs.current[0].focus();
     }
-  }, []);
+  }, [email, navigate]);
+
+  if (!email) return null;
 
   const handleChange = (index, value) => {
     if (!/^\d*$/.test(value)) return;
@@ -66,7 +74,7 @@ function VerifyCode() {
     }
   };
 
-  const handleComplete = (code) => {
+  const handleComplete = () => {
     setVerifying(true);
     setError("");
     setTimeout(() => {

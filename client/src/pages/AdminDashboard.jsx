@@ -558,6 +558,7 @@ function AdminDashboard() {
                       <label>Category *</label>
                       <select
                         value={productForm.category}
+                        aria-label="Category"
                         onChange={(e) =>
                           setProductForm({
                             ...productForm,
@@ -631,7 +632,7 @@ function AdminDashboard() {
                         {uploadingImage ? "Uploading..." : "📂 Choose File"}
                         <input
                           type="file"
-                          accept="image/*"
+                          accept="image/jpeg,image/png,image/webp,image/gif"
                           onChange={handleImageUpload}
                           disabled={uploadingImage}
                           style={{ display: "none" }}
@@ -811,6 +812,7 @@ function AdminDashboard() {
                         <select
                           className="status-select"
                           value={order.status}
+                          aria-label={`Update status for order ${order._id}`}
                           onChange={(e) =>
                             handleUpdateStatus(order._id, e.target.value)
                           }

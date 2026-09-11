@@ -190,7 +190,7 @@ function SkinAnalysis({ onCartOpen }) {
         url="/skin-analysis"
       />
       <Navbar onCartOpen={onCartOpen} />
-      <div className="skin-analysis-page">
+      <div className="skin-analysis-page" role="main">
         {/* Hero header */}
         <div className="sa-header">
           <span className="sa-badge">✦ AI-Powered</span>

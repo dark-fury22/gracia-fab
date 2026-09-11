@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useCart } from "../hooks/useCart";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -108,13 +108,12 @@ const SOCIAL_POSTS = [
     handle: "@zainab.atelier",
     location: "London · Lagos",
     image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&auto=format&fit=crop&q=85",
-    tag: "#VirtualTryOn",
+    tag: "#RawHairMaison",
   },
 ];
 
 function Home({ onCartOpen }) {
   const { addToCart } = useCart();
-  const navigate = useNavigate();
 
   const [isPlaying, setIsPlaying] = useState(true);
   const [selectedSizes, setSelectedSizes] = useState({
@@ -177,6 +176,7 @@ function Home({ onCartOpen }) {
 
       <Navbar onCartOpen={onCartOpen} />
 
+      <main>
       {/* ── SECTION 1: CINEMATIC DARK HERO (Sample 5 Benchmark) ── */}
       <section className="ysl-hero-section" ref={overviewRef}>
         <div className="ysl-hero-bg">
@@ -225,7 +225,7 @@ function Home({ onCartOpen }) {
       </section>
 
       {/* ── SECTION 2: STICKY SUB-ANCHOR BAR (Sample 5 Benchmark) ── */}
-      <nav className="ysl-sub-anchor-bar">
+      <nav className="ysl-sub-anchor-bar" aria-label="Page sections">
         <div className="ysl-anchor-container">
           <button onClick={() => scrollToSection(overviewRef)} className="ysl-anchor-item">
             OVERVIEW
@@ -435,7 +435,10 @@ function Home({ onCartOpen }) {
 
         <div className="ysl-social-carousel-wrap">
           <div className="ysl-social-grid">
-            {SOCIAL_POSTS.map((post) => (
+            {[
+              ...SOCIAL_POSTS.slice(socialIndex),
+              ...SOCIAL_POSTS.slice(0, socialIndex),
+            ].map((post) => (
               <div key={post.id} className="ysl-social-card">
                 <img src={post.image} alt={post.tag} className="ysl-social-img" />
                 <div className="ysl-social-hover-overlay">
@@ -470,6 +473,7 @@ function Home({ onCartOpen }) {
           </p>
         </div>
       </section>
+      </main>
 
       {/* ── SECTION 9: YSL 5-COLUMN BLACK LUXURY FOOTER ── */}
       <Footer />

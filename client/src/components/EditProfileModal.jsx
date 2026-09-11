@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import "./EditProfileModal.css";
 
 function EditProfileModal({ isOpen, onClose, user, onSave }) {
@@ -7,14 +7,20 @@ function EditProfileModal({ isOpen, onClose, user, onSave }) {
   const [email, setEmail] = useState("");
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
-    if (user) {
+  // Re-sync the form from `user` only on the closed→open transition —
+  // adjusting state during render (rather than in an effect) avoids an
+  // extra commit, and it deliberately does *not* re-sync while already
+  // open so an in-progress edit is never silently overwritten.
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+  if (isOpen !== prevIsOpen) {
+    setPrevIsOpen(isOpen);
+    if (isOpen && user) {
       const parts = (user.name || "").trim().split(" ");
       setFirstName(parts[0] || "");
       setLastName(parts.slice(1).join(" ") || "");
       setEmail(user.email || "");
     }
-  }, [user, isOpen]);
+  }
 
   if (!isOpen) return null;
 

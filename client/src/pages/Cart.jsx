@@ -25,7 +25,7 @@ function Cart() {
         url="/cart"
       />
       <Navbar />
-      <div className="cart-page">
+      <div className="cart-page" role="main">
         <h1>Your Cart 🛒</h1>
 
         {cartItems.length === 0 ? (

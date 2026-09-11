@@ -256,7 +256,7 @@ function SkinToneDetector() {
   };
 
   return (
-    <div className="skin-detector">
+    <div className="skin-detector" role="main">
       {/* Header */}
       <div className="skin-detector-header">
         <h1>✨ Skin Tone Detector</h1>

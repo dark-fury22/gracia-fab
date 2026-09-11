@@ -137,7 +137,7 @@ function RoutineGenerator({ onCartOpen }) {
         url="/routine-generator"
       />
       <Navbar onCartOpen={onCartOpen} />
-      <div className="routine-generator">
+      <div className="routine-generator" role="main">
         {!result ? (
           /* ── Input form ── */
           <>

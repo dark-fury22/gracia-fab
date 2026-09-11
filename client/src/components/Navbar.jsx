@@ -304,13 +304,17 @@ function Navbar({ onCartOpen }) {
     }
   }, [searchOpen]);
 
-  // Close menus on route change
-  useEffect(() => {
+  // Close menus on route change — adjusting state during render (rather
+  // than in an effect) avoids an extra commit on every navigation.
+  const locationKey = `${location.pathname}${location.search}`;
+  const [prevLocationKey, setPrevLocationKey] = useState(locationKey);
+  if (locationKey !== prevLocationKey) {
+    setPrevLocationKey(locationKey);
     setMenuOpen(false);
     setAccountOpen(false);
     setSearchOpen(false);
     setActiveMega(null);
-  }, [location.pathname, location.search]);
+  }
 
   const handleLogout = () => {
     logout();
@@ -453,7 +457,7 @@ function Navbar({ onCartOpen }) {
       </div>
 
       {/* ── Tier 3: Primary Category Navigation Bar (Matching Screenshots 1, 2, 3) ── */}
-      <nav className="ysl-category-nav">
+      <nav className="ysl-category-nav" aria-label="Product categories">
         <div className="ysl-category-links">
           <Link
             to="/products?category=fragrance"

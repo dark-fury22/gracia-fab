@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../hooks/useCart";
 import "./CartDrawer.css";
@@ -5,6 +6,14 @@ import "./CartDrawer.css";
 function CartDrawer({ isOpen, onClose }) {
   const { cartItems, removeFromCart, updateQuantity, cartTotal } = useCart();
   const navigate = useNavigate();
+  const drawerRef = useRef(null);
+
+  // React 18 doesn't render the `inert` JSX prop to the DOM (that lands in
+  // React 19), so set the property imperatively — without it, a closed
+  // (but still-mounted, off-screen) drawer stays keyboard-focusable.
+  useEffect(() => {
+    if (drawerRef.current) drawerRef.current.inert = !isOpen;
+  }, [isOpen]);
 
   const formatPrice = (price) =>
     new Intl.NumberFormat("en-NG", {
@@ -24,7 +33,13 @@ function CartDrawer({ isOpen, onClose }) {
       {isOpen && <div className="drawer-overlay" onClick={onClose} />}
 
       {/* Drawer */}
-      <div className={`cart-drawer ${isOpen ? "open" : ""}`}>
+      <aside
+        ref={drawerRef}
+        className={`cart-drawer ${isOpen ? "open" : ""}`}
+        role="dialog"
+        aria-label="Shopping cart"
+        aria-hidden={!isOpen}
+      >
         <div className="drawer-header">
           <h2>My Bag ({cartItems.length})</h2>
           <button className="drawer-close" onClick={onClose}>
@@ -101,7 +116,7 @@ function CartDrawer({ isOpen, onClose }) {
             </button>
           </div>
         )}
-      </div>
+      </aside>
     </>
   );
 }

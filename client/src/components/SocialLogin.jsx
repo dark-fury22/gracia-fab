@@ -19,19 +19,14 @@ function GoogleButton() {
   const handleGoogleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       try {
-        const userInfoRes = await fetch(
-          "https://www.googleapis.com/oauth2/v3/userinfo",
-          {
-            headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
-          },
-        );
-        const userInfo = await userInfoRes.json();
-
+        // Send only the raw access token — the server verifies it with
+        // Google itself and derives the profile server-side, rather than
+        // trusting a client-supplied identity payload.
         const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
         const res = await fetch(`${API_URL}/api/auth/google`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(userInfo),
+          body: JSON.stringify({ access_token: tokenResponse.access_token }),
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.message);

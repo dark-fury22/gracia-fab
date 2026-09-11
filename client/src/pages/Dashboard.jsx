@@ -12,17 +12,6 @@ import "../styles/Dashboard.css";
 const DEFAULT_ADDRESS =
   "No 60 Enugu Road by Igbere Street, Umuahia, Abia, 440233 Umuahia Oyo, Nigeria";
 
-const SAMPLE_ORDERS = [
-  {
-    _id: "16610",
-    name: "Bone Straight 30\" HD Frontal Lace",
-    status: "On its way",
-    totalPrice: 80000,
-    image:
-      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=360&h=360&fit=crop&crop=face",
-  },
-];
-
 function Dashboard() {
   const { user, logout } = useAuth();
   const { addToCart } = useCart();
@@ -31,10 +20,18 @@ function Dashboard() {
   const [activeTab, setActiveTab] = useState("profile");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [marketingEmail, setMarketingEmail] = useState(true);
-  const [orders, setOrders] = useState(SAMPLE_ORDERS);
+  const [orders, setOrders] = useState([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
   const [userAddress, setUserAddress] = useState(DEFAULT_ADDRESS);
+  const [passwordData, setPasswordData] = useState({
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [passwordSaving, setPasswordSaving] = useState(false);
+  const [passwordSuccess, setPasswordSuccess] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
   // Redirect if not logged in
   useEffect(() => {
@@ -51,11 +48,10 @@ function Dashboard() {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await response.json();
-        if (Array.isArray(data) && data.length > 0) {
-          setOrders(data);
-        }
+        setOrders(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error(err);
+        setOrders([]);
       } finally {
         setLoadingOrders(false);
       }
@@ -67,6 +63,7 @@ function Dashboard() {
   }, [user, activeTab]);
 
   const handleProfileSave = async ({ name, email }) => {
+    setErrorMsg("");
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(`${API_URL}/api/auth/profile`, {
@@ -96,6 +93,47 @@ function Dashboard() {
       setTimeout(() => setSuccessMsg(""), 3000);
     } catch (err) {
       console.error("Profile save error:", err);
+      setErrorMsg(err.message || "Failed to update profile. Please try again.");
+      throw err;
+    }
+  };
+
+  const handlePasswordUpdate = async (e) => {
+    e.preventDefault();
+    setPasswordError("");
+    setPasswordSuccess("");
+
+    if (passwordData.newPassword.length < 6) {
+      setPasswordError("Password must be at least 6 characters");
+      return;
+    }
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      setPasswordError("New passwords do not match");
+      return;
+    }
+
+    try {
+      setPasswordSaving(true);
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_URL}/api/auth/profile`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ password: passwordData.newPassword }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message);
+
+      setPasswordSuccess("Password updated successfully!");
+      setPasswordData({ newPassword: "", confirmPassword: "" });
+      setTimeout(() => setPasswordSuccess(""), 3000);
+    } catch (err) {
+      setPasswordError(err.message || "Failed to update password. Please try again.");
+    } finally {
+      setPasswordSaving(false);
     }
   };
 
@@ -149,6 +187,8 @@ function Dashboard() {
         </div>
       </header>
 
+      <h1 className="sr-only">My Account</h1>
+
       {/* Main Account Shell */}
       <div className="account-shell">
         {/* Left Navigation Sidebar */}
@@ -171,11 +211,18 @@ function Dashboard() {
           >
             Profile
           </button>
+          <button
+            className={`account-nav-item ${activeTab === "security" ? "active" : ""}`}
+            onClick={() => setActiveTab("security")}
+          >
+            🔒 Security
+          </button>
         </aside>
 
         {/* Right Content Area */}
         <main className="account-main">
           {successMsg && <div className="account-alert-success">{successMsg}</div>}
+          {errorMsg && <div className="account-alert-error">⚠️ {errorMsg}</div>}
 
           {/* ── TAB 1: PROFILE (Matching Image 4) ── */}
           {activeTab === "profile" && (
@@ -358,6 +405,60 @@ function Dashboard() {
           {activeTab === "rewards" && (
             <div className="rewards-view">
               <LoyaltyWidget />
+            </div>
+          )}
+
+          {/* ── TAB 4: SECURITY ── */}
+          {activeTab === "security" && (
+            <div className="account-card">
+              <div className="account-card-header">
+                <h3>Change password</h3>
+              </div>
+
+              {passwordSuccess && (
+                <div className="account-alert-success">{passwordSuccess}</div>
+              )}
+              {passwordError && (
+                <div className="account-alert-error">⚠️ {passwordError}</div>
+              )}
+
+              <form onSubmit={handlePasswordUpdate}>
+                <div className="form-group">
+                  <label>New password</label>
+                  <input
+                    type="password"
+                    value={passwordData.newPassword}
+                    onChange={(e) =>
+                      setPasswordData({
+                        ...passwordData,
+                        newPassword: e.target.value,
+                      })
+                    }
+                    placeholder="At least 6 characters"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Confirm new password</label>
+                  <input
+                    type="password"
+                    value={passwordData.confirmPassword}
+                    onChange={(e) =>
+                      setPasswordData({
+                        ...passwordData,
+                        confirmPassword: e.target.value,
+                      })
+                    }
+                    placeholder="Repeat new password"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="account-btn-primary"
+                  disabled={passwordSaving}
+                >
+                  {passwordSaving ? "Updating…" : "Update password"}
+                </button>
+              </form>
             </div>
           )}
         </main>

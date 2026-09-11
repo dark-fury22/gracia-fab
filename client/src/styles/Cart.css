@@ -158,7 +158,7 @@
 .btn-remove {
   background: none;
   border: none;
-  color: var(--text-faint);
+  color: var(--text-muted);
   font-size: 0.78rem;
   cursor: pointer;
   transition: color var(--duration) var(--ease);
@@ -258,3 +258,27 @@
 }
 
 .btn-continue:hover { color: var(--accent); }
+
+@media (max-width: 768px) {
+  .cart-page { padding: 1rem; }
+
+  .cart-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  /* Summary above the item list on mobile, matching Checkout's pattern —
+     users see the total before scrolling past every item. */
+  .cart-summary {
+    order: -1;
+    position: static;
+    padding: 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .cart-page { padding: 0.85rem; }
+  .cart-item { flex-wrap: wrap; }
+  .cart-item-image { width: 64px; height: 72px; }
+}

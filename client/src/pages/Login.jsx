@@ -36,7 +36,7 @@ function Login() {
   };
 
   return (
-    <div className="auth-page">
+    <div className="auth-page" role="main">
       <SEO
         title="Sign In"
         description="Sign in to your Gracia Fab account for personalized AI beauty recommendations."

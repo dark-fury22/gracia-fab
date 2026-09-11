@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, Suspense, lazy } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -23,7 +23,9 @@ import OrderConfirmation from "./pages/OrderConfirmation";
 import MyOrders from "./pages/MyOrders";
 import Dashboard from "./pages/Dashboard";
 import Wishlist from "./pages/Wishlist";
-import AdminDashboard from "./pages/AdminDashboard";
+// Lazy-loaded: only admins ever visit this route, so its ~1,100-line
+// bundle shouldn't ship in every visitor's initial page load.
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 import BackToTop from "./components/BackToTop";
 import InstallPrompt from "./components/InstallPrompt";
 import BeautyLanding from "./pages/BeautyLanding";
@@ -198,7 +200,9 @@ function App() {
           path="/admin"
           element={
             <AdminRoute>
-              <AdminDashboard />
+              <Suspense fallback={null}>
+                <AdminDashboard />
+              </Suspense>
             </AdminRoute>
           }
         />

@@ -43,7 +43,7 @@
 .checkout-step-label {
   font-size: 0.8rem;
   font-weight: 600;
-  color: var(--text-faint);
+  color: var(--text-muted);
   white-space: nowrap;
 }
 

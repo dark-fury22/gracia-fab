@@ -46,7 +46,7 @@ function Register() {
   };
 
   return (
-    <div className="auth-page">
+    <div className="auth-page" role="main">
       <SEO
         title="Create Account"
         description="Join Gracia Fab today and discover personalized AI beauty recommendations for skincare, haircare, wigs and bridal looks."

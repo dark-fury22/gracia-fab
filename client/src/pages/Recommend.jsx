@@ -111,7 +111,7 @@ function Recommend() {
         url="/recommend"
       />
       <Navbar />
-      <div className="recommend-page">
+      <div className="recommend-page" role="main">
         {/* Header */}
         <div className="recommend-header">
           <h1>Get Your Beauty Recommendations ✨</h1>
@@ -145,6 +145,7 @@ function Recommend() {
                   <label>What is your skin type?</label>
                   <select
                     name="skinType"
+                    aria-label="What is your skin type?"
                     value={formData.skinType}
                     onChange={handleChange}
                   >
@@ -183,6 +184,7 @@ function Recommend() {
                   <label>What is your hair type?</label>
                   <select
                     name="hairType"
+                    aria-label="What is your hair type?"
                     value={formData.hairType}
                     onChange={handleChange}
                   >
@@ -225,6 +227,7 @@ function Recommend() {
                   <label>What are you shopping for?</label>
                   <select
                     name="lookingFor"
+                    aria-label="What are you shopping for?"
                     value={formData.lookingFor}
                     onChange={handleChange}
                   >
@@ -243,6 +246,7 @@ function Recommend() {
                   <label>What's your budget? (₦)</label>
                   <select
                     name="budget"
+                    aria-label="What's your budget?"
                     value={formData.budget}
                     onChange={handleChange}
                   >
@@ -258,6 +262,7 @@ function Recommend() {
                   <label>What's the occasion?</label>
                   <select
                     name="occasion"
+                    aria-label="What's the occasion?"
                     value={formData.occasion}
                     onChange={handleChange}
                   >

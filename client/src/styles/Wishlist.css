@@ -245,3 +245,21 @@
 .btn-rec-view:hover { background: var(--accent); border-color: var(--accent); }
 [data-theme="light"] .btn-rec-view:hover { color: #ffffff; }
 [data-theme="dark"] .btn-rec-view:hover { color: #000000; }
+
+@media (max-width: 600px) {
+  .wishlist-page { padding: 1.2rem; }
+
+  .wishlist-tabs {
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .wishlist-tabs::-webkit-scrollbar { display: none; }
+
+  .wishlist-tab {
+    padding: 0.7rem 1rem;
+    font-size: 0.7rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+}
