@@ -276,3 +276,139 @@
   border-color: var(--accent);
   color: var(--accent);
 }
+
+/* ── Step 0: Shopping-for picker ── */
+.shopping-for-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.9rem;
+}
+
+.shopping-for-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--surface-2);
+  border: 1.5px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  transition: all var(--duration) var(--ease);
+}
+
+.shopping-for-option:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.shopping-for-option.active {
+  border-color: var(--accent);
+  background: var(--accent-light);
+  color: var(--accent);
+}
+
+.shopping-for-emoji { font-size: 1.8rem; }
+
+/* ── Result tabs ── */
+.result-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.result-tab {
+  background: none;
+  border: 1.5px solid var(--border-soft);
+  color: var(--text-muted);
+  padding: 0.65rem 1.5rem;
+  border-radius: 30px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--duration) var(--ease);
+}
+
+.result-tab.active {
+  border-color: var(--accent);
+  background: var(--accent-light);
+  color: var(--accent);
+}
+
+/* ── Add-to-bag inline on result cards ── */
+.result-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.btn-add-to-bag-sm {
+  background: var(--accent);
+  border: none;
+  color: #ffffff;
+  padding: 0.4rem 0.9rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: all var(--duration) var(--ease);
+}
+
+.btn-add-to-bag-sm:hover { background: var(--accent-hover); }
+.btn-add-to-bag-sm:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── Save / sign-up prompt ── */
+.save-signup-prompt {
+  background: var(--surface-2);
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  text-align: center;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.save-signup-prompt p {
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  margin-bottom: 1rem;
+}
+
+.btn-signup-inline {
+  display: inline-block;
+  background: var(--accent);
+  color: #ffffff;
+  padding: 0.75rem 1.75rem;
+  border-radius: 30px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all var(--duration) var(--ease);
+}
+
+.btn-signup-inline:hover { background: var(--accent-hover); }
+
+.save-success {
+  color: var(--success);
+  font-weight: 600;
+  font-size: 0.88rem;
+}
+
+/* ── Routine tab panel (reuses .rg-* classes from RoutineGenerator.css) ── */
+.routine-tab-panel {
+  max-width: 720px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.routine-loading {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 2rem 0;
+}

@@ -75,7 +75,7 @@ export const getAllProducts = async (req, res) => {
 export const createProduct = async (req, res) => {
   try {
     const {
-      name, description, price, image,
+      name, description, price, image, secondaryImage,
       category, brand, stock,
       tags, isFeatured
     } = req.body
@@ -85,6 +85,7 @@ export const createProduct = async (req, res) => {
       description,
       price,
       image,
+      secondaryImage,
       category,
       brand,
       stock,
@@ -109,7 +110,7 @@ export const updateProduct = async (req, res) => {
     }
 
     const {
-      name, description, price, image,
+      name, description, price, image, secondaryImage,
       category, brand, stock,
       tags, isFeatured
     } = req.body
@@ -118,6 +119,7 @@ export const updateProduct = async (req, res) => {
     product.description = description || product.description
     product.price = price ?? product.price
 product.image = image ?? product.image
+    product.secondaryImage = secondaryImage ?? product.secondaryImage
     product.category = category || product.category
     product.brand = brand || product.brand
     product.stock = stock ?? product.stock

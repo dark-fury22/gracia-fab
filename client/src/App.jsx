@@ -128,15 +128,10 @@ function App() {
           element={<ProductDetail onCartOpen={openCart} />}
         />
         <Route path="/cart" element={<Cart />} />
+        {/* AI Advisor is public — a shopper should get real value (matched
+            products) before we ever ask them to create an account. */}
+        <Route path="/recommend" element={<Recommend onCartOpen={openCart} />} />
         {/* ── Protected routes ── */}
-        <Route
-          path="/recommend"
-          element={
-            <ProtectedRoute>
-              <Recommend />
-            </ProtectedRoute>
-          }
-        />
         <Route
           path="/checkout"
           element={
@@ -201,14 +196,11 @@ function App() {
             </AdminRoute>
           }
         />
-        // Add inside Routes:
+        {/* Skin Tone Detector runs entirely client-side and calls only
+            public endpoints — no reason to gate it behind login. */}
         <Route
           path="/skin-tone"
-          element={
-            <ProtectedRoute>
-              <SkinToneDetectorPage onCartOpen={openCart} />
-            </ProtectedRoute>
-          }
+          element={<SkinToneDetectorPage onCartOpen={openCart} />}
         />
         <Route
           path="/skin-analysis"
@@ -218,13 +210,11 @@ function App() {
             </ProtectedRoute>
           }
         />
+        {/* Public, same reasoning as /recommend — the generated routine
+            is the hook; login only matters once they want to save it. */}
         <Route
           path="/routine-generator"
-          element={
-            <ProtectedRoute>
-              <RoutineGenerator onCartOpen={openCart} />
-            </ProtectedRoute>
-          }
+          element={<RoutineGenerator onCartOpen={openCart} />}
         />
         {/* ── Catch all ── */}
         <Route path="*" element={<Navigate to="/login" replace />} />

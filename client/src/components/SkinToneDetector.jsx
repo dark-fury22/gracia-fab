@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
 import API_URL from "../config";
+import { useBeautyProfile } from "../hooks/useBeautyProfile";
 import "./SkinToneDetector.css";
 import PhotoUpload from "./PhotoUpload";
 
@@ -204,6 +205,7 @@ const analyseImage = (img) => {
 };
 
 function SkinToneDetector() {
+  const { updateProfile } = useBeautyProfile();
   const fileInputRef = useRef(null);
   const [photo, setPhoto] = useState(null);
   const [result, setResult] = useState(null);
@@ -226,6 +228,12 @@ function SkinToneDetector() {
       setResult({ ...analysis, tone });
       setStep("result");
 
+      // Share the detected tone with the shared beauty profile, so the
+      // AI Advisor can factor it in without asking again.
+      updateProfile({
+        skinTone: { id: tone.id, label: tone.label, hex: tone.hex },
+      });
+
       // Fetch recommended products
       try {
         const res = await fetch(`${API_URL}/api/search`, {
@@ -244,7 +252,7 @@ function SkinToneDetector() {
       );
       setStep("upload");
     }
-  }, []);
+  }, [updateProfile]);
 
   const reset = () => {
     setPhoto(null);

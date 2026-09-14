@@ -22,6 +22,21 @@
 
 .admin-header p { color: var(--text-muted); font-size: 0.85rem; }
 
+.admin-back-to-store {
+  background: none;
+  border: 1.5px solid var(--border-soft);
+  color: var(--text-muted);
+  padding: 0.65rem 1.25rem;
+  border-radius: 30px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--duration) var(--ease);
+}
+
+.admin-back-to-store:hover { border-color: var(--accent); color: var(--accent); }
+
 .admin-tabs {
   display: flex;
   border-bottom: 1.5px solid var(--border-soft);

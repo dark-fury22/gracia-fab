@@ -42,6 +42,7 @@ function AdminDashboard() {
     description: "",
     price: "",
     image: "",
+    secondaryImage: "",
     category: "skincare",
     brand: "",
     stock: "10",
@@ -51,6 +52,7 @@ function AdminDashboard() {
   const [formError, setFormError] = useState("");
   const [formSuccess, setFormSuccess] = useState("");
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadingSecondaryImage, setUploadingSecondaryImage] = useState(false);
 
   const getHeaders = useCallback(() => ({
     "Content-Type": "application/json",
@@ -213,7 +215,7 @@ function AdminDashboard() {
     }
   };
 
-  const handleImageUpload = async (e) => {
+  const handleImageUpload = async (e, field = "image") => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -222,7 +224,8 @@ function AdminDashboard() {
       return;
     }
 
-    setUploadingImage(true);
+    const setUploading = field === "secondaryImage" ? setUploadingSecondaryImage : setUploadingImage;
+    setUploading(true);
     setFormError("");
 
     try {
@@ -247,19 +250,19 @@ function AdminDashboard() {
 
           setProductForm((prev) => ({
             ...prev,
-            image: data.url,
+            [field]: data.url,
           }));
           setFormSuccess("✅ Image uploaded successfully!");
           setTimeout(() => setFormSuccess(""), 3000);
         } catch (err) {
           setFormError(err.message);
         } finally {
-          setUploadingImage(false);
+          setUploading(false);
         }
       };
     } catch {
       setFormError("Failed to read file");
-      setUploadingImage(false);
+      setUploading(false);
     }
   };
 
@@ -342,6 +345,7 @@ function AdminDashboard() {
       description: product.description,
       price: product?.price,
       image: product?.image,
+      secondaryImage: product?.secondaryImage || "",
       category: product.category,
       brand: product.brand,
       stock: product.stock,
@@ -357,6 +361,7 @@ function AdminDashboard() {
       description: "",
       price: "",
       image: "",
+      secondaryImage: "",
       category: "skincare",
       brand: "",
       stock: "10",
@@ -384,6 +389,12 @@ function AdminDashboard() {
             <h1>Admin Dashboard 👑</h1>
             <p>Manage your BeautyAI store</p>
           </div>
+          <button
+            className="admin-back-to-store"
+            onClick={() => navigate("/")}
+          >
+            ← Back to Store
+          </button>
         </div>
 
         {/* Tabs */}
@@ -635,6 +646,45 @@ function AdminDashboard() {
                           accept="image/jpeg,image/png,image/webp,image/gif"
                           onChange={handleImageUpload}
                           disabled={uploadingImage}
+                          style={{ display: "none" }}
+                        />
+                      </label>
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label>Secondary Image (optional — shown on hover)</label>
+                    <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                      <input
+                        type="text"
+                        value={productForm.secondaryImage}
+                        onChange={(e) =>
+                          setProductForm({
+                            ...productForm,
+                            secondaryImage: e.target.value,
+                          })
+                        }
+                        placeholder="https://... or upload file"
+                        style={{ flex: 1 }}
+                      />
+                      <label style={{
+                        padding: "10px 16px",
+                        background: "var(--accent)",
+                        color: "#000",
+                        borderRadius: "6px",
+                        cursor: "pointer",
+                        fontWeight: "bold",
+                        display: "inline-block",
+                        textAlign: "center",
+                        fontSize: "14px",
+                        whiteSpace: "nowrap"
+                      }}>
+                        {uploadingSecondaryImage ? "Uploading..." : "📂 Choose File"}
+                        <input
+                          type="file"
+                          accept="image/jpeg,image/png,image/webp,image/gif"
+                          onChange={(e) => handleImageUpload(e, "secondaryImage")}
+                          disabled={uploadingSecondaryImage}
                           style={{ display: "none" }}
                         />
                       </label>

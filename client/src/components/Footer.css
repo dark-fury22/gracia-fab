@@ -1,12 +1,11 @@
 /* ═══════════════════════════════════════════════════════════════════
-   YSL BEAUTY — 5-COLUMN BLACK LUXURY FOOTER
-   Matches Sample 5 footer presentation
+   FOOTER
    ═══════════════════════════════════════════════════════════════════ */
 
 .ysl-footer {
-  background: #000000 !important;
-  color: #FFFFFF !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg);
+  color: var(--text);
+  border-top: 1px solid rgba(61, 12, 16, 0.1);
   padding-top: 4.5rem;
   font-family: var(--font-body);
 }
@@ -15,25 +14,209 @@
   max-width: 1440px;
   margin: 0 auto;
   padding: 0 3.5rem 4rem;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1.6fr;
+  display: flex;
+  flex-direction: column;
+  gap: 3.5rem;
+}
+
+/* ── Top row: brand block + newsletter block ── */
+.ysl-footer-row-top {
+  display: flex;
+  justify-content: space-between;
   gap: 3rem;
+  flex-wrap: wrap;
+}
+
+.ysl-footer-brand-col {
+  display: flex;
+  flex-direction: column;
+  max-width: 420px;
+}
+
+.ysl-footer-logo {
+  font-family: var(--font-display, "Playfair Display", serif);
+  font-size: 2.6rem;
+  font-weight: 700;
+  color: #3D0C10;
+  text-decoration: none;
+  line-height: 1;
+  margin-bottom: 1rem;
+}
+
+.ysl-footer-logo-star {
+  color: #C1440E;
+  font-size: 0.55em;
+  vertical-align: super;
+}
+
+.ysl-footer-tagline {
+  font-size: 0.92rem;
+  color: var(--text-2);
+  margin: 0 0 1.5rem;
+  line-height: 1.5;
+}
+
+.ysl-footer-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 1.5rem;
+}
+
+.ysl-footer-contact-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.85rem;
+  color: var(--text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  width: fit-content;
+}
+
+.ysl-footer-contact-link:hover {
+  color: #3D0C10;
+}
+
+.ysl-footer-contact-icon {
+  font-size: 0.9rem;
+}
+
+/* Social Row */
+.ysl-footer-social-row {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.ysl-footer-social-row a {
+  color: #3D0C10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.ysl-footer-social-row a:hover {
+  color: #C1440E;
+  transform: translateY(-2px);
+}
+
+/* ── Newsletter column ── */
+.ysl-footer-newsletter-col {
+  display: flex;
+  flex-direction: column;
+  max-width: 460px;
+  width: 100%;
+}
+
+.ysl-footer-newsletter-title {
+  font-family: var(--font-display, "Playfair Display", serif);
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 0.6rem;
+}
+
+.ysl-footer-newsletter-desc {
+  font-size: 0.85rem;
+  color: var(--text-2);
+  line-height: 1.55;
+  margin: 0 0 1.25rem;
+}
+
+.ysl-newsletter-input-row {
+  display: flex;
+  gap: 0;
+  border: 1px solid rgba(61, 12, 16, 0.25);
+  background: var(--surface);
+}
+
+.ysl-footer-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  padding: 0.85rem 1.1rem;
+  outline: none;
+  min-width: 0;
+}
+
+.ysl-footer-input::placeholder {
+  color: var(--text-muted);
+}
+
+.ysl-footer-submit-btn {
+  background: #3D0C10;
+  color: #FFFFFF;
+  border: none;
+  padding: 0.85rem 1.6rem;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s ease;
+}
+
+.ysl-footer-submit-btn:hover {
+  background: #5A121A;
+}
+
+.ysl-footer-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.ysl-signup-success {
+  background: rgba(61, 12, 16, 0.06);
+  border: 1px solid rgba(61, 12, 16, 0.2);
+  padding: 1rem 1.25rem;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.ysl-signup-error {
+  background: rgba(220, 38, 38, 0.08);
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  padding: 0.65rem 0.85rem;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: #B91C1C;
+  margin-bottom: 0.75rem;
+}
+
+.ysl-check-icon {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #3D0C10;
+}
+
+/* ── Link columns ── */
+.ysl-footer-links-grid {
+  display: flex;
+  gap: 4.5rem;
+  flex-wrap: wrap;
 }
 
 .ysl-footer-col {
   display: flex;
   flex-direction: column;
+  min-width: 150px;
 }
 
 .ysl-footer-col-title {
   font-family: var(--font-body);
-  font-size: 0.72rem;
+  font-size: 0.82rem;
   font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: #FFFFFF;
-  margin-bottom: 1.5rem;
-  line-height: 1.3;
+  color: #C1440E;
+  margin-bottom: 1.2rem;
 }
 
 .ysl-footer-links {
@@ -46,271 +229,84 @@
 }
 
 .ysl-footer-links a {
-  font-size: 0.76rem;
+  font-size: 0.85rem;
   font-weight: 400;
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--text-2);
   text-decoration: none;
   transition: color 0.2s ease;
   line-height: 1.4;
 }
 
 .ysl-footer-links a:hover {
-  color: #FFFFFF;
+  color: #3D0C10;
   text-decoration: underline;
   text-underline-offset: 3px;
 }
 
-/* ── Column 5: Sign Up Form & Privileges ── */
-.ysl-footer-signup-col {
-  display: flex;
-  flex-direction: column;
-}
-
-.ysl-footer-signup-desc {
-  font-size: 0.76rem;
-  color: rgba(255, 255, 255, 0.65);
-  line-height: 1.55;
-  margin-bottom: 1.25rem;
-}
-
-.ysl-signup-form {
-  display: flex;
-  flex-direction: column;
-  gap: 0.85rem;
-  margin-bottom: 1.5rem;
-}
-
-.ysl-input-group {
-  width: 100%;
-}
-
-.ysl-footer-input {
-  width: 100%;
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  color: #FFFFFF;
-  font-family: var(--font-body);
-  font-size: 0.78rem;
-  padding: 0.75rem 1rem;
-  outline: none;
-  transition: border-color 0.2s ease, background 0.2s ease;
-}
-
-.ysl-footer-input:focus {
-  border-color: #FFFFFF;
-  background: rgba(255, 255, 255, 0.04);
-}
-
-.ysl-footer-input::placeholder {
-  color: rgba(255, 255, 255, 0.45);
-  font-weight: 300;
-}
-
-.ysl-consent-label {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.6rem;
-  font-size: 0.68rem;
-  color: rgba(255, 255, 255, 0.55);
-  line-height: 1.45;
-  cursor: pointer;
-  margin-top: 0.2rem;
-}
-
-.ysl-consent-checkbox {
-  margin-top: 2px;
-  accent-color: #FFFFFF;
-  cursor: pointer;
-}
-
-.ysl-consent-label a {
-  color: #FFFFFF;
-  text-decoration: underline;
-}
-
-.ysl-footer-submit-btn {
-  background: #FFFFFF;
-  color: #000000;
-  border: 1px solid #FFFFFF;
-  padding: 0.75rem 1.5rem;
-  font-family: var(--font-body);
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  cursor: pointer;
-  margin-top: 0.4rem;
-  transition: all 0.2s ease;
-}
-
-.ysl-footer-submit-btn:hover {
-  background: transparent;
-  color: #FFFFFF;
-}
-
-.ysl-signup-success {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  padding: 1rem 1.25rem;
-  font-size: 0.72rem;
-  letter-spacing: 0.08em;
-  line-height: 1.5;
-  color: #FFFFFF;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
-}
-
-.ysl-signup-error {
-  background: rgba(220, 38, 38, 0.12);
-  border: 1px solid rgba(220, 38, 38, 0.4);
-  padding: 0.65rem 0.85rem;
-  font-size: 0.72rem;
-  line-height: 1.5;
-  color: #FF9B9B;
-}
-
-.ysl-check-icon {
-  font-size: 1.1rem;
-  font-weight: 800;
-}
-
-/* Concierge Hotline */
-.ysl-footer-hotline {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  margin-bottom: 1.4rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding-top: 1.2rem;
-}
-
-.ysl-hotline-label {
-  font-size: 0.62rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.5);
-}
-
-.ysl-hotline-number {
-  font-size: 0.78rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  color: #FFFFFF;
-  text-decoration: none;
-  transition: opacity 0.2s ease;
-}
-
-.ysl-hotline-number:hover {
-  opacity: 0.8;
-}
-
-/* Social Row */
-.ysl-footer-social-row {
-  display: flex;
-  align-items: center;
-  gap: 1.2rem;
-}
-
-.ysl-footer-social-row a {
-  color: rgba(255, 255, 255, 0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: color 0.2s ease, transform 0.2s ease;
-}
-
-.ysl-footer-social-row a:hover {
-  color: #FFFFFF;
-  transform: translateY(-2px);
-}
-
-/* ── Bottom Strip: Country, Copyright, Payments ── */
+/* ── Bottom Strip ── */
 .ysl-footer-bottom {
   max-width: 1440px;
   margin: 0 auto;
-  padding: 2rem 3.5rem 3rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-  font-size: 0.68rem;
-  letter-spacing: 0.08em;
-  color: rgba(255, 255, 255, 0.5);
-}
-
-.ysl-footer-country {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.ysl-flag {
-  font-size: 0.95rem;
-}
-
-.ysl-country-name {
-  font-weight: 600;
-  color: #FFFFFF;
-}
-
-.ysl-country-change {
-  text-decoration: underline;
-  cursor: pointer;
-  margin-left: 0.4rem;
-  color: rgba(255, 255, 255, 0.68);
-  font-size: 0.62rem;
+  padding: 1.75rem 3.5rem;
+  border-top: 1px solid rgba(61, 12, 16, 0.1);
 }
 
 .ysl-footer-copy {
-  text-transform: uppercase;
+  font-size: 0.78rem;
+  color: var(--text-2);
 }
 
-.ysl-footer-payment-badges {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  flex-wrap: wrap;
-}
-
-.ysl-pay-badge {
-  font-size: 0.62rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  padding: 0.25rem 0.6rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: rgba(255, 255, 255, 0.7);
+.ysl-footer-copy-star {
+  color: #C1440E;
 }
 
 /* ═══════════════════════════════════════════════════════════════════
    RESPONSIVE
    ═══════════════════════════════════════════════════════════════════ */
-@media (max-width: 1200px) {
-  .ysl-footer-top {
-    grid-template-columns: 1fr 1fr 1fr;
+@media (max-width: 900px) {
+  .ysl-footer-row-top {
+    flex-direction: column;
     gap: 2.5rem;
   }
-  .ysl-footer-signup-col {
-    grid-column: 1 / -1;
-    max-width: 580px;
+
+  .ysl-footer-brand-col,
+  .ysl-footer-newsletter-col {
+    max-width: 100%;
+  }
+
+  .ysl-footer-links-grid {
+    gap: 2.5rem;
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 640px) {
   .ysl-footer { padding-top: 3rem; }
+
   .ysl-footer-top {
-    grid-template-columns: 1fr;
     padding: 0 1.5rem 2.5rem;
+    gap: 2.5rem;
+  }
+
+  .ysl-footer-logo {
+    font-size: 2rem;
+  }
+
+  .ysl-footer-links-grid {
+    flex-direction: column;
     gap: 2rem;
   }
-  .ysl-footer-bottom {
-    padding: 1.5rem 1.5rem 2.5rem;
+
+  .ysl-newsletter-input-row {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
+    border: none;
+    gap: 0.6rem;
+  }
+
+  .ysl-footer-input {
+    border: 1px solid rgba(61, 12, 16, 0.25);
+  }
+
+  .ysl-footer-bottom {
+    padding: 1.5rem;
   }
 }

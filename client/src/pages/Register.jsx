@@ -36,8 +36,8 @@ function Register() {
     }
     try {
       setLoading(true);
-      await register(formData.name, formData.email, formData.password);
-      navigate("/");
+      const data = await register(formData.name, formData.email, formData.password);
+      navigate(data.isAdmin ? "/admin" : "/");
     } catch (err) {
       setError(err.message);
     } finally {

@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { useCart } from "../hooks/useCart";
 import ThemeToggle from "./ThemeToggle";
+import LogoMark from "./LogoMark";
 import "./Navbar.css";
 
 // ── Mega-menu data for Gracia Fab's real product categories ──
@@ -22,12 +23,12 @@ const MEGA_MENUS = {
     cards: [
       {
         title: "CLINICAL SKINCARE",
-        image: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=500&auto=format&fit=crop&q=80",
+        image: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=500&auto=format&fit=crop&q=80",
         url: "/products?category=skincare",
       },
       {
         title: "MOISTURIZERS & SERUMS",
-        image: "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=500&auto=format&fit=crop&q=80",
+        image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=500&auto=format&fit=crop&q=80",
         url: "/products?category=skincare",
       },
     ],
@@ -51,7 +52,7 @@ const MEGA_MENUS = {
       },
       {
         title: "SCALP & GROWTH CARE",
-        image: "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=500&auto=format&fit=crop&q=80",
+        image: "https://images.unsplash.com/photo-1589156280159-27698a70f29e?w=500&auto=format&fit=crop&q=80",
         url: "/products?category=haircare",
       },
     ],
@@ -106,7 +107,7 @@ const MEGA_MENUS = {
   },
 };
 
-function Navbar({ onCartOpen }) {
+function Navbar({ onCartOpen, transparent = false }) {
   const { user, logout } = useAuth();
   const { cartItems } = useCart();
   const navigate = useNavigate();
@@ -117,12 +118,24 @@ function Navbar({ onCartOpen }) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeMega, setActiveMega] = useState(null); // 'skincare' | 'haircare' | 'wig' | 'bridal'
+  const [scrolled, setScrolled] = useState(false);
 
   const accountRef = useRef(null);
   const searchInputRef = useRef(null);
   const megaNavRef = useRef(null);
 
   const cartCount = cartItems.reduce((a, c) => a + c.quantity, 0);
+
+  // Only the transparent (hero-overlay) variant needs to react to scroll —
+  // it starts see-through over the hero video, then turns solid once the
+  // user scrolls past it so the nav stays legible over ordinary content.
+  useEffect(() => {
+    if (!transparent) return;
+    const handleScroll = () => setScrolled(window.scrollY > 80);
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [transparent]);
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -184,39 +197,26 @@ function Navbar({ onCartOpen }) {
   };
 
   return (
-    <header className="ysl-header" onMouseLeave={handleNavMouseLeave} ref={megaNavRef}>
-      {/* ── Tier 1: Top Black Announcement Strip ── */}
-      <div className="ysl-announcement-strip">
-        <span className="ysl-announcement-text">
-          Receive a Special Gift on orders above ₦35,000 across Nigeria ✦ Complimentary Maison Packaging
-        </span>
-      </div>
-
+    <header
+      className={`ysl-header ${transparent ? "ysl-header--transparent" : ""} ${transparent && scrolled ? "ysl-header--scrolled" : ""}`}
+      onMouseLeave={handleNavMouseLeave}
+      ref={megaNavRef}
+    >
       {/* ── Tier 2: Maison Sub-Bar (Matching Screenshots 1, 2, 3) ── */}
       <div className="ysl-subbar">
-        {/* Left: Boxed Currency Selector + Find Store + Customer Service */}
-        <div className="ysl-subbar-left">
-          <div className="ysl-currency-box" title="Selected Country / Currency">
-            <span>₦ - NG (NGN)</span>
-            <span className="ysl-currency-arrow">⌄</span>
-          </div>
-          <Link to="/contact" className="ysl-sub-link">
-            FIND A STORE
-          </Link>
-          <Link to="/contact" className="ysl-sub-link">
-            CUSTOMER SERVICE
-          </Link>
-        </div>
+        {/* Empty spacer — keeps the centered wordmark centered against
+            the utilities on the right (see ysl-subbar-right below). */}
+        <div className="ysl-subbar-left" aria-hidden="true" />
 
         {/* Center Maison Wordmark */}
         <div className="ysl-brand-center">
           <Link to="/" className="ysl-brand-wordmark" title="Gracia Fab Maison">
-            GRACIA FAB
+            <LogoMark className="ysl-brand-icon" />
+            <span className="ysl-brand-text">GRACIA FAB</span>
           </Link>
-          <span className="ysl-brand-submark">LAGOS · ABUJA</span>
         </div>
 
-        {/* Right Utilities: Account, Beauty Club, My Cart */}
+        {/* Right Utilities: Account, My Cart */}
         <div className="ysl-subbar-right">
           {user ? (
             <div className="ysl-account-wrap" ref={accountRef}>
@@ -261,11 +261,6 @@ function Navbar({ onCartOpen }) {
               <span>ACCOUNT</span>
             </Link>
           )}
-
-          <Link to="/register" className="ysl-sub-link ysl-beauty-club-link">
-            <span className="ysl-star-icon">★</span>
-            <span>BEAUTY CLUB</span>
-          </Link>
 
           <button
             className="ysl-sub-link ysl-cart-utility-btn"
@@ -335,47 +330,34 @@ function Navbar({ onCartOpen }) {
           >
             BRIDAL
           </Link>
-
-          <Link
-            to="/recommend"
-            className="ysl-cat-link"
-            onMouseEnter={() => setActiveMega(null)}
-          >
-            BEAUTY CLUB
-          </Link>
-
-          <Link
-            to="/products?sort=rating"
-            className="ysl-cat-link"
-            onMouseEnter={() => setActiveMega(null)}
-          >
-            TOP RATED
-          </Link>
         </div>
 
-        {/* Right Search Button [ 🔍 Search... ] */}
-        <div className="ysl-search-container">
-          <button
-            className="ysl-search-pill-btn"
-            onClick={() => setSearchOpen((o) => !o)}
-            aria-label="Open Search"
-          >
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+        {/* Right Search Button [ 🔍 Search... ] — not shown on the home
+            page, which has no separate search bar to justify it. */}
+        {!transparent && (
+          <div className="ysl-search-container">
+            <button
+              className="ysl-search-pill-btn"
+              onClick={() => setSearchOpen((o) => !o)}
+              aria-label="Open Search"
             >
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
-            <span>Search...</span>
-          </button>
-        </div>
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+              <span>Search...</span>
+            </button>
+          </div>
+        )}
       </nav>
 
       {/* ── FULL-WIDTH LUXURY MEGA-MENU OVERLAY (Matching Screenshots 1, 2, 3, 4) ── */}
@@ -522,9 +504,6 @@ function Navbar({ onCartOpen }) {
             </Link>
             <Link to="/products?category=bridal" onClick={() => setMenuOpen(false)}>
               BRIDAL
-            </Link>
-            <Link to="/recommend" onClick={() => setMenuOpen(false)}>
-              BEAUTY CLUB
             </Link>
             <Link to="/products" onClick={() => setMenuOpen(false)}>
               VIEW ALL COLLECTIONS

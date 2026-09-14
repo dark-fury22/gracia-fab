@@ -4,6 +4,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import PhotoUpload from "../components/PhotoUpload";
 import SEO from "../components/SEO";
+import { useBeautyProfile } from "../hooks/useBeautyProfile";
 import API_URL from "../config";
 import "../styles/SkinAnalysis.css";
 
@@ -35,6 +36,7 @@ const OVERALL_LABELS = {
 };
 
 function SkinAnalysis({ onCartOpen }) {
+  const { updateProfile } = useBeautyProfile();
   const [countdown, setCountdown] = useState(0);
   const [photo, setPhoto] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -136,6 +138,18 @@ function SkinAnalysis({ onCartOpen }) {
 
       setResult(data);
       setStep("result");
+
+      // Share what the AI just found back to the shared beauty profile,
+      // so the Routine Generator and AI Advisor start pre-filled instead
+      // of asking the same questions again.
+      const detectedConcerns = Object.entries(data.analysis?.concerns || {})
+        .filter(([, v]) => v.detected)
+        .map(([key]) => CONCERN_LABELS[key]?.label)
+        .filter(Boolean);
+      updateProfile({
+        skinType: data.analysis?.detectedSkinType || "",
+        skinConcerns: detectedConcerns.join(", "),
+      });
     } catch (err) {
       if (
         err.message?.toLowerCase().includes("wait") ||

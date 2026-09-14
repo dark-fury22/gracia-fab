@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import SEO from "../components/SEO";
+import RoutineStepCard from "../components/RoutineStepCard";
+import { useBeautyProfile } from "../hooks/useBeautyProfile";
 import API_URL from "../config";
 import "../styles/RoutineGenerator.css";
 
@@ -24,61 +26,19 @@ const BUDGETS = [
   "Premium (₦15k+)",
 ];
 
-function StepCard({ step }) {
-  return (
-    <div className="rg-step-card">
-      <div className="rg-step-number">{step.step}</div>
-      <div className="rg-step-content">
-        <div className="rg-step-header">
-          <strong>{step.type}</strong>
-          {step.frequency && (
-            <span className="rg-step-freq">{step.frequency}</span>
-          )}
-        </div>
-        <p className="rg-step-instruction">{step.instruction}</p>
-        {step.why && <p className="rg-step-why">💡 {step.why}</p>}
-        {step.tip && <p className="rg-step-tip">✦ {step.tip}</p>}
-
-        {step.product ? (
-          <Link
-            to={`/products/${step.product._id}`}
-            className="rg-step-product"
-          >
-            <img
-              src={step.product.image}
-              alt={step.product.name}
-              onError={(e) => {
-                e.target.src =
-                  "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=80&h=80&fit=crop";
-              }}
-            />
-            <div>
-              <span>{step.product.name}</span>
-              <span className="rg-step-price">
-                ₦{step.product.price?.toLocaleString()}
-              </span>
-            </div>
-            <span className="rg-step-shop">Shop →</span>
-          </Link>
-        ) : step.productName ? (
-          <div className="rg-step-suggestion">
-            🛍️ Look for: <em>{step.productName}</em>
-            <Link to="/products" className="rg-browse-link">
-              Browse Products →
-            </Link>
-          </div>
-        ) : null}
-      </div>
-    </div>
-  );
-}
-
 function RoutineGenerator({ onCartOpen }) {
+  const { profile, updateProfile } = useBeautyProfile();
+
+  // Pre-fill from the shared beauty profile so a shopper who already
+  // answered these questions elsewhere (AI Advisor, Skin Analysis) never
+  // has to re-enter them here.
   const [form, setForm] = useState({
-    skinType: "",
-    ageRange: "",
-    concerns: [],
-    budget: "",
+    skinType: profile.skinType || "",
+    ageRange: profile.ageRange || "",
+    concerns: profile.skinConcerns
+      ? profile.skinConcerns.split(",").map((c) => c.trim()).filter(Boolean)
+      : [],
+    budget: profile.budget || "",
   });
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
@@ -105,7 +65,7 @@ function RoutineGenerator({ onCartOpen }) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify(form),
       });
@@ -113,6 +73,14 @@ function RoutineGenerator({ onCartOpen }) {
       if (!res.ok) throw new Error(data.message);
       setResult(data);
       setActiveTab("morning");
+      // Share what we learned back to the profile, so the AI Advisor and
+      // Skin Analysis start pre-filled next time too.
+      updateProfile({
+        skinType: form.skinType,
+        ageRange: form.ageRange,
+        skinConcerns: form.concerns.join(", "),
+        budget: form.budget,
+      });
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
       setError(err.message || "Failed to generate routine. Please try again.");
@@ -278,7 +246,7 @@ function RoutineGenerator({ onCartOpen }) {
             {/* Steps */}
             <div className="rg-steps-list">
               {(currentSteps || []).map((step, i) => (
-                <StepCard key={i} step={step} index={i} />
+                <RoutineStepCard key={i} step={step} />
               ))}
             </div>
 

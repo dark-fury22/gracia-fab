@@ -18,35 +18,6 @@
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
-/* ── Tier 1: Top Announcement Strip ── */
-.ysl-announcement-strip {
-  background: #000000;
-  color: #FFFFFF;
-  text-align: center;
-  padding: 0.55rem 1.5rem;
-  font-size: 0.68rem;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-[data-theme="dark"] .ysl-announcement-strip {
-  background: #111111;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.ysl-announcement-text {
-  max-width: 1200px;
-  margin: 0 auto;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 /* ── Tier 2: Maison Sub-Bar ── */
 .ysl-subbar {
   display: flex;
@@ -76,39 +47,6 @@
   gap: 1.6rem;
 }
 
-/* Boxed Currency Selector (Matching Screenshot 1 & 2) */
-.ysl-currency-box {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  border: 1px solid #000000;
-  padding: 0.4rem 0.8rem;
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  color: var(--text);
-  cursor: pointer;
-  background: transparent;
-  transition: all 0.15s ease;
-}
-
-[data-theme="dark"] .ysl-currency-box {
-  border-color: #FFFFFF;
-}
-
-.ysl-currency-box:hover {
-  background: rgba(0, 0, 0, 0.04);
-}
-
-[data-theme="dark"] .ysl-currency-box:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.ysl-currency-arrow {
-  font-size: 0.85rem;
-  line-height: 1;
-}
-
 .ysl-sub-link {
   font-family: var(--font-body);
   font-size: 0.68rem;
@@ -133,16 +71,6 @@
   opacity: 0.75;
 }
 
-.ysl-beauty-club-link {
-  color: var(--text);
-  font-weight: 700;
-}
-
-.ysl-star-icon {
-  color: #D4AF37;
-  font-size: 0.85rem;
-}
-
 .ysl-cart-utility-btn {
   font-weight: 700;
   color: var(--text);
@@ -160,14 +88,12 @@
 }
 
 .ysl-brand-wordmark {
-  font-family: var(--font-display, "Playfair Display", serif);
-  font-size: 1.75rem;
-  font-weight: 800;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
   color: var(--text);
   text-decoration: none;
-  line-height: 1;
   transition: opacity 0.2s ease;
 }
 
@@ -175,13 +101,21 @@
   opacity: 0.85;
 }
 
-.ysl-brand-submark {
-  font-size: 0.52rem;
-  font-weight: 700;
-  letter-spacing: 0.35em;
+.ysl-brand-icon {
+  height: 58px;
+  width: auto;
+  display: block;
+  color: inherit;
+}
+
+.ysl-brand-text {
+  font-family: var(--font-display, "Playfair Display", serif);
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--text-muted);
-  margin-top: 0.35rem;
+  color: inherit;
+  line-height: 1;
 }
 
 /* Account Dropdown */
@@ -731,6 +665,51 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════
+   TRANSPARENT HERO-OVERLAY VARIANT
+   Opt-in via the `transparent` prop (Home page only) so the header sits
+   directly on top of the hero video instead of pushing it down. Turns
+   solid once the page scrolls past the hero so it stays legible.
+   ═══════════════════════════════════════════════════════════════════ */
+.ysl-header.ysl-header--transparent {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+/* Once scrolled past the hero, .ysl-header--scrolled is added and every
+   rule below stops applying — the header just falls back to its normal,
+   theme-aware solid styling defined earlier in this file. Stays fixed. */
+.ysl-header.ysl-header--transparent:not(.ysl-header--scrolled) {
+  background: transparent;
+  box-shadow: none;
+}
+
+.ysl-header.ysl-header--transparent:not(.ysl-header--scrolled) .ysl-subbar,
+.ysl-header.ysl-header--transparent:not(.ysl-header--scrolled) .ysl-category-nav {
+  background: transparent;
+  border-bottom-color: transparent;
+}
+
+.ysl-header.ysl-header--transparent:not(.ysl-header--scrolled) .ysl-brand-wordmark,
+.ysl-header.ysl-header--transparent:not(.ysl-header--scrolled) .ysl-sub-link,
+.ysl-header.ysl-header--transparent:not(.ysl-header--scrolled) .ysl-cat-link,
+.ysl-header.ysl-header--transparent:not(.ysl-header--scrolled) .ysl-search-pill-btn,
+.ysl-header.ysl-header--transparent:not(.ysl-header--scrolled) .ysl-burger-line {
+  color: #FFFFFF;
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.ysl-header.ysl-header--transparent:not(.ysl-header--scrolled) .ysl-search-pill-btn {
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(6px);
+}
+
+.ysl-header.ysl-header--transparent:not(.ysl-header--scrolled) .ysl-cat-link::after {
+  background: #FFFFFF;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
    RESPONSIVE
    ═══════════════════════════════════════════════════════════════════ */
 @media (max-width: 1200px) {
@@ -749,4 +728,6 @@
   .ysl-mobile-toggle { display: flex; }
   .ysl-subbar-right .ysl-sub-link:not(.ysl-cart-utility-btn) { display: none; }
   .ysl-subbar { padding: 0.75rem 1.25rem; }
+  .ysl-brand-icon { height: 42px; }
+  .ysl-brand-text { font-size: 0.85rem; letter-spacing: 0.14em; }
 }

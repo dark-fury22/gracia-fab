@@ -26,8 +26,8 @@ function Login() {
     }
     try {
       setLoading(true);
-      await login(formData.email, formData.password);
-      navigate("/");
+      const data = await login(formData.email, formData.password);
+      navigate(data.isAdmin ? "/admin" : "/");
     } catch (err) {
       setError(err.message);
     } finally {

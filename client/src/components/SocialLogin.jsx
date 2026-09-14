@@ -12,7 +12,7 @@ const saveAndRedirect = (data) => {
       isAdmin: data.isAdmin,
     }),
   );
-  window.location.href = "/";
+  window.location.href = data.isAdmin ? "/admin" : "/";
 };
 
 function GoogleButton() {

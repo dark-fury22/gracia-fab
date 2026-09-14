@@ -7,6 +7,7 @@ import App from "./App.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
 import { CartProvider } from "./context/CartContext.jsx";
 import { ThemeProvider } from "./context/ThemeContext.jsx";
+import { BeautyProfileProvider } from "./context/BeautyProfileContext.jsx";
 import { ToastProvider } from "./components/Toast";
 
 createRoot(document.getElementById("root")).render(
@@ -18,9 +19,11 @@ createRoot(document.getElementById("root")).render(
         <ThemeProvider>
           <AuthProvider>
             <CartProvider>
-              <ToastProvider>
-                <App />
-              </ToastProvider>
+              <BeautyProfileProvider>
+                <ToastProvider>
+                  <App />
+                </ToastProvider>
+              </BeautyProfileProvider>
             </CartProvider>
           </AuthProvider>
         </ThemeProvider>

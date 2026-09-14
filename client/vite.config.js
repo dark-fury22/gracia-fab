@@ -7,7 +7,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.ico", "logo.svg"],
+      includeAssets: ["favicon.svg"],
       manifest: {
         name: "Gracia Fab — AI Beauty Advisor",
         short_name: "Gracia Fab",

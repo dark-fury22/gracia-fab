@@ -50,6 +50,12 @@ const productSchema = new mongoose.Schema(
       required: true,
     },
 
+    // Optional second photo (e.g. a different angle) shown when a shopper
+    // hovers the product card — falls back to `image` when not set.
+    secondaryImage: {
+      type: String,
+    },
+
     category: {
       type: String,
       required: true,
