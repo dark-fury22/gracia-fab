@@ -109,6 +109,11 @@ function Products() {
 
   return (
     <div className="maison-catalog-page" role="main">
+      {/* ── 0. Breadcrumb ── */}
+      <nav className="maison-breadcrumb" aria-label="Breadcrumb">
+        <Link to="/">← Back to Home</Link>
+      </nav>
+
       {/* ── 1. Spotlight Hero Banner ── */}
       <section className="maison-spotlight-hero">
         <div className="maison-spotlight-inner">

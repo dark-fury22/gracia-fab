@@ -126,36 +126,33 @@ export const createOrder = async (req, res) => {
       }
     }
 
-    // Send WhatsApp order confirmation
+    // Notify the customer — email always fires (every account has one);
+    // WhatsApp only fires when a delivery phone was actually given.
     const phone = order.deliveryAddress?.phone;
     const name = order.deliveryAddress?.fullName || "Customer";
     const orderId = order._id.toString().slice(-8).toUpperCase();
 
     if (phone) {
-      const orderId = order._id.toString().slice(-8).toUpperCase();
-
-      // WhatsApp queue
       await addToQueue(whatsappQueue, "order-confirmed", {
         phone,
         message: messages.orderConfirmed(name, orderId, order.totalPrice),
         type: "order-confirmed",
       });
-
-      // Email queue
-      const template = emailTemplates.orderConfirmed(
-        name,
-        orderId,
-        order.totalPrice,
-        order.orderItems,
-      );
-
-      await addToQueue(emailQueue, "order-confirmed", {
-        to: req.user.email,
-        subject: template.subject,
-        html: template.html,
-        type: "order-confirmed",
-      });
     }
+
+    const template = emailTemplates.orderConfirmed(
+      name,
+      orderId,
+      order.totalPrice,
+      order.orderItems,
+    );
+
+    await addToQueue(emailQueue, "order-confirmed", {
+      to: req.user.email,
+      subject: template.subject,
+      html: template.html,
+      type: "order-confirmed",
+    });
 
     logger.info({ orderId: order._id }, "Order created");
 
@@ -378,40 +375,42 @@ export const updateOrderStatus = async (req, res) => {
     const orderUserEmail = (await Order.findById(order._id).populate("user"))
       .user.email;
 
-    if (phone) {
-      if (status === "shipped") {
+    if (status === "shipped") {
+      if (phone) {
         await addToQueue(whatsappQueue, "order-shipped", {
           phone,
           message: messages.orderShipped(name, orderId),
           type: "order-shipped",
         });
-
-        const template = emailTemplates.orderShipped(name, orderId);
-
-        await addToQueue(emailQueue, "order-shipped", {
-          to: orderUserEmail,
-          subject: template.subject,
-          html: template.html,
-          type: "order-shipped",
-        });
       }
 
-      if (status === "delivered") {
+      const template = emailTemplates.orderShipped(name, orderId);
+
+      await addToQueue(emailQueue, "order-shipped", {
+        to: orderUserEmail,
+        subject: template.subject,
+        html: template.html,
+        type: "order-shipped",
+      });
+    }
+
+    if (status === "delivered") {
+      if (phone) {
         await addToQueue(whatsappQueue, "order-delivered", {
           phone,
           message: messages.orderDelivered(name),
           type: "order-delivered",
         });
-
-        const template = emailTemplates.orderDelivered(name);
-
-        await addToQueue(emailQueue, "order-delivered", {
-          to: orderUserEmail,
-          subject: template.subject,
-          html: template.html,
-          type: "order-delivered",
-        });
       }
+
+      const template = emailTemplates.orderDelivered(name);
+
+      await addToQueue(emailQueue, "order-delivered", {
+        to: orderUserEmail,
+        subject: template.subject,
+        html: template.html,
+        type: "order-delivered",
+      });
     }
 
     logger.info({ orderId: order._id, status }, "Order status updated");

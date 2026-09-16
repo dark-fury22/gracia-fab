@@ -1,8 +1,9 @@
-import { useTheme } from "../hooks/useTheme";
 import LogoMark from "./LogoMark";
 
+const accent = "#7A2432";
+const text1 = "#241310";
+
 function GraciaLogo({ size = "md", showText = true, variant = "default" }) {
-  const { theme } = useTheme();
   const sizes = {
     xs: { icon: 28, text: 12, wordmark: 16 },
     sm: { icon: 34, text: 13, wordmark: 20 },
@@ -11,8 +12,6 @@ function GraciaLogo({ size = "md", showText = true, variant = "default" }) {
   };
 
   const s = sizes[size] || sizes.md;
-  const accent = theme === "dark" ? "#FCA311" : "#7A2432";
-  const text1 = theme === "dark" ? "#FFFFFF" : "#241310";
 
   if (variant === "editorial") {
     return (

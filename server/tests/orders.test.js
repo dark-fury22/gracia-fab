@@ -159,3 +159,39 @@ describe("GET /api/orders/:id", () => {
     expect(res.status).toBe(404);
   });
 });
+
+describe("PUT /api/admin/orders/:id (status updates & notifications)", () => {
+  async function registerAdmin(email = "admin@example.com") {
+    const { token, userId } = await registerUser(email);
+    await User.findByIdAndUpdate(userId, { isAdmin: true });
+    return { token, userId };
+  }
+
+  it("marking an order delivered no longer crashes (missing email template regression)", async () => {
+    const buyer = await registerUser("buyer@example.com");
+    const admin = await registerAdmin();
+    const product = await createProduct();
+
+    const createRes = await request(app)
+      .post("/api/orders")
+      .set("Authorization", `Bearer ${buyer.token}`)
+      .send({
+        orderItems: [{ product: product._id, quantity: 1 }],
+        deliveryAddress,
+        deliveryPrice: 2500,
+      });
+    const orderId = createRes.body._id;
+
+    // Jump the order straight to "shipped" — this test targets the
+    // shipped→delivered notification step, not the full state machine.
+    await Order.findByIdAndUpdate(orderId, { status: "shipped" });
+
+    const deliveredRes = await request(app)
+      .put(`/api/admin/orders/${orderId}`)
+      .set("Authorization", `Bearer ${admin.token}`)
+      .send({ status: "delivered" });
+
+    expect(deliveredRes.status).toBe(200);
+    expect(deliveredRes.body.status).toBe("delivered");
+  });
+});

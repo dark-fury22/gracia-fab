@@ -119,6 +119,51 @@ export const emailTemplates = {
     `,
   }),
 
+  orderDelivered: (name) => ({
+    subject: `🎉 Order Delivered | Gracia Fab`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #000; border-radius: 12px; overflow: hidden;">
+        <div style="background: linear-gradient(135deg, #14213D, #1C2E52); padding: 32px; text-align: center;">
+          <h1 style="color: #FCA311; font-style: italic;">Gracia Fab</h1>
+          <div style="font-size: 48px;">🎉</div>
+          <h2 style="color: #fff;">Your order has been delivered!</h2>
+        </div>
+        <div style="padding: 32px; color: rgba(255,255,255,0.8);">
+          <p>Hi <strong style="color: #FCA311;">${name}</strong>!</p>
+          <p>Your Gracia Fab order has arrived. We hope you love your new beauty products! ✨</p>
+          <p>Don't forget to leave a review — it helps other beauty lovers discover their perfect match.</p>
+          <div style="text-align: center; margin-top: 24px;">
+            <a href="https://gracia-fab.vercel.app/my-orders"
+               style="background: #FCA311; color: #000; padding: 14px 32px; border-radius: 30px; text-decoration: none; font-weight: bold; display: inline-block;">
+              View My Orders
+            </a>
+          </div>
+        </div>
+      </div>
+    `,
+  }),
+
+  loginOtp: (name, code) => ({
+    subject: `Your Gracia Fab verification code: ${code}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #000; color: #fff; border-radius: 12px; overflow: hidden;">
+        <div style="background: linear-gradient(135deg, #14213D, #1C2E52); padding: 32px; text-align: center;">
+          <h1 style="color: #FCA311; font-style: italic; margin: 0;">Gracia Fab</h1>
+          <p style="color: rgba(255,255,255,0.7); margin: 8px 0 0;">Your sign-in verification code</p>
+        </div>
+        <div style="padding: 32px; text-align: center;">
+          <p style="color: rgba(255,255,255,0.8);">Hi ${name}, enter this code to finish signing in:</p>
+          <div style="background: #14213D; border-radius: 10px; padding: 24px; margin: 20px 0;">
+            <p style="color: #FCA311; font-size: 36px; font-weight: bold; letter-spacing: 8px; margin: 0;">${code}</p>
+          </div>
+          <p style="color: rgba(255,255,255,0.5); font-size: 13px;">
+            This code expires in 10 minutes. If you didn't try to sign in, you can safely ignore this email.
+          </p>
+        </div>
+      </div>
+    `,
+  }),
+
   welcome: (name) => ({
     subject: `💄 Welcome to Gracia Fab, ${name}!`,
     html: `

@@ -5,7 +5,6 @@ import { HelmetProvider } from "react-helmet-async";
 import Checkout from "../Checkout";
 import { AuthContext } from "../../hooks/useAuth";
 import { CartContext } from "../../hooks/useCart";
-import { ThemeProvider } from "../../context/ThemeContext";
 
 const mockUser = { _id: "u1", name: "Jane Doe", email: "jane@example.com" };
 const cartItem = {
@@ -20,15 +19,13 @@ function renderCheckout({ cartItems = [cartItem], cartTotal = 5000 } = {}) {
   return render(
     <HelmetProvider>
       <MemoryRouter>
-        <ThemeProvider>
-          <AuthContext.Provider value={{ user: mockUser, loading: false }}>
-            <CartContext.Provider
-              value={{ cartItems, cartTotal, clearCart: vi.fn() }}
-            >
-              <Checkout />
-            </CartContext.Provider>
-          </AuthContext.Provider>
-        </ThemeProvider>
+        <AuthContext.Provider value={{ user: mockUser, loading: false }}>
+          <CartContext.Provider
+            value={{ cartItems, cartTotal, clearCart: vi.fn() }}
+          >
+            <Checkout />
+          </CartContext.Provider>
+        </AuthContext.Provider>
       </MemoryRouter>
     </HelmetProvider>,
   );

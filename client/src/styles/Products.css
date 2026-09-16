@@ -9,6 +9,32 @@
   padding-bottom: 5rem;
 }
 
+.maison-breadcrumb {
+  padding: 1rem 2rem;
+}
+
+.maison-breadcrumb a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.maison-breadcrumb a:hover {
+  color: var(--accent);
+}
+
+@media (max-width: 600px) {
+  .maison-breadcrumb {
+    padding: 0.85rem 1.25rem;
+  }
+}
+
 /* ── 1. Spotlight Hero Banner (Sample 5 - Black Opium Style) ── */
 .maison-spotlight-hero {
   background: linear-gradient(135deg, #100609 0%, #220B13 45%, #38121E 100%);

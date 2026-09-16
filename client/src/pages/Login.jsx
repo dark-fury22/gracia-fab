@@ -27,7 +27,7 @@ function Login() {
     try {
       setLoading(true);
       const data = await login(formData.email, formData.password);
-      navigate(data.isAdmin ? "/admin" : "/");
+      navigate("/verify-code", { state: { email: data.email } });
     } catch (err) {
       setError(err.message);
     } finally {
@@ -116,7 +116,7 @@ function Login() {
             className="auth-submit btn-primary-action"
             disabled={loading}
           >
-            {loading ? "Signing in…" : "Sign in →"}
+            {loading ? "Sending code…" : "Sign in →"}
           </button>
         </form>
 

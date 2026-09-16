@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import SEO from "../components/SEO";
@@ -21,15 +21,45 @@ const COMMUNITY_COLUMNS = [
   [
     { src: "https://res.cloudinary.com/dyzkjerez/image/upload/v1789304042/comm_4_mb6m9i.webp", ratio: "3 / 4" },
     { src: "https://res.cloudinary.com/dyzkjerez/image/upload/v1789304077/comm_6_mmjgxd.jpg", ratio: "3 / 4.3" },
-    { src: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=85", ratio: "3 / 4" },
-    { src: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=500&auto=format&fit=crop&q=85", ratio: "4 / 5" },
+    { src: "https://res.cloudinary.com/dyzkjerez/image/upload/v1789576206/poses_r1jfr7.avif", ratio: "3 / 4" },
+    { src: "https://res.cloudinary.com/dyzkjerez/image/upload/v1789576229/poses_1_spktdm.webp", ratio: "4 / 5" },
   ],
   [
     { src: "https://res.cloudinary.com/dyzkjerez/image/upload/v1789303989/comm_2_pxlxxa.jpg", ratio: "3 / 4.2" },
     { src: "https://res.cloudinary.com/dyzkjerez/image/upload/v1789304059/comm_5_hykbme.webp", ratio: "1 / 1" },
-    { src: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=500&auto=format&fit=crop&q=85", ratio: "4 / 5.6" },
-    { src: "https://images.unsplash.com/photo-1589710751893-f9a6770ad71b?w=500&auto=format&fit=crop&q=85", ratio: "3 / 4" },
+    { src: "https://res.cloudinary.com/dyzkjerez/image/upload/v1789576253/poses_2_u3sh5d.webp", ratio: "4 / 5.6" },
+    { src: "https://res.cloudinary.com/dyzkjerez/image/upload/v1789576285/poses_4_oti0mw.webp", ratio: "3 / 4" },
   ],
+];
+
+// Grounded in what the store actually does today — delivery fee, payment
+// rails and the wig-purity guarantee are pulled from Checkout and About,
+// not invented, so this never promises something the site doesn't do.
+const FAQ_ITEMS = [
+  {
+    q: "How does the AI Beauty Advisor work?",
+    a: "Answer a few quick questions about your skin, hair and goals in our AI Advisor — no account needed — and get matched products plus a personalised routine in seconds.",
+  },
+  {
+    q: "Do I need an account to shop?",
+    a: "No — you can browse, use the AI Advisor, and add items to your bag as a guest. You'll only need to sign in when you're ready to check out, so we can process and track your order.",
+  },
+  {
+    q: "Where do you deliver, and how much does it cost?",
+    a: "We deliver nationwide across Nigeria for a flat ₦2,500 delivery fee, calculated at checkout.",
+  },
+  {
+    q: "How can I pay?",
+    a: "Checkout is secured by Paystack — you can pay by card, bank transfer, or USSD.",
+  },
+  {
+    q: "Are your wigs genuine human hair?",
+    a: "Yes — every wig is 100% single-donor raw hair, inspected through a 14-point check in Lagos and backed by our money-back purity guarantee.",
+  },
+  {
+    q: "Is my selfie safe when I use Skin Analysis?",
+    a: "Your photo is sent directly to our AI for that one analysis and isn't stored on our servers.",
+  },
 ];
 
 function Home({ onCartOpen }) {
@@ -38,7 +68,20 @@ function Home({ onCartOpen }) {
   const [hoveredProductId, setHoveredProductId] = useState(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
+  const [openFaq, setOpenFaq] = useState(null);
   const bestSellersTrackRef = useRef(null);
+  const faqSectionRef = useRef(null);
+  const location = useLocation();
+
+  // Let the Navbar's FAQ link ("/#faq") work from any page, and also work
+  // when clicked while already on the home page (a route change alone
+  // wouldn't remount this component or trigger the browser's native
+  // hash-scroll, since the target element didn't exist yet at nav time).
+  useEffect(() => {
+    if (location.hash === "#faq" && faqSectionRef.current) {
+      faqSectionRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [location.hash]);
 
   useEffect(() => {
     let cancelled = false;
@@ -264,7 +307,7 @@ function Home({ onCartOpen }) {
               <Link to="/products?category=skincare" className="ysl-shopcat-card">
                 <div className="ysl-shopcat-img-wrap" style={{ aspectRatio: "3 / 4" }}>
                   <img
-                    src="https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=700&auto=format&fit=crop&q=85"
+                    src="https://res.cloudinary.com/dyzkjerez/image/upload/v1789578054/poses_6_mnz88i.webp"
                     alt="Skincare"
                   />
                 </div>
@@ -274,7 +317,7 @@ function Home({ onCartOpen }) {
               <Link to="/products?category=wig" className="ysl-shopcat-card">
                 <div className="ysl-shopcat-img-wrap" style={{ aspectRatio: "3 / 4.2" }}>
                   <img
-                    src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=700&auto=format&fit=crop&q=85"
+                    src="https://res.cloudinary.com/dyzkjerez/image/upload/v1789578101/poses_9_yt9tda.webp"
                     alt="Wigs"
                   />
                 </div>
@@ -286,7 +329,7 @@ function Home({ onCartOpen }) {
               <Link to="/products?category=haircare" className="ysl-shopcat-card">
                 <div className="ysl-shopcat-img-wrap" style={{ aspectRatio: "4 / 3.3" }}>
                   <img
-                    src="https://images.unsplash.com/photo-1589156280159-27698a70f29e?w=700&auto=format&fit=crop&q=85"
+                    src="https://res.cloudinary.com/dyzkjerez/image/upload/v1789578027/poses_5_lyj445.avif"
                     alt="Haircare"
                   />
                 </div>
@@ -296,7 +339,7 @@ function Home({ onCartOpen }) {
               <Link to="/products?category=bridal" className="ysl-shopcat-card">
                 <div className="ysl-shopcat-img-wrap" style={{ aspectRatio: "4 / 3.6" }}>
                   <img
-                    src="https://images.unsplash.com/photo-1519741497674-611481863552?w=700&auto=format&fit=crop&q=85"
+                    src="https://res.cloudinary.com/dyzkjerez/image/upload/v1789578081/poses_8_wjpags.jpg"
                     alt="Bridal"
                   />
                 </div>
@@ -311,7 +354,7 @@ function Home({ onCartOpen }) {
       <section className="ysl-community-section">
         <div className="ysl-community-header">
           <h2 className="ysl-community-title">
-            Styled by you <span className="ysl-community-star">✦</span>
+            Loved by you <span className="ysl-community-star">✦</span>
           </h2>
           <p className="ysl-community-sub">Tag us on IG @graciafab</p>
         </div>
@@ -384,6 +427,33 @@ function Home({ onCartOpen }) {
               </span>
               <span className="ysl-commitment-label">Made to Last</span>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── SECTION: FAQ ── */}
+      <section className="ysl-faq-section" id="faq" ref={faqSectionRef}>
+        <div className="ysl-faq-inner">
+          <h2 className="ysl-faq-title">Frequently Asked Questions</h2>
+          <p className="ysl-faq-sub">Everything you need to know before you shop.</p>
+
+          <div className="ysl-faq-list">
+            {FAQ_ITEMS.map((item, i) => (
+              <div key={item.q} className={`ysl-faq-item ${openFaq === i ? "open" : ""}`}>
+                <button
+                  type="button"
+                  className="ysl-faq-question"
+                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                  aria-expanded={openFaq === i}
+                >
+                  {item.q}
+                  <span className="ysl-faq-icon" aria-hidden="true">
+                    {openFaq === i ? "−" : "+"}
+                  </span>
+                </button>
+                {openFaq === i && <p className="ysl-faq-answer">{item.a}</p>}
+              </div>
+            ))}
           </div>
         </div>
       </section>

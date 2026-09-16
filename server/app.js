@@ -62,10 +62,16 @@ app.use(
   }),
 );
 
+// Functional tests reuse this same `app` (and its in-memory limiter state)
+// across dozens of requests per file — real caps there would make test
+// outcomes depend on how many earlier tests happened to run, not on the
+// behavior under test. Limits stay exactly as configured outside tests.
+const isTest = process.env.NODE_ENV === "test";
+
 // ── General rate limit: 100 requests per minute per IP
 const generalLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
-  max: 100, // max 100 requests
+  max: isTest ? 100000 : 100, // max 100 requests
   message: {
     message: "Too many requests, please slow down and try again in a minute.",
   },
@@ -76,7 +82,7 @@ const generalLimiter = rateLimit({
 // ── Strict limit for auth routes (stop password guessing)
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10, // only 10 login attempts
+  max: isTest ? 100000 : 10, // only 10 login attempts
   message: {
     message: "Too many login attempts. Please wait 15 minutes.",
   },
@@ -85,7 +91,7 @@ const authLimiter = rateLimit({
 // ── AI routes are expensive — limit them
 const aiLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
-  max: 5, // only 5 AI calls per minute
+  max: isTest ? 100000 : 5, // only 5 AI calls per minute
   message: {
     message: "Too many AI requests. Please wait a moment.",
   },
@@ -95,6 +101,8 @@ const aiLimiter = rateLimit({
 app.use("/api/", generalLimiter);
 app.use("/api/auth/login", authLimiter);
 app.use("/api/auth/register", authLimiter);
+app.use("/api/auth/verify-otp", authLimiter);
+app.use("/api/auth/resend-otp", authLimiter);
 app.use("/api/recommend", aiLimiter);
 app.use("/api/search", aiLimiter);
 

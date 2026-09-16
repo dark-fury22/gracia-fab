@@ -176,35 +176,6 @@
   padding-top: 0.6rem !important;
 }
 
-.ysl-theme-toggle-wrap {
-  display: flex;
-  align-items: center;
-}
-
-/* ── Tier 3: Primary Category Navigation Bar ── */
-.ysl-category-nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.8rem 3.5rem;
-  position: relative;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-  background: var(--bg);
-}
-
-[data-theme="dark"] .ysl-category-nav {
-  background: #000000;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.ysl-category-links {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 2.5rem;
-  margin: 0 auto;
-}
-
 .ysl-cat-link {
   font-family: var(--font-body);
   font-size: 0.74rem;
@@ -239,13 +210,6 @@
 }
 
 /* Right Search Button [ 🔍 Search... ] */
-.ysl-search-container {
-  display: flex;
-  align-items: center;
-  position: absolute;
-  right: 3.5rem;
-}
-
 .ysl-search-pill-btn {
   display: inline-flex;
   align-items: center;
@@ -271,147 +235,6 @@
 .ysl-search-pill-btn:hover {
   background: transparent;
   color: var(--text);
-}
-
-/* ═══════════════════════════════════════════════════════════════════
-   FULL-WIDTH LUXURY MEGA-MENU OVERLAY
-   Matches Screenshots 1, 2, 3
-   ═══════════════════════════════════════════════════════════════════ */
-.ysl-mega-menu-overlay {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  width: 100%;
-  background: #FFFFFF;
-  color: #000000;
-  border-bottom: 1px solid #E5E5E5;
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.12);
-  z-index: 950;
-  padding: 3rem 4rem 3.5rem;
-  animation: yslMegaFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes yslMegaFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.ysl-mega-menu-inner {
-  max-width: 1440px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 4.5rem;
-}
-
-/* Left 3 Text Columns */
-.ysl-mega-columns-left {
-  display: flex;
-  gap: 4rem;
-  flex: 1;
-}
-
-.ysl-mega-text-col {
-  display: flex;
-  flex-direction: column;
-  min-width: 170px;
-}
-
-.ysl-mega-col-heading {
-  font-family: var(--font-body);
-  font-size: 0.74rem;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #000000;
-  margin-bottom: 1.4rem;
-  line-height: 1.3;
-}
-
-.ysl-mega-col-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
-}
-
-.ysl-mega-nav-link {
-  font-size: 0.8rem;
-  color: #6B7280;
-  text-decoration: none;
-  transition: color 0.15s ease;
-  line-height: 1.35;
-}
-
-.ysl-mega-nav-link:hover {
-  color: #000000;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.ysl-mega-nav-link.view-all {
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #000000;
-  margin-top: 0.5rem;
-  display: inline-block;
-}
-
-/* Right 3 Visual Cards */
-.ysl-mega-cards-right {
-  display: flex;
-  gap: 1.5rem;
-  flex-shrink: 0;
-}
-
-.ysl-mega-visual-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-decoration: none;
-  width: 155px;
-  transition: transform 0.2s ease;
-}
-
-.ysl-mega-card-img-wrap {
-  width: 155px;
-  height: 155px;
-  overflow: hidden;
-  background: #F3F4F6;
-  margin-bottom: 0.95rem;
-}
-
-.ysl-mega-card-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.4s ease;
-}
-
-.ysl-mega-visual-card:hover .ysl-mega-card-img {
-  transform: scale(1.08);
-}
-
-.ysl-mega-card-title {
-  font-family: var(--font-body);
-  font-size: 0.7rem;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #000000;
-  text-align: center;
-  line-height: 1.3;
 }
 
 /* ── Minimalist Search Drawer ── */
@@ -685,8 +508,7 @@
   box-shadow: none;
 }
 
-.ysl-header.ysl-header--transparent:not(.ysl-header--scrolled) .ysl-subbar,
-.ysl-header.ysl-header--transparent:not(.ysl-header--scrolled) .ysl-category-nav {
+.ysl-header.ysl-header--transparent:not(.ysl-header--scrolled) .ysl-subbar {
   background: transparent;
   border-bottom-color: transparent;
 }
@@ -714,17 +536,12 @@
    ═══════════════════════════════════════════════════════════════════ */
 @media (max-width: 1200px) {
   .ysl-subbar { padding: 0.75rem 2rem; }
-  .ysl-category-nav { padding: 0.65rem 2rem; }
-  .ysl-category-links { gap: 1.6rem; }
-  .ysl-search-container { position: static; }
-  .ysl-mega-menu-overlay { padding: 2rem; }
-  .ysl-mega-columns-left { gap: 2.5rem; }
+  .ysl-subbar-left { gap: 1.4rem; }
 }
 
 @media (max-width: 900px) {
   .ysl-subbar-left { display: none; }
-  .ysl-category-nav { display: none; }
-  .ysl-mega-menu-overlay { display: none; }
+  .ysl-search-pill-btn { display: none; }
   .ysl-mobile-toggle { display: flex; }
   .ysl-subbar-right .ysl-sub-link:not(.ysl-cart-utility-btn) { display: none; }
   .ysl-subbar { padding: 0.75rem 1.25rem; }

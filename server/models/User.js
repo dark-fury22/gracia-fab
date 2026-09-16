@@ -42,6 +42,21 @@ const userSchema = new mongoose.Schema(
       default: "local",
     },
 
+    // ── Login OTP (second factor) — cleared as soon as it's used or expires.
+    // Only the hash is stored, matching how the password itself is handled.
+    otpCodeHash: {
+      type: String,
+    },
+
+    otpExpiresAt: {
+      type: Date,
+    },
+
+    otpAttempts: {
+      type: Number,
+      default: 0,
+    },
+
     skinType: {
       type: String,
       enum: ["oily", "dry", "combination", "normal", "sensitive"],

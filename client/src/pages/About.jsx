@@ -8,9 +8,9 @@ function About({ onCartOpen }) {
   return (
     <>
       <SEO
-        title="Craftsmanship & Raw Hair Philosophy"
-        description="Discover the science of 100% single-donor raw hair, precision HD melt lace, and AI complexion pairing at Gracia Fab. Tested and crafted in Lagos, Nigeria."
-        keywords="raw hair Nigeria, single donor hair Lagos, HD melt lace, 12A raw hair, wig craftsmanship Nigeria"
+        title="About Gracia Fab"
+        description="Gracia Fab is Nigeria's AI-powered beauty advisor — matching you to skincare, haircare, wigs and bridal beauty from one quick profile. Based in Lagos, shipping nationwide."
+        keywords="AI beauty advisor Nigeria, skincare Lagos, haircare Nigeria, raw hair wigs, bridal beauty Nigeria"
         url="/about"
       />
       <Navbar onCartOpen={onCartOpen} />
@@ -20,82 +20,89 @@ function About({ onCartOpen }) {
         <section className="craft-hero">
           <div className="craft-hero-inner">
             <div className="craft-hero-text">
-              <span className="craft-eyebrow">OUR CRAFTSMANSHIP & PHILOSOPHY</span>
+              <span className="craft-eyebrow">WHO WE ARE</span>
               <h1 className="craft-hero-title">
-                Welcome to hair
+                Beauty, matched
                 <br />
-                <em className="craft-highlight">perfection.</em>
+                <em className="craft-highlight">to you.</em>
               </h1>
               <p className="craft-hero-sub">
-                We reject synthetic coatings, acid-stripped cuticles, and mixed floor hair.
-                Gracia Fab was founded on an uncompromising principle: every strand must be
-                100% single-donor raw hair, preserved with natural cuticles intact and aligned.
+                Gracia Fab is Nigeria's AI-powered beauty advisor and store. Answer a
+                few quick questions once, and our AI matches you to skincare,
+                haircare, wigs and bridal beauty picks curated for your skin, hair
+                and climate — no guesswork, no repeat forms.
               </p>
 
               <div className="craft-metrics-grid">
                 <div className="craft-metric-item">
-                  <strong>100%</strong>
-                  <span>Single Donor</span>
+                  <strong>4</strong>
+                  <span>Categories, One Profile</span>
                 </div>
                 <div className="craft-metric-item">
-                  <strong>5+ Yrs</strong>
-                  <span>Wear Longevity</span>
+                  <strong>AI</strong>
+                  <span>Matched Recommendations</span>
                 </div>
                 <div className="craft-metric-item">
-                  <strong>0.08mm</strong>
-                  <span>Invisible HD Lace</span>
+                  <strong>Lagos</strong>
+                  <span>Based &amp; Inspected</span>
                 </div>
                 <div className="craft-metric-item">
-                  <strong>450°F</strong>
-                  <span>Heat Resilient</span>
+                  <strong>NGN</strong>
+                  <span>Nationwide Delivery</span>
                 </div>
               </div>
             </div>
 
             <div className="craft-hero-media">
               <img
-                src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&h=900&fit=crop&crop=face"
-                alt="100% Single Donor Raw Hair Braid"
+                src="https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=800&h=900&fit=crop&crop=face"
+                alt="Gracia Fab beauty products"
                 className="craft-hero-img"
               />
               <div className="craft-hero-badge">
-                <span>12A+ Grade</span>
-                <strong>Raw Cuticle Hair</strong>
+                <span>AI-Matched</span>
+                <strong>Skincare · Haircare · Wigs · Bridal</strong>
               </div>
             </div>
           </div>
         </section>
 
-        {/* ── 2. "The Unprocessed Difference" Split Section (Sample 2) ── */}
+        {/* ── 2. Our Story ── */}
         <section className="craft-difference-split">
           <div className="craft-difference-inner">
             <div className="craft-difference-visual">
               <div className="craft-visual-frame">
                 <img
                   src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=700&h=850&fit=crop&crop=center"
-                  alt="Raw Hair Macro Serum Application"
+                  alt="Gracia Fab skincare product"
                   className="craft-macro-img"
                 />
                 <div className="craft-visual-tag">
-                  <span>12A+ Raw Cuticle Hair</span>
+                  <span>One Profile, Every Category</span>
                 </div>
               </div>
             </div>
 
             <div className="craft-difference-copy">
-              <span className="craft-eyebrow-terracotta">THE UNPROCESSED DIFFERENCE</span>
+              <span className="craft-eyebrow-terracotta">WHY WE BUILT THIS</span>
               <h2 className="craft-diff-title">
-                Raw hair that acts like your own natural crown.
+                Beauty shopping shouldn't mean starting over on every page.
               </h2>
               <p className="craft-diff-lead">
-                Unlike commercial "virgin hair" that has been bathed in acid to simulate softness and coated with silicones that wash away after two shampoos, authentic raw hair is pure, untouched human keratin.
+                We kept seeing the same problem: a skin quiz here, a hair form there,
+                a different questionnaire for every tool — and none of them talking
+                to each other. So we built one AI Beauty Advisor that remembers what
+                you tell it.
               </p>
               <p className="craft-diff-body">
-                It responds exactly like healthy natural hair: it absorbs moisture, holds curls effortlessly, can be lifted cleanly to 613 platinum blonde without melting, and maintains its natural fluid sway for over five years of continuous wear.
+                Tell it about your skin, hair, and goals once, and that profile
+                carries across our Skin Analysis, Routine Generator and Skin Tone
+                Detector — powering real product matches across skincare, haircare,
+                wigs and bridal beauty, all from our Lagos-based store.
               </p>
-              <a href="#sourcing" className="craft-text-link">
-                Explore our sourcing standards →
-              </a>
+              <Link to="/recommend" className="craft-text-link">
+                Try the AI Beauty Advisor →
+              </Link>
             </div>
           </div>
         </section>
@@ -104,24 +111,25 @@ function About({ onCartOpen }) {
         <section className="craft-quote-bar">
           <div className="craft-quote-bar-inner">
             <p className="craft-quote-bar-text">
-              "When you wear raw hair that has never been chemically stripped,
-              <span className="craft-quote-accent"> you feel the weightless movement instantly.</span>"
+              "You shouldn't need four different apps to find products that actually
+              <span className="craft-quote-accent"> suit your skin, your hair and your day.</span>"
             </p>
           </div>
         </section>
 
-        {/* ── 4. "Beautiful hair requires pure craft" 4-Pillar Dark Card (Sample 2) ── */}
+        {/* ── 4. Four ways we help you ── */}
         <section className="craft-pillars-dark">
           <div className="craft-pillars-inner">
             <div className="craft-pillars-left">
-              <span className="craft-eyebrow">STANDARDS OF EXCELLENCE</span>
+              <span className="craft-eyebrow">WHAT WE OFFER</span>
               <h2 className="craft-pillars-title">
-                Beautiful hair without compromise.
+                Four categories.
                 <br />
-                <span className="craft-pillars-italic">Crafted for royalty.</span>
+                <span className="craft-pillars-italic">One matched experience.</span>
               </h2>
               <p className="craft-pillars-sub">
-                Every unit passes through a rigorous 14-point inspection in Lagos before being packaged in our signature velvet box.
+                Every product we carry is picked to work with your AI-matched
+                profile, not just sit in a category page.
               </p>
             </div>
 
@@ -129,73 +137,80 @@ function About({ onCartOpen }) {
               <div className="craft-pillar-row">
                 <span className="craft-pillar-num">01</span>
                 <div className="craft-pillar-content">
-                  <h3>Cuticles Intact & Aligned</h3>
-                  <p>All strands face the exact same direction from root to tip. Zero matting, zero rat-nesting, and maximum natural bounce.</p>
+                  <h3>Skincare</h3>
+                  <p>Cleansers, serums, moisturizers and treatments matched to your skin type and concerns — from brightening to hydration to anti-aging.</p>
                 </div>
               </div>
 
               <div className="craft-pillar-row">
                 <span className="craft-pillar-num">02</span>
                 <div className="craft-pillar-content">
-                  <h3>Single Donor Purity</h3>
-                  <p>Cut directly from a single donor ponytail. Uniform elasticity and texture consistency from end to end.</p>
+                  <h3>Haircare</h3>
+                  <p>Growth, repair and everyday hair products chosen for your hair type and goals, with an AI-built routine to match.</p>
                 </div>
               </div>
 
               <div className="craft-pillar-row">
                 <span className="craft-pillar-num">03</span>
                 <div className="craft-pillar-content">
-                  <h3>HD Invisible Melt Lace</h3>
-                  <p>Ultra-thin 0.08mm Swiss lace mesh that disappears into rich melanin skin tones under 4K sunlight.</p>
+                  <h3>Wigs</h3>
+                  <p>Single-donor raw hair, HD lace and glueless caps — inspected in Lagos, with an AI skin-tone match for lace and density.</p>
                 </div>
               </div>
 
               <div className="craft-pillar-row">
                 <span className="craft-pillar-num">04</span>
                 <div className="craft-pillar-content">
-                  <h3>Hand-Tied Density Ventilation</h3>
-                  <p>Single-hair micro knots replicate the natural gradual emergence of hair follicles along the scalp.</p>
+                  <h3>Bridal Beauty</h3>
+                  <p>Skincare countdowns, makeup bundles and bridal wigs, matched to your wedding date so you can start prep with time to spare.</p>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* ── 5. "What is a TOP 1% SMART raw wig?" 3-Column Breakdown (Sample 2) ── */}
+        {/* ── 5. How your AI match works ── */}
         <section className="craft-smart-section">
           <div className="craft-smart-inner">
             <div className="craft-smart-header">
-              <span className="craft-eyebrow-terracotta">THE AI BEAUTY REVOLUTION</span>
+              <span className="craft-eyebrow-terracotta">THE AI BEAUTY ADVISOR</span>
               <h2 className="craft-smart-title">
-                What is a <span className="craft-smart-highlight">TOP 1% SMART</span> raw wig?
+                How your <span className="craft-smart-highlight">AI match</span> works
               </h2>
               <p className="craft-smart-sub">
-                We combine ancestral hair craftsmanship with AI skin-tone detection to guarantee an effortless, custom match.
+                No account required to get started — you'll only need to sign in
+                when you're ready to check out.
               </p>
             </div>
 
             <div className="craft-smart-grid">
               <div className="craft-smart-col">
                 <span className="craft-col-num">01</span>
-                <h3>AI Complexion Pairing</h3>
+                <h3>Tell Us About You</h3>
                 <p>
-                  Our proprietary AI Beauty Advisor analyzes undertones, complexion depth, and face shape to recommend optimal lace tints and hair densities.
+                  A short wizard asks what you're shopping for, your skin and hair
+                  type, and your goals — or your bridal style and wedding date if
+                  that's what brought you here.
                 </p>
               </div>
 
               <div className="craft-smart-col">
                 <span className="craft-col-num">02</span>
-                <h3>Pre-Plucked Precision Hairline</h3>
+                <h3>Get Matched Instantly</h3>
                 <p>
-                  Graduated density with hand-plucked micro baby hairs creates an undetectable hairline transition right out of the box.
+                  We match you to real products from our catalog, plus a
+                  personalised morning, night and weekly routine you can shop
+                  straight from the results.
                 </p>
               </div>
 
               <div className="craft-smart-col">
                 <span className="craft-col-num">03</span>
-                <h3>Ergonomic Glueless Cap System</h3>
+                <h3>One Profile, Every Tool</h3>
                 <p>
-                  3D-contoured ear tabs, memory silicone grips, and an adjustable elastic tension band ensure a 10-second slip-on fit with zero messy glue.
+                  What you tell the AI Advisor carries over to Skin Analysis, the
+                  Routine Generator and the Skin Tone Detector — so you never
+                  answer the same question twice.
                 </p>
               </div>
             </div>
@@ -205,10 +220,12 @@ function About({ onCartOpen }) {
         {/* ── 6. Macro Inspection Gallery (Sample 2) ── */}
         <section className="craft-macro-gallery">
           <div className="craft-macro-header">
-            <span className="craft-eyebrow">LABORATORY RIGOR</span>
+            <span className="craft-eyebrow">A CLOSER LOOK AT OUR WIGS</span>
             <h2 className="craft-macro-title">Macro Inspection Gallery</h2>
             <p className="craft-macro-sub">
-              Every bundle is tested for heat recovery, bleach integrity, and lace sheer transparency.
+              Our raw-hair wigs go through the same rigorous standards below — heat
+              recovery, bleach integrity, and lace sheer transparency — before they
+              reach the shop.
             </p>
           </div>
 
@@ -449,20 +466,20 @@ function About({ onCartOpen }) {
         <section className="craft-final-cta">
           <div className="craft-final-cta-inner">
             <h2 className="craft-final-title">
-              Never settle for less
+              Never settle for
               <br />
-              than raw perfection.
+              a generic routine.
             </h2>
             <p className="craft-final-sub">
-              Experience the breath of fresh air that comes with lightweight, single-donor luxury hair.
+              Get matched to skincare, haircare, wigs and bridal beauty built around you.
             </p>
 
             <div className="craft-final-buttons">
               <Link to="/products" className="craft-btn-primary">
-                Shop All Raw Wigs →
+                Shop All Products →
               </Link>
               <Link to="/recommend" className="craft-btn-outline">
-                Take AI Complexion Quiz ✦
+                Take the AI Beauty Quiz ✦
               </Link>
             </div>
           </div>

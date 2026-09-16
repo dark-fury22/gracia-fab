@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 import GraciaLogo from "../components/GraciaLogo";
 import SEO from "../components/SEO";
 import "./VerifyCode.css";
@@ -7,10 +8,13 @@ import "./VerifyCode.css";
 function VerifyCode() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { verifyOtp, resendOtp } = useAuth();
   const email = location.state?.email;
   const [digits, setDigits] = useState(["", "", "", "", "", ""]);
   const [verifying, setVerifying] = useState(false);
   const [error, setError] = useState("");
+  const [resending, setResending] = useState(false);
+  const [resendMessage, setResendMessage] = useState("");
   const inputRefs = useRef([]);
 
   useEffect(() => {
@@ -74,14 +78,35 @@ function VerifyCode() {
     }
   };
 
-  const handleComplete = () => {
+  const handleComplete = async (fullCode) => {
     setVerifying(true);
     setError("");
-    setTimeout(() => {
-      // Mock verification success
+    try {
+      const data = await verifyOtp(email, fullCode);
+      navigate(data.isAdmin ? "/admin" : "/");
+    } catch (err) {
+      setError(err.message || "Incorrect code. Please try again.");
+      setDigits(["", "", "", "", "", ""]);
+      if (inputRefs.current[0]) inputRefs.current[0].focus();
+    } finally {
       setVerifying(false);
-      navigate("/dashboard");
-    }, 1200);
+    }
+  };
+
+  const handleResend = async () => {
+    setResending(true);
+    setError("");
+    setResendMessage("");
+    try {
+      await resendOtp(email);
+      setResendMessage("A new code has been sent.");
+      setDigits(["", "", "", "", "", ""]);
+      if (inputRefs.current[0]) inputRefs.current[0].focus();
+    } catch (err) {
+      setError(err.message || "Couldn't resend the code. Please try again.");
+    } finally {
+      setResending(false);
+    }
   };
 
   return (
@@ -107,6 +132,9 @@ function VerifyCode() {
           </p>
 
           {error && <div className="verify-error">{error}</div>}
+          {resendMessage && !error && (
+            <div className="verify-resend-success">{resendMessage}</div>
+          )}
 
           <div className="verify-inputs" onPaste={handlePaste}>
             {digits.map((digit, idx) => (
@@ -129,6 +157,15 @@ function VerifyCode() {
               </div>
             ))}
           </div>
+
+          <button
+            type="button"
+            className="verify-resend-btn"
+            onClick={handleResend}
+            disabled={resending || verifying}
+          >
+            {resending ? "Sending…" : "Didn't get a code? Resend"}
+          </button>
         </div>
       </div>
 

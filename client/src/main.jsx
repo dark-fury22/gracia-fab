@@ -6,7 +6,6 @@ import "./index.css";
 import App from "./App.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
 import { CartProvider } from "./context/CartContext.jsx";
-import { ThemeProvider } from "./context/ThemeContext.jsx";
 import { BeautyProfileProvider } from "./context/BeautyProfileContext.jsx";
 import { ToastProvider } from "./components/Toast";
 
@@ -16,17 +15,15 @@ createRoot(document.getElementById("root")).render(
       <GoogleOAuthProvider
         clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || ""}
       >
-        <ThemeProvider>
-          <AuthProvider>
-            <CartProvider>
-              <BeautyProfileProvider>
-                <ToastProvider>
-                  <App />
-                </ToastProvider>
-              </BeautyProfileProvider>
-            </CartProvider>
-          </AuthProvider>
-        </ThemeProvider>
+        <AuthProvider>
+          <CartProvider>
+            <BeautyProfileProvider>
+              <ToastProvider>
+                <App />
+              </ToastProvider>
+            </BeautyProfileProvider>
+          </CartProvider>
+        </AuthProvider>
       </GoogleOAuthProvider>
     </HelmetProvider>
   </StrictMode>,

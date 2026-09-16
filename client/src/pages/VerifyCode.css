@@ -115,6 +115,34 @@
   width: 100%;
 }
 
+.verify-resend-success {
+  background: var(--success-bg);
+  border: 1px solid var(--success);
+  color: var(--success);
+  padding: 0.65rem 1rem;
+  border-radius: var(--radius-md);
+  font-size: 0.82rem;
+  margin-bottom: 1.25rem;
+  width: 100%;
+}
+
+.verify-resend-btn {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  padding: 0;
+}
+
+.verify-resend-btn:disabled {
+  color: var(--text-faint);
+  cursor: not-allowed;
+}
+
 .verify-footer {
   margin-top: 3.5rem;
 }
