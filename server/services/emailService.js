@@ -1,56 +1,44 @@
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 import logger from "../utils/logger.js";
 
-// Create email transporter
-// Using Gmail — go to Google Account → Security → App Passwords
-let transporter = null;
+// Sends over HTTPS via Resend's API rather than raw SMTP — Render (and most
+// PaaS hosts) block outbound SMTP ports (25/465/587) to prevent spam relay
+// abuse, so a direct nodemailer/Gmail connection can never succeed there.
+// Falls back to onboarding@resend.dev, which works without verifying a
+// custom domain — fine for getting started, swap in a verified domain's
+// address via RESEND_FROM_EMAIL once one exists.
+let resend = null;
 
-const getTransporter = () => {
-  if (transporter) return transporter;
+const getClient = () => {
+  if (resend) return resend;
 
-  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-    logger.warn("No email credentials — emails will be logged only");
+  if (!process.env.RESEND_API_KEY) {
+    logger.warn("No RESEND_API_KEY — emails will be logged only");
     return null;
   }
 
-  transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS, // App password, not your Gmail password
-    },
-    // Belt-and-suspenders alongside the process-wide ipv4first DNS order set
-    // in server.js: force IPv4 for this connection specifically, and fail
-    // fast rather than hanging for minutes if the network path is bad.
-    family: 4,
-    connectionTimeout: 10_000,
-    greetingTimeout: 10_000,
-    socketTimeout: 15_000,
-  });
-
-  return transporter;
+  resend = new Resend(process.env.RESEND_API_KEY);
+  return resend;
 };
 
 export const sendEmail = async ({ to, subject, html }) => {
-  const transport = getTransporter();
+  const client = getClient();
 
-  if (!transport) {
-    logger.info({ to, subject }, "No email transport configured — email not sent");
+  if (!client) {
+    logger.info({ to, subject }, "No email client configured — email not sent");
     return;
   }
 
-  try {
-    await transport.sendMail({
-      from: `"Gracia Fab Beauty" <${process.env.EMAIL_USER}>`,
-      to,
-      subject,
-      html,
-    });
-    logger.info({ to }, "Email sent");
-  } catch (err) {
-    logger.error({ err, to }, "Email failed");
-    throw err; // Rethrow so BullMQ can retry
+  const from = process.env.RESEND_FROM_EMAIL || "Gracia Fab Beauty <onboarding@resend.dev>";
+
+  const { error } = await client.emails.send({ from, to, subject, html });
+
+  if (error) {
+    logger.error({ err: error, to }, "Email failed");
+    throw new Error(error.message || "Email send failed");
   }
+
+  logger.info({ to }, "Email sent");
 };
 
 // ── Email templates
