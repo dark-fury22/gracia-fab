@@ -11,7 +11,6 @@ const product = {
   name: "Hydrating Serum",
   price: 5000,
   image: "https://example.com/serum.jpg",
-  brand: "Gracia Fab",
 };
 
 function renderProductCard() {
@@ -40,11 +39,11 @@ describe("ProductCardSkeleton", () => {
 });
 
 describe("ProductCard", () => {
-  it("renders the product name and brand", () => {
+  it("renders the product name and price", () => {
     renderProductCard();
 
     expect(screen.getByText("Hydrating Serum")).toBeInTheDocument();
-    expect(screen.getByText("Gracia Fab")).toBeInTheDocument();
+    expect(screen.getByText("₦5,000")).toBeInTheDocument();
   });
 
   it("adds the product to the cart and shows a confirmation toast", () => {
