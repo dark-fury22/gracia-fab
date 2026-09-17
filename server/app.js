@@ -29,6 +29,12 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
+// ── Trust Render's reverse proxy for the first hop, so req.ip (and
+// express-rate-limit's IP-based keying) reflects the real visitor instead
+// of throwing on the X-Forwarded-For header Render always sets.
+// https://express-rate-limit.github.io/ERR_ERL_UNEXPECTED_X_FORWARDED_FOR/
+app.set("trust proxy", 1);
+
 // ── Structured request logging — every request gets a log line with
 // method, path, status code and response time.
 app.use(pinoHttp({ logger }));
