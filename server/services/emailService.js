@@ -19,6 +19,13 @@ const getTransporter = () => {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS, // App password, not your Gmail password
     },
+    // Belt-and-suspenders alongside the process-wide ipv4first DNS order set
+    // in server.js: force IPv4 for this connection specifically, and fail
+    // fast rather than hanging for minutes if the network path is bad.
+    family: 4,
+    connectionTimeout: 10_000,
+    greetingTimeout: 10_000,
+    socketTimeout: 15_000,
   });
 
   return transporter;
