@@ -5,6 +5,7 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import app from "../app.js";
 import User from "../models/User.js";
 import logger from "../utils/logger.js";
+import * as emailService from "../services/emailService.js";
 
 let mongod;
 
@@ -86,6 +87,23 @@ describe("POST /api/auth/login", () => {
     expect(res.status).toBe(200);
     expect(res.body.requiresOtp).toBe(true);
     expect(res.body.token).toBeUndefined();
+  });
+
+  it("falls back to a normal password-only login when the OTP email fails to send", async () => {
+    const spy = vi
+      .spyOn(emailService, "sendEmail")
+      .mockRejectedValueOnce(new Error("delivery failed"));
+
+    const res = await request(app).post("/api/auth/login").send({
+      email: "jane@example.com",
+      password: "password123",
+    });
+
+    spy.mockRestore();
+
+    expect(res.status).toBe(200);
+    expect(res.body.token).toBeDefined();
+    expect(res.body.requiresOtp).toBeUndefined();
   });
 
   it("rejects an incorrect password", async () => {

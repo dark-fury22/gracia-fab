@@ -7,6 +7,27 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Saves a successful login/register response and establishes the session.
+  const persistSession = (data) => {
+    localStorage.setItem("token", data.token);
+    localStorage.setItem(
+      "user",
+      JSON.stringify({
+        _id: data._id,
+        name: data.name,
+        email: data.email,
+        isAdmin: data.isAdmin,
+      }),
+    );
+
+    setUser({
+      _id: data._id,
+      name: data.name,
+      email: data.email,
+      isAdmin: data.isAdmin,
+    });
+  };
+
   // On app load, check if user is already logged in
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -35,31 +56,15 @@ export function AuthProvider({ children }) {
       throw new Error(data.message || "Registration failed");
     }
 
-    // Save to localStorage
-    localStorage.setItem("token", data.token);
-    localStorage.setItem(
-      "user",
-      JSON.stringify({
-        _id: data._id,
-        name: data.name,
-        email: data.email,
-        isAdmin: data.isAdmin,
-      }),
-    );
-
-    setUser({
-      _id: data._id,
-      name: data.name,
-      email: data.email,
-      isAdmin: data.isAdmin,
-    });
-
+    persistSession(data);
     return data;
   };
 
-  // Login function — step 1: verify the password. The server withholds the
-  // session token until the OTP it just emailed is confirmed via verifyOtp,
-  // so this only ever returns { requiresOtp: true, email }.
+  // Login function — step 1: verify the password. Normally the server
+  // withholds the session token until the OTP it just emailed is confirmed
+  // via verifyOtp, returning only { requiresOtp: true, email }. If email
+  // delivery itself isn't working, the server instead fails open and
+  // returns a token directly, same as a pre-OTP login — handle both.
   const login = async (email, password) => {
     const response = await fetch(`${API_URL}/api/auth/login`, {
       method: "POST",
@@ -71,6 +76,10 @@ export function AuthProvider({ children }) {
 
     if (!response.ok) {
       throw new Error(data.message || "Login failed");
+    }
+
+    if (data.token) {
+      persistSession(data);
     }
 
     return data;
@@ -90,25 +99,7 @@ export function AuthProvider({ children }) {
       throw new Error(data.message || "Verification failed");
     }
 
-    // Save to localStorage
-    localStorage.setItem("token", data.token);
-    localStorage.setItem(
-      "user",
-      JSON.stringify({
-        _id: data._id,
-        name: data.name,
-        email: data.email,
-        isAdmin: data.isAdmin,
-      }),
-    );
-
-    setUser({
-      _id: data._id,
-      name: data.name,
-      email: data.email,
-      isAdmin: data.isAdmin,
-    });
-
+    persistSession(data);
     return data;
   };
 

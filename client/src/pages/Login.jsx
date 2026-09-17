@@ -27,7 +27,11 @@ function Login() {
     try {
       setLoading(true);
       const data = await login(formData.email, formData.password);
-      navigate("/verify-code", { state: { email: data.email } });
+      if (data.requiresOtp) {
+        navigate("/verify-code", { state: { email: data.email } });
+      } else {
+        navigate(data.isAdmin ? "/admin" : "/");
+      }
     } catch (err) {
       setError(err.message);
     } finally {

@@ -85,16 +85,34 @@ export const loginUser = async (req, res) => {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
-    await issueLoginOtp(user);
-
-    res.json({
-      requiresOtp: true,
-      email: user.email,
-      message: "We've emailed you a verification code.",
-    });
+    try {
+      await issueLoginOtp(user);
+      return res.json({
+        requiresOtp: true,
+        email: user.email,
+        message: "We've emailed you a verification code.",
+      });
+    } catch (otpError) {
+      // Email delivery isn't reliably set up yet for every recipient (e.g.
+      // no verified Resend sending domain) — fail open to a normal
+      // password-only login rather than locking every visitor out of the
+      // site. Once email starts succeeding, this branch stops being hit
+      // and OTP resumes automatically for everyone.
+      logger.error(
+        { err: otpError },
+        "OTP email failed — falling back to password-only login",
+      );
+      return res.json({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        isAdmin: user.isAdmin,
+        token: generateToken(user._id),
+      });
+    }
   } catch (error) {
     logger.error({ err: error }, "loginUser error");
-    res.status(500).json({ message: "Unable to send verification code. Please try again shortly." });
+    res.status(500).json({ message: "Something went wrong. Please try again shortly." });
   }
 };
 
