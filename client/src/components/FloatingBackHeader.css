@@ -1,0 +1,182 @@
+/* ═══════════════════════════════════════════════════════════════════
+   FLOATING BACK HEADER — Immersive Web3 / Luxury Minimal Navigation
+   ═══════════════════════════════════════════════════════════════════ */
+
+.floating-back-header {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 950;
+  background: rgba(251, 243, 231, 0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(122, 36, 50, 0.1);
+  padding: 0.85rem 1.75rem;
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+[data-theme="dark"] .floating-back-header {
+  background: rgba(24, 11, 14, 0.92);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.18);
+}
+
+.floating-back-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+/* ── Back / Return Button ── */
+.floating-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  background: #FFFFFF;
+  border: 1px solid rgba(122, 36, 50, 0.18);
+  color: var(--text, #241310);
+  font-family: inherit;
+  font-size: 0.86rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 0.5rem 1.15rem;
+  border-radius: 30px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(122, 36, 50, 0.06);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="dark"] .floating-back-btn {
+  background: #251217;
+  border-color: rgba(212, 175, 55, 0.3);
+  color: #FFFFFF;
+}
+
+.floating-back-btn:hover {
+  background: #7A2432;
+  border-color: #7A2432;
+  color: #FFFFFF;
+  transform: translateX(-3px);
+  box-shadow: 0 4px 14px rgba(122, 36, 50, 0.25);
+}
+
+[data-theme="dark"] .floating-back-btn:hover {
+  background: #D4AF37;
+  border-color: #D4AF37;
+  color: #180B0E;
+}
+
+.floating-back-btn .back-arrow {
+  font-size: 1.05rem;
+  transition: transform 0.2s ease;
+}
+
+.floating-back-btn:hover .back-arrow {
+  transform: translateX(-2px);
+}
+
+/* ── Center Brand Mark ── */
+.floating-brand-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  text-decoration: none;
+  color: #7A2432;
+  font-family: var(--font-display, 'Playfair Display', serif);
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+[data-theme="dark"] .floating-brand-mark {
+  color: #D4AF37;
+}
+
+.floating-brand-mark:hover {
+  opacity: 0.85;
+  transform: scale(1.02);
+}
+
+.floating-brand-mark .brand-sparkle {
+  color: #D4AF37;
+  font-size: 0.9rem;
+}
+
+/* ── Right Cart Pill ── */
+.floating-cart-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  background: #7A2432;
+  color: #FFFFFF;
+  border: none;
+  font-family: inherit;
+  font-size: 0.86rem;
+  font-weight: 600;
+  padding: 0.5rem 1.15rem;
+  border-radius: 30px;
+  cursor: pointer;
+  box-shadow: 0 3px 12px rgba(122, 36, 50, 0.25);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="dark"] .floating-cart-pill {
+  background: #D4AF37;
+  color: #180B0E;
+  box-shadow: 0 3px 12px rgba(212, 175, 55, 0.3);
+}
+
+.floating-cart-pill:hover {
+  background: #5C1B26;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(122, 36, 50, 0.35);
+}
+
+[data-theme="dark"] .floating-cart-pill:hover {
+  background: #E5C358;
+}
+
+.floating-cart-pill .cart-icon {
+  font-size: 0.95rem;
+}
+
+.floating-cart-pill .cart-badge {
+  background: rgba(255, 255, 255, 0.25);
+  color: #FFFFFF;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.12rem 0.45rem;
+  border-radius: 12px;
+  min-width: 1.2rem;
+  text-align: center;
+}
+
+[data-theme="dark"] .floating-cart-pill .cart-badge {
+  background: rgba(24, 11, 14, 0.25);
+  color: #180B0E;
+}
+
+@media (max-width: 600px) {
+  .floating-back-header {
+    padding: 0.65rem 1rem;
+  }
+  .floating-back-btn {
+    padding: 0.45rem 0.85rem;
+    font-size: 0.8rem;
+  }
+  .floating-brand-mark {
+    font-size: 0.95rem;
+  }
+  .floating-cart-pill {
+    padding: 0.45rem 0.85rem;
+    font-size: 0.8rem;
+  }
+  .floating-cart-pill .cart-label {
+    display: none;
+  }
+}
+

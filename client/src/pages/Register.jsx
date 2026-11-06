@@ -53,6 +53,23 @@ function Register() {
         url="/register"
       />
 
+      <div className="auth-top-nav">
+        <button
+          type="button"
+          onClick={() => {
+            if (window.history.state && window.history.state.idx > 0) {
+              navigate(-1);
+            } else {
+              navigate("/");
+            }
+          }}
+          className="auth-floating-back-btn"
+          aria-label="Return to store"
+        >
+          ← Return to Store
+        </button>
+      </div>
+
       <div className="auth-shell">
         <Link to="/" className="auth-logo-link">
           <GraciaLogo size="lg" />

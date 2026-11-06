@@ -11,6 +11,7 @@ function VerifyCode() {
   const { verifyOtp, resendOtp } = useAuth();
   const email = location.state?.email;
   const [digits, setDigits] = useState(["", "", "", "", "", ""]);
+  const [devOtpCode, setDevOtpCode] = useState(location.state?.devOtpCode || null);
   const [verifying, setVerifying] = useState(false);
   const [error, setError] = useState("");
   const [resending, setResending] = useState(false);
@@ -98,7 +99,8 @@ function VerifyCode() {
     setError("");
     setResendMessage("");
     try {
-      await resendOtp(email);
+      const data = await resendOtp(email);
+      if (data?.devOtpCode) setDevOtpCode(data.devOtpCode);
       setResendMessage("A new code has been sent.");
       setDigits(["", "", "", "", "", ""]);
       if (inputRefs.current[0]) inputRefs.current[0].focus();
@@ -134,6 +136,47 @@ function VerifyCode() {
           {error && <div className="verify-error">{error}</div>}
           {resendMessage && !error && (
             <div className="verify-resend-success">{resendMessage}</div>
+          )}
+
+          {devOtpCode && (
+            <div
+              className="verify-dev-hint"
+              style={{
+                background: "rgba(212, 175, 55, 0.12)",
+                border: "1px dashed #D4AF37",
+                borderRadius: "10px",
+                padding: "0.75rem 1rem",
+                marginBottom: "1.25rem",
+                fontSize: "0.85rem",
+                textAlign: "center",
+              }}
+            >
+              <span style={{ color: "var(--text-1)" }}>
+                ✦ Development/Demo Code: <strong>{devOtpCode}</strong>
+              </span>
+              <button
+                type="button"
+                style={{
+                  display: "block",
+                  margin: "0.45rem auto 0",
+                  background: "var(--color-primary, #7A2432)",
+                  color: "#FFF",
+                  border: "none",
+                  borderRadius: "6px",
+                  padding: "0.35rem 0.85rem",
+                  fontSize: "0.78rem",
+                  fontWeight: "600",
+                  cursor: "pointer",
+                }}
+                onClick={() => {
+                  const arr = String(devOtpCode).split("");
+                  setDigits(arr);
+                  handleComplete(String(devOtpCode));
+                }}
+              >
+                Auto-fill &amp; Verify Code →
+              </button>
+            </div>
           )}
 
           <div className="verify-inputs" onPaste={handlePaste}>

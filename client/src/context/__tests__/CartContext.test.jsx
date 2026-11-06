@@ -44,6 +44,18 @@ describe("CartContext", () => {
     expect(result.current.cartTotal).toBe(10000);
   });
 
+  it("adds a product with explicit quantity", () => {
+    const { result } = renderHook(() => useCart(), { wrapper });
+
+    act(() => {
+      result.current.addToCart(product, 3);
+    });
+
+    expect(result.current.cartItems).toHaveLength(1);
+    expect(result.current.cartItems[0].quantity).toBe(3);
+    expect(result.current.cartTotal).toBe(15000);
+  });
+
   it("removes a product from the cart", () => {
     const { result } = renderHook(() => useCart(), { wrapper });
 

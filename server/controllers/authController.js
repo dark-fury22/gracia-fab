@@ -69,6 +69,7 @@ const issueLoginOtp = async (user) => {
   if (process.env.NODE_ENV !== "production") {
     logger.info({ email: user.email, code }, "OTP generated (dev mode)");
   }
+  return code;
 };
 
 // @desc    Login user — step 1: verify password, send a login OTP
@@ -86,11 +87,12 @@ export const loginUser = async (req, res) => {
     }
 
     try {
-      await issueLoginOtp(user);
+      const code = await issueLoginOtp(user);
       return res.json({
         requiresOtp: true,
         email: user.email,
         message: "We've emailed you a verification code.",
+        devOtpCode: process.env.NODE_ENV !== "production" ? code : undefined,
       });
     } catch (otpError) {
       // Email delivery isn't reliably set up yet for every recipient (e.g.
@@ -178,9 +180,12 @@ export const resendOtp = async (req, res) => {
       return res.json({ message: "If an account exists, a new code has been sent." });
     }
 
-    await issueLoginOtp(user);
+    const code = await issueLoginOtp(user);
 
-    res.json({ message: "A new code has been sent." });
+    res.json({
+      message: "A new code has been sent.",
+      devOtpCode: process.env.NODE_ENV !== "production" ? code : undefined,
+    });
   } catch (error) {
     logger.error({ err: error }, "resendOtp error");
     res.status(500).json({ message: "Unable to send verification code. Please try again shortly." });

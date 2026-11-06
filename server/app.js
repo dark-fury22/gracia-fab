@@ -85,10 +85,10 @@ const generalLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-// ── Strict limit for auth routes (stop password guessing)
+// ── Strict limit for auth routes (stop password guessing in prod; relaxed in dev/test)
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: isTest ? 100000 : 10, // only 10 login attempts
+  max: isTest || process.env.NODE_ENV !== "production" ? 1000 : 10,
   message: {
     message: "Too many login attempts. Please wait 15 minutes.",
   },
@@ -101,6 +101,17 @@ const aiLimiter = rateLimit({
   message: {
     message: "Too many AI requests. Please wait a moment.",
   },
+});
+
+// ── Conversational chat limiter: allows natural multi-turn dialogue while preventing abuse
+const chatLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: isTest ? 100000 : 30, // 30 messages per minute
+  message: {
+    message: "You're chatting quite fast! Please wait a moment for our AI advisor.",
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
 });
 
 // ── Apply general rate limit to all /api/ routes
@@ -177,7 +188,7 @@ app.use(express.urlencoded({ limit: "10mb", extended: true }));
 app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
 
 // ── AI Beauty Chat (Gemini or Groq fallback)
-app.post("/api/chat", aiLimiter, async (req, res) => {
+app.post("/api/chat", chatLimiter, async (req, res) => {
   const { message, history = [] } = req.body;
   if (!message) return res.status(400).json({ message: "Message required" });
 
@@ -191,10 +202,10 @@ app.post("/api/chat", aiLimiter, async (req, res) => {
       .map((p) => `ID:${p._id} | ${p.name} | ${p.category} | ₦${p.price}`)
       .join("\n");
 
-    const systemInstruction = `You are a friendly beauty advisor for Gracia Fab, a Nigerian beauty store.
-Help with skincare, haircare, wigs, and bridal beauty.
-Keep responses to 2-3 sentences max. Be warm and helpful.
-If recommending products from our catalog, add "PRODUCTS: ["id1","id2"]" at the end.
+    const systemInstruction = `You are a warm, luxury beauty concierge for Gracia Fab, an upscale Nigerian beauty maison.
+You assist customers with melanin-rich skincare (hyperpigmentation, sun protection, hydration), raw virgin glueless wigs, bridal beauty, and haircare.
+Keep responses concise (2-3 sentences max), elegant, and actionable.
+When relevant, recommend 1 or 2 specific products from our catalog below by adding PRODUCTS: ["id1", "id2"] at the very end of your response.
 
 Available products:
 ${productList}`;
@@ -206,16 +217,34 @@ ${productList}`;
       try {
         const { GoogleGenerativeAI } = await import("@google/generative-ai");
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+        
+        // Select model (Gemini 2.0 Flash or 1.5 Flash)
+        const modelName = process.env.GEMINI_MODEL || "gemini-2.0-flash";
         const model = genAI.getGenerativeModel({
-          model: "gemini-1.5-flash",
+          model: modelName,
           systemInstruction,
         });
 
-        // Build Gemini chat history format
-        const geminiHistory = history.slice(-6).map((m) => ({
-          role: m.role === "assistant" ? "model" : "user",
-          parts: [{ text: m.content || m.text }],
-        }));
+        // Build Gemini chat history format:
+        // Must start with 'user', alternate between 'user' and 'model', and end with 'model' before sendMessage
+        const geminiHistory = [];
+        for (const m of history.slice(-8)) {
+          const role = (m.role === "assistant" || m.sender === "ai") ? "model" : "user";
+          const text = (m.content || m.text || "").trim();
+          if (!text) continue;
+          if (geminiHistory.length === 0 && role === "model") {
+            continue; // Gemini requires the first turn in history to be 'user'
+          }
+          const last = geminiHistory[geminiHistory.length - 1];
+          if (last && last.role === role) {
+            last.parts[0].text += `\n${text}`;
+          } else {
+            geminiHistory.push({ role, parts: [{ text }] });
+          }
+        }
+        if (geminiHistory.length > 0 && geminiHistory[geminiHistory.length - 1].role === "user") {
+          geminiHistory.pop();
+        }
 
         const chat = model.startChat({ history: geminiHistory });
         const result = await chat.sendMessage(message);
@@ -229,41 +258,42 @@ ${productList}`;
     if (!reply && process.env.GROQ_API_KEY) {
       const Groq = (await import("groq-sdk")).default;
       const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+      const groqMessages = [
+        { role: "system", content: systemInstruction },
+        ...history.slice(-6).map((m) => ({
+          role: (m.role === "assistant" || m.sender === "ai") ? "assistant" : "user",
+          content: m.text || m.content || "",
+        })).filter(m => m.content.trim().length > 0),
+        { role: "user", content: message },
+      ];
+
       const completion = await groq.chat.completions.create({
         model: "llama-3.1-8b-instant",
         max_tokens: 300,
         temperature: 0.7,
-        messages: [
-          { role: "system", content: systemInstruction },
-          ...history.slice(-6).map((m) => ({
-            role: m.role === "assistant" ? "assistant" : "user",
-            content: m.text || m.content,
-          })),
-          { role: "user", content: message },
-        ],
+        messages: groqMessages,
       });
       reply = completion.choices[0]?.message?.content || "";
     }
 
     if (!reply) {
       reply =
-        "I'm here to help with your beauty questions! Please ask me about skincare, haircare, or our products 💄";
+        "Welcome to Gracia Fab! I am here to help you find the perfect skincare, haircare, glueless raw wigs, or bridal beauty formulations. How may I assist you today? ✨";
     }
 
     // Extract recommended product IDs
     let recommendedProducts = [];
-    const prodMatch = reply.match(/PRODUCTS:\s*\[([^\]]+)\]/);
+    const prodMatch = reply.match(/PRODUCTS:\s*\[([^\]]+)\]/i);
     if (prodMatch) {
-      reply = reply.replace(/PRODUCTS:\s*\[[^\]]+\]/, "").trim();
-      const ids = prodMatch[1]
-        .match(/"([^"]+)"/g)
-        ?.map((id) => id.replace(/"/g, ""));
-      if (ids?.length) {
+      reply = reply.replace(/PRODUCTS:\s*\[[^\]]+\]/i, "").trim();
+      const rawIds = prodMatch[1].match(/[a-f0-9]{24}|[a-zA-Z0-9_-]{8,}/gi);
+      if (rawIds?.length) {
         recommendedProducts = await Product.find({
-          _id: { $in: ids },
+          _id: { $in: rawIds },
         })
-          .select("name price image _id")
-          .limit(2);
+          .select("name price image _id category")
+          .limit(2)
+          .lean();
       }
     }
 
@@ -271,7 +301,7 @@ ${productList}`;
   } catch (err) {
     logger.error({ err }, "Chat error");
     res.json({
-      reply: "I'm having a quick break! Try again in a moment 💄",
+      reply: "I'm having a brief moment! Feel free to ask about our skincare, haircare, raw wigs, or bridal beauty services ✨",
       products: [],
     });
   }

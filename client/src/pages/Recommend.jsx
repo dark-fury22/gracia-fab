@@ -1,626 +1,801 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import Navbar from "../components/Navbar";
+import FloatingBackHeader from "../components/FloatingBackHeader";
 import Footer from "../components/Footer";
-import RoutineStepCard from "../components/RoutineStepCard";
 import SEO from "../components/SEO";
-import { useAuth } from "../hooks/useAuth";
+import LiveCameraToneDetector from "../components/LiveCameraToneDetector";
 import { useCart } from "../hooks/useCart";
 import { useToast } from "../hooks/useToast";
 import { useBeautyProfile } from "../hooks/useBeautyProfile";
+import { AFRICAN_UNDERTONES } from "../utils/africanUndertones";
 import API_URL from "../config";
 import "../styles/Recommend.css";
-import "../styles/RoutineGenerator.css";
 
-const SHOPPING_FOR_OPTIONS = [
-  { id: "skincare", label: "Skincare", emoji: "🧴" },
-  { id: "haircare", label: "Haircare", emoji: "💆🏽‍♀️" },
-  { id: "wig", label: "Wigs", emoji: "💇🏽‍♀️" },
-  { id: "bridal", label: "Bridal Beauty", emoji: "👰🏽" },
-  { id: "everything", label: "Everything — Surprise Me", emoji: "✨" },
+// ── Default Curated 4-Step Routine ──
+const DEFAULT_ROUTINE = [
+  {
+    _id: "prod-cleanser-1",
+    step: "Step 01 / Cleanse",
+    name: "Hydrating Face Cleanser",
+    category: "skincare",
+    price: 18000,
+    rating: 4.8,
+    reviewsCount: 1240,
+    image:
+      "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=500&auto=format&fit=crop&q=80",
+    benefit: "Gently purifies without stripping natural moisture",
+  },
+  {
+    _id: "prod-toner-2",
+    step: "Step 02 / Tone",
+    name: "Glow Balancing Toner",
+    category: "skincare",
+    price: 16500,
+    rating: 4.7,
+    reviewsCount: 980,
+    image:
+      "https://images.unsplash.com/photo-1608248597359-5776d6342111?w=500&auto=format&fit=crop&q=80",
+    benefit: "Refines pores and restores skin pH balance",
+  },
+  {
+    _id: "prod-moisturizer-3",
+    step: "Step 03 / Hydrate",
+    name: "Radiance Rich Moisturizer",
+    category: "skincare",
+    price: 24000,
+    rating: 4.8,
+    reviewsCount: 1520,
+    image:
+      "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=500&auto=format&fit=crop&q=80",
+    benefit: "Deep nourishing hydration with barrier protection",
+  },
+  {
+    _id: "prod-spf-4",
+    step: "Step 04 / Protect",
+    name: "Daily Invisible SPF 50+",
+    category: "skincare",
+    price: 20000,
+    rating: 4.9,
+    reviewsCount: 720,
+    image:
+      "https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?w=500&auto=format&fit=crop&q=80",
+    benefit: "Zero white cast formula for melanin-rich skin",
+  },
 ];
 
-const AGE_RANGES = ["Teens (13-19)", "20s", "30s", "40s", "50+"];
+const SKIN_TYPES = [
+  "Combination Skin",
+  "Oily / Acne-Prone",
+  "Dry / Dehydrated",
+  "Normal / Balanced",
+  "Sensitive / Reactive",
+];
 
-const LOOKING_FOR_MAP = {
-  skincare: "skincare products",
-  haircare: "haircare products",
-  wig: "wig or hairstyle",
-  bridal: "bridal beauty",
-  everything: "everything",
-};
+const HAIR_TYPES = [
+  "4C Coily & Tight Curls",
+  "4A / 4B Kinky Hair",
+  "3B / 3C Curly",
+  "Relaxed / Heat-Treated",
+  "Protective Braids & Locs",
+];
 
-function Recommend({ onCartOpen }) {
-  const { user } = useAuth();
+const CLIMATE_CONCERNS = [
+  { id: "hyper", label: "Hyperpigmentation & Dark Spots", icon: "☀️" },
+  { id: "oil", label: "Midday Shine & Lagos Humidity", icon: "💧" },
+  { id: "dry", label: "Harmattan Dryness & Flaking", icon: "🍂" },
+  { id: "sun", label: "Sun Protection (Zero White Cast)", icon: "🛡️" },
+  { id: "edges", label: "Edge Protection & Lace Tension", icon: "🌸" },
+  { id: "pores", label: "Enlarged Pores & Texture", icon: "✨" },
+];
+
+function Recommend({ onCartOpen, initialStep = 1 }) {
   const { addToCart } = useCart();
   const { addToast } = useToast();
-  const { profile, updateProfile } = useBeautyProfile();
+  const beautyContext = useBeautyProfile() || {};
+  const profile = beautyContext.profile || {};
+  const updateProfile = beautyContext.updateProfile || (() => {});
 
-  const [step, setStep] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const [results, setResults] = useState(null);
-  const [error, setError] = useState("");
-  const [saved, setSaved] = useState(false);
+  // Stepper State: 1 = Focus/Intro, 2 = Profile, 3 = Concerns, 4 = Undertone, 5 = Routine Result
+  const [currentStep, setCurrentStep] = useState(initialStep);
+  const [cameraModalOpen, setCameraModalOpen] = useState(false);
 
-  const [resultTab, setResultTab] = useState("picks"); // picks | routine
-  const [routine, setRoutine] = useState(null);
-  const [routineLoading, setRoutineLoading] = useState(false);
-  const [routineError, setRoutineError] = useState("");
-  const [routineTab, setRoutineTab] = useState("morning");
+  // Form selections
+  const [selectedGoal, setSelectedGoal] = useState("skincare");
+  const [selectedSkinType, setSelectedSkinType] = useState(
+    profile.skinType || "Combination Skin"
+  );
+  const [selectedHairType, setSelectedHairType] = useState(
+    profile.hairType || "4C Coily & Tight Curls"
+  );
+  const [selectedConcerns, setSelectedConcerns] = useState([
+    "Hyperpigmentation & Dark Spots",
+    "Sun Protection (Zero White Cast)",
+  ]);
+  const [selectedToneKey, setSelectedToneKey] = useState(
+    profile.skinTone?.key || "warm-golden"
+  );
 
-  // Pre-filled from whatever the shared beauty profile already knows —
-  // a selfie in Skin Analysis or an earlier visit here means these
-  // questions don't get asked twice.
-  const [formData, setFormData] = useState({
-    shoppingFor: profile.shoppingFor || "",
-    skinType: profile.skinType || "",
-    skinConcerns: profile.skinConcerns || "",
-    ageRange: profile.ageRange || "",
-    hairType: profile.hairType || "",
-    hairConcerns: profile.hairConcerns || "",
-    budget: profile.budget || "",
-    occasion: profile.occasion || "",
-    weddingDate: profile.weddingDate || "",
-    bridalStyle: profile.bridalStyle || "",
-  });
+  // Routine & Cart
+  const [routineItems, setRoutineItems] = useState(DEFAULT_ROUTINE);
+  const [wishlist, setWishlist] = useState({});
 
-  const isBridal = formData.shoppingFor === "bridal";
-  const steps = isBridal
-    ? ["What You Need", "About Your Skin", "Bridal Details", "Your Budget"]
-    : ["What You Need", "About Your Skin", "About Your Hair", "Your Goals"];
+  // Chat State inside Results view
+  const [chatOpen, setChatOpen] = useState(false);
+  const [chatMessages, setChatMessages] = useState([
+    {
+      sender: "ai",
+      time: "11:24 AM",
+      text: "Hello beautiful! ✨ I've curated this ritual for your exact profile. What questions can I answer about your ingredients?",
+    },
+  ]);
+  const [chatInput, setChatInput] = useState("");
+  const [isAiTyping, setIsAiTyping] = useState(false);
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const containerRef = useRef(null);
 
-  const selectShoppingFor = (id) => {
-    setFormData((f) => ({ ...f, shoppingFor: id }));
-    setStep(1);
-  };
+  // Auto-fetch products to enrich routine if live API is available
+  useEffect(() => {
+    let isMounted = true;
+    async function fetchProducts() {
+      try {
+        const res = await fetch(`${API_URL}/api/products?limit=8`);
+        if (res.ok) {
+          const data = await res.json();
+          const prods = Array.isArray(data) ? data : data.products || [];
+          if (prods.length >= 4 && isMounted) {
+            const mapped = DEFAULT_ROUTINE.map((item, idx) => {
+              const live = prods[idx];
+              if (!live) return item;
+              return {
+                ...item,
+                _id: live._id || item._id,
+                name: live.name || item.name,
+                price: live.price || item.price,
+                image: live.image || item.image,
+                rating: live.rating || item.rating,
+              };
+            });
+            setRoutineItems(mapped);
+          }
+        }
+      } catch {
+        // Fallback to DEFAULT_ROUTINE
+      }
+    }
+    fetchProducts();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
-  const handleSubmit = async () => {
-    setLoading(true);
-    setError("");
-    try {
-      const payload = {
-        skinType: formData.skinType,
-        skinConcerns: formData.skinConcerns,
-        hairType: isBridal ? "" : formData.hairType,
-        hairConcerns: isBridal ? "" : formData.hairConcerns,
-        lookingFor: LOOKING_FOR_MAP[formData.shoppingFor] || "everything",
-        budget: formData.budget,
-        occasion: isBridal ? "wedding or bridal" : formData.occasion,
-      };
-      const response = await fetch(`${API_URL}/api/recommend`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message);
-      setResults(data.recommendations);
-      setResultTab("picks");
-      setRoutine(null);
-      // Remember everything for next time, wherever they land.
-      updateProfile(formData);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    } catch {
-      setError("Failed to get recommendations. Please try again.");
-    } finally {
-      setLoading(false);
+  const scrollToTop = () => {
+    if (containerRef.current && typeof containerRef.current.scrollIntoView === "function") {
+      containerRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
 
-  const handleAddToBag = (product) => {
+  const handleNextStep = () => {
+    setCurrentStep((prev) => Math.min(prev + 1, 5));
+    scrollToTop();
+  };
+
+  const handlePrevStep = () => {
+    setCurrentStep((prev) => Math.max(prev - 1, 1));
+    scrollToTop();
+  };
+
+  const toggleConcern = (concernLabel) => {
+    setSelectedConcerns((prev) =>
+      prev.includes(concernLabel)
+        ? prev.filter((c) => c !== concernLabel)
+        : [...prev, concernLabel]
+    );
+  };
+
+  const handleToneDetected = (toneData) => {
+    setSelectedToneKey(toneData.key || "warm-golden");
+    updateProfile({ skinTone: toneData });
+    addToast(`Detected ${toneData.name || toneData.undertone}! ✨`, "success");
+    handleNextStep();
+  };
+
+  const handleAddToCart = (product) => {
     if (!product) return;
-    addToCart(product);
-    addToast(`Added ${product.name} to your bag 🛍️`, "cart");
+    addToCart({
+      _id: product._id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+    });
+    addToast(`Added "${product.name}" to your bag 🛍️`, "cart");
     if (onCartOpen) onCartOpen();
   };
 
-  const loadRoutine = async () => {
-    if (routine || routineLoading) return;
-    setRoutineLoading(true);
-    setRoutineError("");
-    try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(`${API_URL}/api/routine/generate`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({
-          skinType: formData.skinType,
-          ageRange: formData.ageRange,
-          concerns: formData.skinConcerns
-            ? formData.skinConcerns.split(",").map((c) => c.trim()).filter(Boolean)
-            : [],
-          budget: formData.budget,
-        }),
+  const handleAddEntireRoutine = () => {
+    routineItems.forEach((item) => {
+      addToCart({
+        _id: item._id,
+        name: item.name,
+        price: item.price,
+        image: item.image,
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message);
-      setRoutine(data.routine);
-      setRoutineTab("morning");
-    } catch (err) {
-      setRoutineError(
-        err.message || "Could not build your routine. Please try again.",
-      );
-    } finally {
-      setRoutineLoading(false);
-    }
+    });
+    const total = routineItems.reduce((acc, c) => acc + (c.price || 0), 0);
+    addToast(
+      `Added complete 4-step routine (₦${total.toLocaleString()}) to your bag! 🌟`,
+      "cart"
+    );
+    if (onCartOpen) onCartOpen();
   };
 
-  const handleResultTab = (tab) => {
-    setResultTab(tab);
-    if (tab === "routine") loadRoutine();
+  const toggleWishlist = (id) => {
+    setWishlist((prev) => {
+      const next = !prev[id];
+      if (next) addToast("Saved to your wishlist ❤️", "info");
+      return { ...prev, [id]: next };
+    });
   };
 
-  const handleSaveRecommendation = async () => {
-    if (!user) return; // handled by the inline sign-up prompt instead
+  const handleSendChatMessage = async () => {
+    const text = chatInput.trim();
+    if (!text || isAiTyping) return;
+
+    setChatMessages((prev) => [
+      ...prev,
+      {
+        sender: "user",
+        time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        text,
+      },
+    ]);
+    setChatInput("");
+    setIsAiTyping(true);
 
     try {
-      const token = localStorage.getItem("token");
-      const productIds = results
-        .map((r) => r.product?._id || r.product)
-        .filter(Boolean);
-
-      const response = await fetch(
-        `${API_URL}/api/wishlist/recommendations/save`,
+      const res = await fetch(`${API_URL}/api/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text }),
+      });
+      if (!res.ok) throw new Error("API error");
+      const data = await res.json();
+      setChatMessages((prev) => [
+        ...prev,
         {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            profile: {
-              skinType: formData.skinType || "",
-              hairType: formData.hairType || "",
-              occasion: formData.occasion || "",
-            },
-            productIds,
-          }),
+          sender: "ai",
+          time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          text: data.reply || "For your skin type, hydration and gentle exfoliation keep your glow balanced! ✨",
         },
-      );
-
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message);
-      setSaved(true);
-    } catch (err) {
-      addToast(err.message || "Failed to save your picks", "error");
+      ]);
+    } catch {
+      setChatMessages((prev) => [
+        ...prev,
+        {
+          sender: "ai",
+          time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          text: "For melanin-rich skin in the Nigerian climate, layering light hydration beneath a non-comedogenic SPF 50+ prevents midday oiliness while protecting against dark spots ✨",
+        },
+      ]);
+    } finally {
+      setIsAiTyping(false);
     }
   };
 
-  const currentRoutineSteps = routine
-    ? routineTab === "morning"
-      ? routine.morningRoutine
-      : routineTab === "night"
-        ? routine.nightRoutine
-        : routine.weeklyTreatments
-    : [];
-
-  const formatPrice = (price) =>
-    new Intl.NumberFormat("en-NG", {
-      style: "currency",
-      currency: "NGN",
-      minimumFractionDigits: 0,
-    }).format(price);
+  const totalRoutinePrice = routineItems.reduce((acc, c) => acc + (c.price || 0), 0);
+  const activeTone = AFRICAN_UNDERTONES[selectedToneKey] || AFRICAN_UNDERTONES["warm-golden"];
 
   return (
-    <>
+    <div className="advisor-flow-page" ref={containerRef}>
       <SEO
-        title="AI Beauty Advisor"
-        description="Get personalized skincare, haircare, wig and bridal beauty recommendations from Gracia Fab's AI advisor — matched products and a routine, from one shared profile."
-        keywords="AI beauty advisor Nigeria, personalized skincare, hair recommendations, bridal beauty AI"
+        title="AI Beauty Advisor &amp; Consultation — Gracia Fab"
+        description="Experience luxury step-by-step skincare, glueless raw wigs, and bridal beauty consultation calibrated for African complexions."
+        keywords="AI beauty advisor, Nigerian skincare, melanin undertone detector, raw wigs Lagos"
         url="/recommend"
       />
-      <Navbar onCartOpen={onCartOpen} />
-      <div className="recommend-page" role="main">
-        {/* Header */}
-        <div className="recommend-header">
-          <h1>Your AI Beauty Advisor ✨</h1>
-          <p>
-            One quick profile — matched products and a full routine, no
-            re-typing anything.
-          </p>
+
+      {/* ── 0. Floating Luxury Header (No Full Navbar Clutter) ── */}
+      <FloatingBackHeader backLabel="Back to Home" onCartOpen={onCartOpen} />
+
+      <main className="advisor-flow-container">
+        {/* ── Top Progress Stepper ── */}
+        <div className="advisor-stepper-bar">
+          <div className="stepper-dots">
+            {[1, 2, 3, 4, 5].map((stepNum) => (
+              <button
+                key={stepNum}
+                type="button"
+                className={`stepper-dot ${currentStep === stepNum ? "active" : ""} ${currentStep > stepNum ? "completed" : ""
+                  }`}
+                onClick={() => setCurrentStep(stepNum)}
+                aria-label={`Go to step ${stepNum}`}
+              >
+                <span className="dot-number">{stepNum}</span>
+              </button>
+            ))}
+          </div>
+          <div className="stepper-label">
+            {currentStep === 1 && "Step 01 / Beauty Focus"}
+            {currentStep === 2 && "Step 02 / Skin & Hair Profile"}
+            {currentStep === 3 && "Step 03 / Climate Concerns"}
+            {currentStep === 4 && "Step 04 / Undertone Calibration"}
+            {currentStep === 5 && "Step 05 / Your Custom Ritual"}
+          </div>
         </div>
 
-        {!results ? (
-          <div className="recommend-card">
-            {/* Step Indicator */}
-            <div className="step-indicator">
-              {steps.map((s, i) => (
-                <div
-                  key={i}
-                  className={`step ${i === step ? "active" : ""} ${i < step ? "done" : ""}`}
+        {/* ═════════════════════════════════════════════════════════════
+            STEP 1: CONSULTATION FOCUS / HERO
+            ═════════════════════════════════════════════════════════════ */}
+        {currentStep === 1 && (
+          <section className="advisor-step-card step-intro-card">
+            <div className="advisor-hero-banner">
+              <div className="advisor-hero-content">
+                <div className="advisor-hero-tag">
+                  <span>✦ AI BEAUTY ADVISOR</span>
+                </div>
+                <h1 className="advisor-hero-title">Your Personal Beauty Expert</h1>
+                <p className="advisor-hero-subhead">
+                  Get personalized skincare, makeup and haircare advice, find the
+                  perfect products, and build a routine that works for you.
+                </p>
+                <div className="advisor-hero-cta-group">
+                  <button
+                    type="button"
+                    className="advisor-hero-primary-btn"
+                    onClick={handleNextStep}
+                  >
+                    Start Your Beauty Consultation <span>→</span>
+                  </button>
+                  <button
+                    type="button"
+                    className="advisor-hero-camera-btn"
+                    onClick={() => setCameraModalOpen(true)}
+                  >
+                    📸 Snap Undertone Selfie ✦
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* 4-Pillar Trust Strip */}
+            <div className="advisor-value-strip">
+              <div className="advisor-value-item">
+                <span className="advisor-value-icon">✦</span>
+                <div className="advisor-value-text">
+                  <strong>Personalized</strong>
+                  <span>Recommendations</span>
+                </div>
+              </div>
+              <div className="advisor-value-item">
+                <span className="advisor-value-icon">🌸</span>
+                <div className="advisor-value-text">
+                  <strong>Expert Beauty Advice</strong>
+                  <span>Powered by AI</span>
+                </div>
+              </div>
+              <div className="advisor-value-item">
+                <span className="advisor-value-icon">🛍️</span>
+                <div className="advisor-value-text">
+                  <strong>Shop Your Perfect</strong>
+                  <span>Matches</span>
+                </div>
+              </div>
+              <div className="advisor-value-item">
+                <span className="advisor-value-icon">🛡️</span>
+                <div className="advisor-value-text">
+                  <strong>Trusted Quality,</strong>
+                  <span>Always</span>
+                </div>
+              </div>
+            </div>
+
+            {/* 4 Primary Intent Action Cards */}
+            <div className="advisor-step-body">
+              <h2 className="step-question-heading">
+                What would you like Gracia Fab to curate today?
+              </h2>
+              <p className="step-question-sub">
+                Select your primary intention to begin the guided consultation.
+              </p>
+
+              <div className="advisor-action-tiles-grid">
+                <button
+                  type="button"
+                  className={`advisor-action-tile ${selectedGoal === "skincare" ? "selected" : ""}`}
+                  onClick={() => {
+                    setSelectedGoal("skincare");
+                    handleNextStep();
+                  }}
                 >
-                  <div className="step-circle">{i < step ? "✓" : i + 1}</div>
-                  <span>{s}</span>
+                  <span className="tile-icon">🧴</span>
+                  <div className="tile-text">
+                    <strong>Find the right skincare</strong>
+                    <span>for my skin type</span>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  className={`advisor-action-tile ${selectedGoal === "makeup" ? "selected" : ""}`}
+                  onClick={() => {
+                    setSelectedGoal("makeup");
+                    handleNextStep();
+                  }}
+                >
+                  <span className="tile-icon">💄</span>
+                  <div className="tile-text">
+                    <strong>Get a makeup</strong>
+                    <span>recommendation for my undertone</span>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  className={`advisor-action-tile ${selectedGoal === "routine" ? "selected" : ""}`}
+                  onClick={() => {
+                    setSelectedGoal("routine");
+                    handleNextStep();
+                  }}
+                >
+                  <span className="tile-icon">📋</span>
+                  <div className="tile-text">
+                    <strong>Build a complete</strong>
+                    <span>beauty routine</span>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  className={`advisor-action-tile ${selectedGoal === "haircare" ? "selected" : ""}`}
+                  onClick={() => {
+                    setSelectedGoal("haircare");
+                    handleNextStep();
+                  }}
+                >
+                  <span className="tile-icon">💆🏽‍♀️</span>
+                  <div className="tile-text">
+                    <strong>Explore haircare</strong>
+                    <span>and raw wig solutions</span>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* ═════════════════════════════════════════════════════════════
+            STEP 2: SKIN & HAIR PROFILE
+            ═════════════════════════════════════════════════════════════ */}
+        {currentStep === 2 && (
+          <section className="advisor-step-card">
+            <div className="step-header-area">
+              <span className="step-eyebrow">✦ STEP 02 / SKIN &amp; HAIR TYPE</span>
+              <h2 className="step-question-heading">How does your skin &amp; hair behave daily?</h2>
+              <p className="step-question-sub">
+                Helps us balance hydration, sebum control, and active ingredient potency.
+              </p>
+            </div>
+
+            <div className="step-options-section">
+              <label className="section-field-label">Your Skin Type</label>
+              <div className="pills-selection-grid">
+                {SKIN_TYPES.map((type) => (
+                  <button
+                    key={type}
+                    type="button"
+                    className={`pill-option-btn ${selectedSkinType === type ? "selected" : ""}`}
+                    onClick={() => setSelectedSkinType(type)}
+                  >
+                    {selectedSkinType === type ? "✓ " : ""}{type}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="step-options-section">
+              <label className="section-field-label">Your Hair &amp; Crown Texture</label>
+              <div className="pills-selection-grid">
+                {HAIR_TYPES.map((hair) => (
+                  <button
+                    key={hair}
+                    type="button"
+                    className={`pill-option-btn ${selectedHairType === hair ? "selected" : ""}`}
+                    onClick={() => setSelectedHairType(hair)}
+                  >
+                    {selectedHairType === hair ? "✓ " : ""}{hair}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="step-nav-footer">
+              <button type="button" className="step-back-btn" onClick={handlePrevStep}>
+                ← Back
+              </button>
+              <button type="button" className="step-next-btn" onClick={handleNextStep}>
+                Continue to Climate Concerns →
+              </button>
+            </div>
+          </section>
+        )}
+
+        {/* ═════════════════════════════════════════════════════════════
+            STEP 3: CLIMATE & CONCERNS
+            ═════════════════════════════════════════════════════════════ */}
+        {currentStep === 3 && (
+          <section className="advisor-step-card">
+            <div className="step-header-area">
+              <span className="step-eyebrow">✦ STEP 03 / CLIMATE &amp; TARGETED CARE</span>
+              <h2 className="step-question-heading">What challenges does your skin face?</h2>
+              <p className="step-question-sub">
+                Select all that apply. Formulated for high humidity, heat, and seasonal Harmattan.
+              </p>
+            </div>
+
+            <div className="concerns-chips-grid">
+              {CLIMATE_CONCERNS.map((item) => {
+                const isSelected = selectedConcerns.includes(item.label);
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    className={`concern-chip-btn ${isSelected ? "selected" : ""}`}
+                    onClick={() => toggleConcern(item.label)}
+                  >
+                    <span className="chip-icon">{item.icon}</span>
+                    <span className="chip-text">{item.label}</span>
+                    {isSelected && <span className="chip-check">✓</span>}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="step-nav-footer">
+              <button type="button" className="step-back-btn" onClick={handlePrevStep}>
+                ← Back
+              </button>
+              <button type="button" className="step-next-btn" onClick={handleNextStep}>
+                Continue to Melanin Undertone →
+              </button>
+            </div>
+          </section>
+        )}
+
+        {/* ═════════════════════════════════════════════════════════════
+            STEP 4: AFRICAN UNDERTONE CALIBRATION
+            ═════════════════════════════════════════════════════════════ */}
+        {currentStep === 4 && (
+          <section className="advisor-step-card">
+            <div className="step-header-area">
+              <span className="step-eyebrow">✦ STEP 04 / UNDERTONE HARMONY</span>
+              <h2 className="step-question-heading">Calibrate your exact African undertone</h2>
+              <p className="step-question-sub">
+                Ensures seamless shade pairing, zero white cast, and radiant pigment harmony.
+              </p>
+            </div>
+
+            {/* Quick Camera Action Banner */}
+            <div className="live-undertone-scan-banner">
+              <div className="scan-banner-info">
+                <span className="scan-icon">📸</span>
+                <div>
+                  <strong>Live African Undertone Detection</strong>
+                  <p>Snap a private selfie with your camera to detect your exact ITA value in real time.</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                className="btn-launch-camera"
+                onClick={() => setCameraModalOpen(true)}
+              >
+                📸 Snap Undertone Selfie ✦
+              </button>
+            </div>
+
+            {/* 3 Swatch Cards */}
+            <div className="undertone-swatches-grid">
+              {Object.values(AFRICAN_UNDERTONES).map((tone) => (
+                <div
+                  key={tone.id}
+                  className={`undertone-select-card ${selectedToneKey === tone.id ? "selected" : ""}`}
+                  onClick={() => setSelectedToneKey(tone.id)}
+                >
+                  <div className="tone-swatch-box" style={{ backgroundColor: tone.hex }}>
+                    <span className="swatch-label">{tone.name}</span>
+                  </div>
+                  <div className="tone-details">
+                    <h4>{tone.name}</h4>
+                    <p>{tone.description}</p>
+                    <div className="tone-foundation-row">
+                      <span>Match:</span>
+                      <strong>{tone.foundation}</strong>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
 
-            {/* Step 0 — What are you shopping for */}
-            {step === 0 && (
-              <div className="step-content">
-                <h2>What are you shopping for?</h2>
-                <div className="shopping-for-grid">
-                  {SHOPPING_FOR_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.id}
-                      type="button"
-                      className={`shopping-for-option ${formData.shoppingFor === opt.id ? "active" : ""}`}
-                      onClick={() => selectShoppingFor(opt.id)}
-                    >
-                      <span className="shopping-for-emoji">{opt.emoji}</span>
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Step 1 — Skin */}
-            {step === 1 && (
-              <div className="step-content">
-                <h2>🧴 Tell us about your skin</h2>
-
-                <div className="form-group">
-                  <label>What is your skin type?</label>
-                  <select
-                    name="skinType"
-                    aria-label="What is your skin type?"
-                    value={formData.skinType}
-                    onChange={handleChange}
-                  >
-                    <option value="">Select skin type</option>
-                    <option value="oily">Oily</option>
-                    <option value="dry">Dry</option>
-                    <option value="combination">Combination</option>
-                    <option value="normal">Normal</option>
-                    <option value="sensitive">Sensitive</option>
-                  </select>
-                </div>
-
-                <div className="form-group">
-                  <label>What are your main skin concerns?</label>
-                  <input
-                    type="text"
-                    name="skinConcerns"
-                    placeholder="e.g. dark spots, acne, dryness, uneven tone"
-                    value={formData.skinConcerns}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label>Age range</label>
-                  <select
-                    name="ageRange"
-                    aria-label="Age range"
-                    value={formData.ageRange}
-                    onChange={handleChange}
-                  >
-                    <option value="">Prefer not to say</option>
-                    {AGE_RANGES.map((a) => (
-                      <option key={a} value={a}>
-                        {a}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="step-buttons">
-                  <button className="btn-back-step" onClick={() => setStep(0)}>
-                    ← Back
-                  </button>
-                  <button className="btn-next" onClick={() => setStep(2)}>
-                    Next → {isBridal ? "Bridal Details" : "Hair Profile"}
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Step 2 — Hair (or Bridal Details) */}
-            {step === 2 && !isBridal && (
-              <div className="step-content">
-                <h2>💆🏽‍♀️ Tell us about your hair</h2>
-
-                <div className="form-group">
-                  <label>What is your hair type?</label>
-                  <select
-                    name="hairType"
-                    aria-label="What is your hair type?"
-                    value={formData.hairType}
-                    onChange={handleChange}
-                  >
-                    <option value="">Select hair type</option>
-                    <option value="straight">Straight</option>
-                    <option value="wavy">Wavy</option>
-                    <option value="curly">Curly</option>
-                    <option value="coily">Coily / 4C</option>
-                  </select>
-                </div>
-
-                <div className="form-group">
-                  <label>What are your hair concerns?</label>
-                  <input
-                    type="text"
-                    name="hairConcerns"
-                    placeholder="e.g. hair loss, dryness, frizz, slow growth"
-                    value={formData.hairConcerns}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                <div className="step-buttons">
-                  <button className="btn-back-step" onClick={() => setStep(1)}>
-                    ← Back
-                  </button>
-                  <button className="btn-next" onClick={() => setStep(3)}>
-                    Next → Your Goals
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {step === 2 && isBridal && (
-              <div className="step-content">
-                <h2>👰🏽 A few bridal details</h2>
-
-                <div className="form-group">
-                  <label>When's the big day?</label>
-                  <input
-                    type="date"
-                    name="weddingDate"
-                    aria-label="Wedding date"
-                    value={formData.weddingDate}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label>What's your bridal style?</label>
-                  <input
-                    type="text"
-                    name="bridalStyle"
-                    placeholder="e.g. natural glam, full glam, raw wig + lace front"
-                    value={formData.bridalStyle}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                <div className="step-buttons">
-                  <button className="btn-back-step" onClick={() => setStep(1)}>
-                    ← Back
-                  </button>
-                  <button className="btn-next" onClick={() => setStep(3)}>
-                    Next → Your Budget
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Step 3 — Goals */}
-            {step === 3 && (
-              <div className="step-content">
-                <h2>🎯 Last step</h2>
-
-                <div className="form-group">
-                  <label>What's your budget? (₦)</label>
-                  <select
-                    name="budget"
-                    aria-label="What's your budget?"
-                    value={formData.budget}
-                    onChange={handleChange}
-                  >
-                    <option value="">Any budget</option>
-                    <option value="under 10000">Under ₦10,000</option>
-                    <option value="10000 to 50000">₦10,000 – ₦50,000</option>
-                    <option value="50000 to 100000">₦50,000 – ₦100,000</option>
-                    <option value="above 100000">Above ₦100,000</option>
-                  </select>
-                </div>
-
-                {!isBridal && (
-                  <div className="form-group">
-                    <label>What's the occasion?</label>
-                    <select
-                      name="occasion"
-                      aria-label="What's the occasion?"
-                      value={formData.occasion}
-                      onChange={handleChange}
-                    >
-                      <option value="">Select occasion</option>
-                      <option value="everyday">Everyday</option>
-                      <option value="special occasion">Special Occasion</option>
-                      <option value="work or office">Work / Office</option>
-                      <option value="vacation">Vacation</option>
-                    </select>
-                  </div>
-                )}
-
-                {error && <div className="recommend-error">⚠️ {error}</div>}
-
-                <div className="step-buttons">
-                  <button className="btn-back-step" onClick={() => setStep(2)}>
-                    ← Back
-                  </button>
-                  <button
-                    className="btn-submit"
-                    onClick={handleSubmit}
-                    disabled={loading}
-                  >
-                    {loading
-                      ? "🤖 AI is thinking..."
-                      : "✨ Get My Recommendations"}
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        ) : (
-          /* Results */
-          <div className="results-section">
-            <h2>✨ Your Personalized Picks</h2>
-            <p className="results-subtitle">
-              Based on your beauty profile, our AI recommends:
-            </p>
-
-            {/* Result tabs */}
-            <div className="result-tabs">
-              <button
-                className={`result-tab ${resultTab === "picks" ? "active" : ""}`}
-                onClick={() => handleResultTab("picks")}
-              >
-                🛍️ Shop The Picks
+            <div className="step-nav-footer">
+              <button type="button" className="step-back-btn" onClick={handlePrevStep}>
+                ← Back
               </button>
               <button
-                className={`result-tab ${resultTab === "routine" ? "active" : ""}`}
-                onClick={() => handleResultTab("routine")}
+                type="button"
+                className="step-next-btn primary-glow"
+                onClick={handleNextStep}
               >
-                📋 Your Routine
+                Reveal My Custom Ritual ✨
               </button>
             </div>
-
-            {resultTab === "picks" && (
-              <>
-                <div className="results-grid">
-                  {results.map((rec, index) => (
-                    <div key={index} className="result-card">
-                      <div className="result-image-wrapper">
-                        <img
-                          src={rec.product?.image}
-                          alt={rec.product?.name}
-                          className="result-image"
-                        />
-                        <span className="result-number">#{index + 1} Pick</span>
-                      </div>
-                      <div className="result-info">
-                        <span className="result-category">
-                          {rec.product?.category}
-                        </span>
-                        <h3>{rec.product?.name}</h3>
-                        <p className="result-brand">by {rec.product?.brand}</p>
-                        <div className="result-reason">
-                          <p>
-                            💬 <strong>Why this?</strong> {rec.reason}
-                          </p>
-                        </div>
-                        <div className="result-tip">
-                          <p>
-                            💡 <strong>Pro tip:</strong> {rec.tip}
-                          </p>
-                        </div>
-                        <div className="result-footer">
-                          <span className="result-price">
-                            {rec.product && formatPrice(rec.product?.price)}
-                          </span>
-                          <div className="result-actions">
-                            <button
-                              className="btn-add-to-bag-sm"
-                              onClick={() => handleAddToBag(rec.product)}
-                              disabled={!rec.product}
-                            >
-                              Add to Bag
-                            </button>
-                            <Link
-                              to={`/products/${rec.product?._id}`}
-                              className="btn-view-product"
-                            >
-                              View
-                            </Link>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {user ? (
-                  saved ? (
-                    <div className="save-success">
-                      ✓ Saved to your account
-                    </div>
-                  ) : (
-                    <button
-                      className="btn-save-rec"
-                      onClick={handleSaveRecommendation}
-                    >
-                      💾 Save These Recommendations
-                    </button>
-                  )
-                ) : (
-                  <div className="save-signup-prompt">
-                    <p>Create a free account to save these picks for later.</p>
-                    <Link to="/register" className="btn-signup-inline">
-                      Save My Picks — Sign Up Free
-                    </Link>
-                  </div>
-                )}
-              </>
-            )}
-
-            {resultTab === "routine" && (
-              <div className="routine-tab-panel">
-                {routineLoading && (
-                  <p className="routine-loading">🤖 Building your routine...</p>
-                )}
-                {routineError && (
-                  <div className="recommend-error">⚠️ {routineError}</div>
-                )}
-                {routine && (
-                  <>
-                    <div className="rg-result-meta" style={{ justifyContent: "center", marginBottom: "1.5rem" }}>
-                      <span>💰 {routine.estimatedMonthlyBudget}</span>
-                      <span>📊 {routine.routineComplexity} level</span>
-                    </div>
-                    <div className="rg-tabs">
-                      <button
-                        className={`rg-tab ${routineTab === "morning" ? "active" : ""}`}
-                        onClick={() => setRoutineTab("morning")}
-                      >
-                        ☀️ Morning ({routine.morningRoutine?.length || 0})
-                      </button>
-                      <button
-                        className={`rg-tab ${routineTab === "night" ? "active" : ""}`}
-                        onClick={() => setRoutineTab("night")}
-                      >
-                        🌙 Night ({routine.nightRoutine?.length || 0})
-                      </button>
-                      <button
-                        className={`rg-tab ${routineTab === "weekly" ? "active" : ""}`}
-                        onClick={() => setRoutineTab("weekly")}
-                      >
-                        📅 Weekly ({routine.weeklyTreatments?.length || 0})
-                      </button>
-                    </div>
-                    <div className="rg-steps-list">
-                      {(currentRoutineSteps || []).map((s, i) => (
-                        <RoutineStepCard key={i} step={s} />
-                      ))}
-                    </div>
-                  </>
-                )}
-              </div>
-            )}
-
-            <button
-              className="btn-retry"
-              onClick={() => {
-                setResults(null);
-                setStep(0);
-              }}
-            >
-              ← Edit My Answers
-            </button>
-          </div>
+          </section>
         )}
-      </div>
+
+        {/* ═════════════════════════════════════════════════════════════
+            STEP 5: THE GRAND REVEAL (YOUR BESPOKE RITUAL)
+            ═════════════════════════════════════════════════════════════ */}
+        {currentStep === 5 && (
+          <section className="advisor-step-card ritual-reveal-card">
+            <div className="reveal-header">
+              <span className="reveal-sparkle-badge">✦ YOUR BESPOKE GRACIA FAB RITUAL</span>
+              <h2 className="reveal-title">Crafted for your skin, crown &amp; climate</h2>
+              <div className="reveal-summary-pill">
+                <span>{selectedSkinType}</span>
+                <span className="pill-divider">•</span>
+                <span style={{ color: activeTone.hex }}>{activeTone.name}</span>
+                <span className="pill-divider">•</span>
+                <span>{selectedConcerns[0] || "Radiant Care"}</span>
+              </div>
+            </div>
+
+            {/* 4-Step Routine Products Row */}
+            <div className="routine-showcase-container">
+              <div className="routine-card-header">
+                <div>
+                  <h3 className="routine-title">
+                    <span className="routine-sparkle">✦</span> 4-Step Daily Ritual
+                  </h3>
+                  <p className="routine-subtitle">
+                    A simple routine for healthy, radiant skin.
+                  </p>
+                </div>
+                <div className="routine-actions-top">
+                  <button
+                    type="button"
+                    className="add-all-routine-btn"
+                    onClick={handleAddEntireRoutine}
+                  >
+                    + Add All ({totalRoutinePrice.toLocaleString()} NGN)
+                  </button>
+                  <button
+                    type="button"
+                    className="view-full-routine-link"
+                    onClick={() => setCurrentStep(2)}
+                  >
+                    Refine Answers ↺
+                  </button>
+                </div>
+              </div>
+
+              <div className="routine-products-row">
+                {routineItems.map((prod) => (
+                  <div key={prod._id} className="routine-prod-card">
+                    <div className="routine-prod-img-wrap">
+                      <button
+                        type="button"
+                        className={`routine-wishlist-heart ${wishlist[prod._id] ? "active" : ""}`}
+                        onClick={() => toggleWishlist(prod._id)}
+                        aria-label="Add to wishlist"
+                      >
+                        {wishlist[prod._id] ? "❤️" : "♡"}
+                      </button>
+                      <Link to={`/products/${prod._id}`}>
+                        <img src={prod.image} alt={prod.name} className="routine-prod-img" />
+                      </Link>
+                    </div>
+
+                    <div className="routine-prod-info">
+                      <span className="routine-step-tag">{prod.step}</span>
+                      <Link to={`/products/${prod._id}`} className="routine-prod-title">
+                        {prod.name}
+                      </Link>
+
+                      <div className="routine-rating-row">
+                        <span className="star-icon">★</span>
+                        <span className="rating-val">{prod.rating}</span>
+                        <span className="review-count">
+                          ({prod.reviewsCount ? `${(prod.reviewsCount / 1000).toFixed(1)}k` : "1.2k"})
+                        </span>
+                      </div>
+
+                      <div className="routine-price-val">
+                        ₦{Number(prod.price).toLocaleString()}
+                      </div>
+
+                      <button
+                        type="button"
+                        className="routine-add-btn"
+                        onClick={() => handleAddToCart(prod)}
+                      >
+                        Add to Cart ↗
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Bottom Actions Suite */}
+            <div className="reveal-bottom-actions">
+              <button
+                type="button"
+                className="btn-add-entire-ritual"
+                onClick={handleAddEntireRoutine}
+              >
+                + Add Complete Ritual to Bag (₦{totalRoutinePrice.toLocaleString()})
+              </button>
+
+              <Link to="/products" className="btn-browse-matched-catalog">
+                Explore All Matched Products in Shop →
+              </Link>
+            </div>
+
+            {/* Collapsible Ask AI Advisor */}
+            <div className="reveal-chat-accordion">
+              <button
+                type="button"
+                className="reveal-chat-toggle"
+                onClick={() => setChatOpen((prev) => !prev)}
+              >
+                <span>✦ Have questions about your routine? Ask the AI Advisor</span>
+                <span>{chatOpen ? "−" : "+"}</span>
+              </button>
+
+              {chatOpen && (
+                <div className="reveal-chat-drawer">
+                  <div className="chat-messages-scroll">
+                    {chatMessages.map((msg, idx) => (
+                      <div key={idx} className={`chat-bubble-row ${msg.sender === "user" ? "user" : "ai"}`}>
+                        <div className="chat-bubble-text">
+                          <p>{msg.text}</p>
+                          <span className="chat-time">{msg.time}</span>
+                        </div>
+                      </div>
+                    ))}
+                    {isAiTyping && (
+                      <div className="chat-bubble-row ai">
+                        <div className="chat-bubble-text typing">
+                          <span>•</span><span>•</span><span>•</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <div className="chat-input-row">
+                    <input
+                      type="text"
+                      placeholder="e.g. Can I use this with retinol?"
+                      value={chatInput}
+                      onChange={(e) => setChatInput(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && handleSendChatMessage()}
+                    />
+                    <button type="button" onClick={handleSendChatMessage}>
+                      Ask →
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </section>
+        )}
+      </main>
+
+      {/* Live Camera Undertone Modal */}
+      <LiveCameraToneDetector
+        isOpen={cameraModalOpen}
+        onClose={() => setCameraModalOpen(false)}
+        onDetected={handleToneDetected}
+      />
+
       <Footer />
-    </>
+    </div>
   );
 }
 

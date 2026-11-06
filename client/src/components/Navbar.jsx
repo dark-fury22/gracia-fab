@@ -8,10 +8,9 @@ import "./Navbar.css";
 // ── Primary nav links ──
 const NAV_LINKS = [
   { label: "HOME", url: "/" },
-  { label: "RECOMMENDATION", url: "/recommend" },
+  { label: "BEAUTY ADVISOR", url: "/recommend" },
   { label: "SHOP", url: "/products" },
   { label: "ABOUT", url: "/about" },
-  { label: "FAQ", url: "/#faq" },
 ];
 
 function Navbar({ onCartOpen, transparent = false }) {
@@ -292,74 +291,83 @@ function Navbar({ onCartOpen, transparent = false }) {
             </button>
           </div>
 
-          <div className="ysl-mobile-categories">
+          <nav className="ysl-mobile-categories" aria-label="Mobile Navigation">
             {NAV_LINKS.map((link) => (
-              <Link key={link.url} to={link.url} onClick={() => setMenuOpen(false)}>
+              <Link
+                key={link.url}
+                to={link.url}
+                onClick={() => setMenuOpen(false)}
+                className={location.pathname === link.url ? "active" : ""}
+              >
                 {link.label}
               </Link>
             ))}
-          </div>
 
-          <div className="ysl-mobile-section-divider">SHOP BY CATEGORY</div>
-          <div className="ysl-mobile-sublinks">
-            <Link to="/products?category=skincare" onClick={() => setMenuOpen(false)}>
-              Skincare
-            </Link>
-            <Link to="/products?category=haircare" onClick={() => setMenuOpen(false)}>
-              Haircare
-            </Link>
-            <Link to="/products?category=wig" onClick={() => setMenuOpen(false)}>
-              Wigs
-            </Link>
-            <Link to="/products?category=bridal" onClick={() => setMenuOpen(false)}>
-              Bridal Beauty
-            </Link>
-            <Link to="/products" onClick={() => setMenuOpen(false)}>
-              View All Products
-            </Link>
-          </div>
-
-          <div className="ysl-mobile-section-divider">AI BEAUTY LAB</div>
-          <div className="ysl-mobile-sublinks">
-            <Link to="/skin-analysis" onClick={() => setMenuOpen(false)}>
-              🔬 AI Skin Analysis (Selfie)
-            </Link>
-            <Link to="/routine-generator" onClick={() => setMenuOpen(false)}>
-              ✨ Custom Routine Generator
-            </Link>
-            <Link to="/skin-tone" onClick={() => setMenuOpen(false)}>
-              🎨 Skin Tone Detector
-            </Link>
-          </div>
-
-          <div className="ysl-mobile-section-divider">SERVICES &amp; ACCOUNT</div>
-          <div className="ysl-mobile-sublinks">
-            <Link to="/contact" onClick={() => setMenuOpen(false)}>
-              Customer Concierge
-            </Link>
             {user ? (
               <>
-                <Link to="/dashboard" onClick={() => setMenuOpen(false)}>
-                  My Account ({user.name})
+                <Link
+                  to="/dashboard"
+                  onClick={() => setMenuOpen(false)}
+                  className={location.pathname === "/dashboard" ? "active" : ""}
+                >
+                  ACCOUNT
                 </Link>
-                <Link to="/my-orders" onClick={() => setMenuOpen(false)}>
-                  Track Orders
-                </Link>
-                <Link to="/wishlist" onClick={() => setMenuOpen(false)}>
-                  Saved Items
-                </Link>
-                <button className="ysl-mobile-logout" onClick={handleLogout}>
-                  Sign Out
+                {user.isAdmin && (
+                  <Link
+                    to="/admin"
+                    onClick={() => setMenuOpen(false)}
+                    className={location.pathname === "/admin" ? "active" : ""}
+                  >
+                    ADMIN PANEL
+                  </Link>
+                )}
+                <button
+                  type="button"
+                  className="ysl-mobile-link-btn"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    onCartOpen?.();
+                  }}
+                  aria-label={`Open Cart, ${cartCount} items`}
+                >
+                  <span>MY CART</span>
+                  <span className="ysl-mobile-cart-badge">{cartCount}</span>
+                </button>
+                <button
+                  type="button"
+                  className="ysl-mobile-link-btn ysl-mobile-logout"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    handleLogout();
+                  }}
+                >
+                  <span>SIGN OUT</span>
                 </button>
               </>
             ) : (
               <>
-                <Link to="/login" onClick={() => setMenuOpen(false)}>
-                  Sign In / Register
+                <Link
+                  to="/login"
+                  onClick={() => setMenuOpen(false)}
+                  className={location.pathname === "/login" ? "active" : ""}
+                >
+                  ACCOUNT
                 </Link>
+                <button
+                  type="button"
+                  className="ysl-mobile-link-btn"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    onCartOpen?.();
+                  }}
+                  aria-label={`Open Cart, ${cartCount} items`}
+                >
+                  <span>MY CART</span>
+                  <span className="ysl-mobile-cart-badge">{cartCount}</span>
+                </button>
               </>
             )}
-          </div>
+          </nav>
         </div>
       )}
     </header>

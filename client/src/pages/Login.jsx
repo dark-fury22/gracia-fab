@@ -28,7 +28,9 @@ function Login() {
       setLoading(true);
       const data = await login(formData.email, formData.password);
       if (data.requiresOtp) {
-        navigate("/verify-code", { state: { email: data.email } });
+        navigate("/verify-code", {
+          state: { email: data.email, devOtpCode: data.devOtpCode },
+        });
       } else {
         navigate(data.isAdmin ? "/admin" : "/");
       }
@@ -47,6 +49,23 @@ function Login() {
         url="/login"
       />
 
+      <div className="auth-top-nav">
+        <button
+          type="button"
+          onClick={() => {
+            if (window.history.state && window.history.state.idx > 0) {
+              navigate(-1);
+            } else {
+              navigate("/");
+            }
+          }}
+          className="auth-floating-back-btn"
+          aria-label="Return to store"
+        >
+          ← Return to Store
+        </button>
+      </div>
+
       <div className="auth-shell">
         <Link to="/" className="auth-logo-link" title="Return to Gracia Fab home">
           <GraciaLogo size="lg" variant="editorial" />
@@ -54,6 +73,44 @@ function Login() {
 
         <h1 className="auth-heading">Sign in</h1>
         <p className="auth-subheading">Sign in or create an account</p>
+
+        {/* Demo Credentials Quick-Fill (Dev/Local environment) */}
+        <div className="auth-demo-box">
+          <div className="auth-demo-header">
+            <span className="auth-demo-sparkle">✦</span>
+            <span>Demo Accounts (1-Click Fill)</span>
+          </div>
+          <div className="auth-demo-chips">
+            <button
+              type="button"
+              className="auth-demo-chip"
+              onClick={() => {
+                setFormData({
+                  email: "admin@graciafab.com",
+                  password: "password123",
+                });
+                setError("");
+              }}
+            >
+              👑 <strong>Admin Account</strong>
+              <span>admin@graciafab.com</span>
+            </button>
+            <button
+              type="button"
+              className="auth-demo-chip"
+              onClick={() => {
+                setFormData({
+                  email: "demo@graciafab.com",
+                  password: "password123",
+                });
+                setError("");
+              }}
+            >
+              🌸 <strong>Customer Account</strong>
+              <span>demo@graciafab.com</span>
+            </button>
+          </div>
+        </div>
 
         <form className="auth-form" onSubmit={handleSubmit}>
           {error && <div className="auth-error">⚠️ {error}</div>}
@@ -78,10 +135,13 @@ function Login() {
                 required
               />
               <button
-                type="submit"
+                type="button"
                 className="auth-inline-arrow"
                 disabled={loading || !formData.email}
-                aria-label="Submit email"
+                onClick={() => {
+                  document.getElementById("auth-password")?.focus();
+                }}
+                aria-label="Continue to password"
                 title="Continue"
               >
                 →

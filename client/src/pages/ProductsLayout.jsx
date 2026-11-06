@@ -1,4 +1,4 @@
-import Navbar from "../components/Navbar";
+import FloatingBackHeader from "../components/FloatingBackHeader";
 import Footer from "../components/Footer";
 import Products from "./Products";
 import SEO from "../components/SEO";
@@ -12,8 +12,8 @@ function ProductsLayout({ onCartOpen }) {
         keywords="beauty products Nigeria, skincare Lagos, haircare products, wigs Nigeria, bridal beauty"
         url="/products"
       />
-      <Navbar onCartOpen={onCartOpen} />
-      <Products />
+      <FloatingBackHeader backLabel="Back to Home" onCartOpen={onCartOpen} />
+      <Products onCartOpen={onCartOpen} />
       <Footer />
     </>
   );

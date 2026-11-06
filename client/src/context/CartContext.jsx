@@ -13,20 +13,21 @@ export function CartProvider({ children }) {
     localStorage.setItem("cart", JSON.stringify(cartItems));
   }, [cartItems]);
 
-  // Add item to cart
-  const addToCart = (product) => {
+  // Add item to cart (supports optional quantity)
+  const addToCart = (product, qty = 1) => {
+    const amount = typeof qty === "number" && qty > 0 ? qty : 1;
     setCartItems((prev) => {
       const exists = prev.find((item) => item._id === product._id);
       if (exists) {
-        // If already in cart, increase quantity
+        // If already in cart, increase quantity by amount
         return prev.map((item) =>
           item._id === product._id
-            ? { ...item, quantity: item.quantity + 1 }
+            ? { ...item, quantity: item.quantity + amount }
             : item,
         );
       }
-      // Add new item with quantity 1
-      return [...prev, { ...product, quantity: 1 }];
+      // Add new item with specified quantity
+      return [...prev, { ...product, quantity: amount }];
     });
   };
 

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import Navbar from "../components/Navbar";
+import FloatingBackHeader from "../components/FloatingBackHeader";
 import Footer from "../components/Footer";
 import "../styles/About.css";
 import SEO from "../components/SEO";
@@ -13,7 +13,7 @@ function About({ onCartOpen }) {
         keywords="AI beauty advisor Nigeria, skincare Lagos, haircare Nigeria, raw hair wigs, bridal beauty Nigeria"
         url="/about"
       />
-      <Navbar onCartOpen={onCartOpen} />
+      <FloatingBackHeader backLabel="Back to Home" onCartOpen={onCartOpen} />
 
       <div className="craft-page" role="main">
         {/* ── 1. Dark Cinematic Espresso Hero (Sample 2) ── */}

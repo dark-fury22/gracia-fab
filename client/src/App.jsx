@@ -33,6 +33,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import SkinAnalysis from "./pages/SkinAnalysis";
 import RoutineGenerator from "./pages/RoutineGenerator";
+import Compare from "./pages/Compare";
 import AiConciergeChat from "./components/AiConciergeChat";
 
 // Wrapper pages
@@ -131,6 +132,8 @@ function App() {
         {/* AI Advisor is public — a shopper should get real value (matched
             products) before we ever ask them to create an account. */}
         <Route path="/recommend" element={<Recommend onCartOpen={openCart} />} />
+        <Route path="/advisor" element={<Recommend onCartOpen={openCart} />} />
+        <Route path="/compare" element={<Compare onCartOpen={openCart} />} />
         {/* ── Protected routes ── */}
         <Route
           path="/checkout"
@@ -160,7 +163,7 @@ function App() {
           path="/dashboard"
           element={
             <ProtectedRoute>
-              <Dashboard />
+              <Dashboard onCartOpen={openCart} />
             </ProtectedRoute>
           }
         />
