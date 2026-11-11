@@ -13,7 +13,7 @@ import { ToastProvider } from "./components/Toast";
 // desktop browsers immediately display the latest version instead of serving stale cache.
 if (typeof window !== "undefined" && "serviceWorker" in navigator) {
   navigator.serviceWorker.ready.then((reg) => {
-    reg.update().catch(() => { });
+    reg.update().catch(() => {});
   });
 
   let refreshing = false;

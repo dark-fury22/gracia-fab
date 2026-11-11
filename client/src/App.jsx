@@ -106,132 +106,132 @@ function App() {
     <Router>
       <CartDrawer isOpen={cartOpen} onClose={closeCart} />
       <ErrorBoundary>
-        <Routes>
-          {/* ── Public only (redirect to home if logged in) ── */}
-          <Route
-            path="/login"
-            element={
-              <PublicOnlyRoute>
-                <Login />
-              </PublicOnlyRoute>
-            }
-          />
-          <Route
-            path="/verify-code"
-            element={<VerifyCode />}
-          />
-          <Route
-            path="/register"
-            element={
-              <PublicOnlyRoute>
-                <Register />
-              </PublicOnlyRoute>
-            }
-          />
-          {/* ── Public browsing — anyone can shop and build a cart without an account ── */}
-          <Route path="/" element={<Home onCartOpen={openCart} />} />
-          <Route
-            path="/products"
-            element={<ProductsLayout onCartOpen={openCart} />}
-          />
-          <Route
-            path="/products/:id"
-            element={<ProductDetail onCartOpen={openCart} />}
-          />
-          <Route path="/cart" element={<Cart />} />
-          {/* AI Advisor is public — a shopper should get real value (matched
+      <Routes>
+        {/* ── Public only (redirect to home if logged in) ── */}
+        <Route
+          path="/login"
+          element={
+            <PublicOnlyRoute>
+              <Login />
+            </PublicOnlyRoute>
+          }
+        />
+        <Route
+          path="/verify-code"
+          element={<VerifyCode />}
+        />
+        <Route
+          path="/register"
+          element={
+            <PublicOnlyRoute>
+              <Register />
+            </PublicOnlyRoute>
+          }
+        />
+        {/* ── Public browsing — anyone can shop and build a cart without an account ── */}
+        <Route path="/" element={<Home onCartOpen={openCart} />} />
+        <Route
+          path="/products"
+          element={<ProductsLayout onCartOpen={openCart} />}
+        />
+        <Route
+          path="/products/:id"
+          element={<ProductDetail onCartOpen={openCart} />}
+        />
+        <Route path="/cart" element={<Cart />} />
+        {/* AI Advisor is public — a shopper should get real value (matched
             products) before we ever ask them to create an account. */}
-          <Route path="/recommend" element={<Recommend onCartOpen={openCart} />} />
-          <Route path="/advisor" element={<Recommend onCartOpen={openCart} />} />
-          <Route path="/compare" element={<Compare onCartOpen={openCart} />} />
-          {/* ── Protected routes ── */}
-          <Route
-            path="/checkout"
-            element={
-              <ProtectedRoute>
-                <Checkout onCartOpen={openCart} />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/order-confirmation/:id"
-            element={
-              <ProtectedRoute>
-                <OrderConfirmation />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/my-orders"
-            element={
-              <ProtectedRoute>
-                <MyOrders />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard onCartOpen={openCart} />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/wishlist"
-            element={
-              <ProtectedRoute>
-                <Wishlist />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/about" element={<About onCartOpen={openCart} />} />
-          <Route
-            path="/contact"
-            element={<Contact onCartOpen={openCart} />}
-          />
-          <Route
-            path="/beauty/:slug"
-            element={
-              <ProtectedRoute>
-                <BeautyLanding onCartOpen={openCart} />
-              </ProtectedRoute>
-            }
-          />
-          {/* ── Admin only ── */}
-          <Route
-            path="/admin"
-            element={
-              <AdminRoute>
-                <Suspense fallback={<p className="admin-loading" style={{ padding: "48px 16px", textAlign: "center" }}>Loading admin dashboard…</p>}>
-                  <AdminDashboard />
-                </Suspense>
-              </AdminRoute>
-            }
-          />
-          {/* Skin Tone Detector runs entirely client-side and calls only
+        <Route path="/recommend" element={<Recommend onCartOpen={openCart} />} />
+        <Route path="/advisor" element={<Recommend onCartOpen={openCart} />} />
+        <Route path="/compare" element={<Compare onCartOpen={openCart} />} />
+        {/* ── Protected routes ── */}
+        <Route
+          path="/checkout"
+          element={
+            <ProtectedRoute>
+              <Checkout onCartOpen={openCart} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/order-confirmation/:id"
+          element={
+            <ProtectedRoute>
+              <OrderConfirmation />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/my-orders"
+          element={
+            <ProtectedRoute>
+              <MyOrders />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard onCartOpen={openCart} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/wishlist"
+          element={
+            <ProtectedRoute>
+              <Wishlist />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/about" element={<About onCartOpen={openCart} />} />
+        <Route
+          path="/contact"
+          element={<Contact onCartOpen={openCart} />}
+        />
+        <Route
+          path="/beauty/:slug"
+          element={
+            <ProtectedRoute>
+              <BeautyLanding onCartOpen={openCart} />
+            </ProtectedRoute>
+          }
+        />
+        {/* ── Admin only ── */}
+        <Route
+          path="/admin"
+          element={
+            <AdminRoute>
+              <Suspense fallback={<p className="admin-loading" style={{ padding: "48px 16px", textAlign: "center" }}>Loading admin dashboard…</p>}>
+                <AdminDashboard />
+              </Suspense>
+            </AdminRoute>
+          }
+        />
+        {/* Skin Tone Detector runs entirely client-side and calls only
             public endpoints — no reason to gate it behind login. */}
-          <Route
-            path="/skin-tone"
-            element={<SkinToneDetectorPage onCartOpen={openCart} />}
-          />
-          <Route
-            path="/skin-analysis"
-            element={
-              <ProtectedRoute>
-                <SkinAnalysis onCartOpen={openCart} />
-              </ProtectedRoute>
-            }
-          />
-          {/* Public, same reasoning as /recommend — the generated routine
+        <Route
+          path="/skin-tone"
+          element={<SkinToneDetectorPage onCartOpen={openCart} />}
+        />
+        <Route
+          path="/skin-analysis"
+          element={
+            <ProtectedRoute>
+              <SkinAnalysis onCartOpen={openCart} />
+            </ProtectedRoute>
+          }
+        />
+        {/* Public, same reasoning as /recommend — the generated routine
             is the hook; login only matters once they want to save it. */}
-          <Route
-            path="/routine-generator"
-            element={<RoutineGenerator onCartOpen={openCart} />}
-          />
-          {/* ── Catch all ── */}
-          <Route path="*" element={<Navigate to="/login" replace />} />
-        </Routes>
+        <Route
+          path="/routine-generator"
+          element={<RoutineGenerator onCartOpen={openCart} />}
+        />
+        {/* ── Catch all ── */}
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
       </ErrorBoundary>
       <BackToTop />
       <InstallPrompt />
