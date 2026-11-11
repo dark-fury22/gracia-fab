@@ -7,7 +7,8 @@
     "dev": "nodemon server.js",
     "seed": "node data/seeder.js",
     "test": "vitest run",
-    "stock:zero-uncounted": "node data/zeroUncountedStock.js"
+    "stock:zero-uncounted": "node data/zeroUncountedStock.js",
+    "catalog:sync": "node data/syncCatalog.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.104.1",
