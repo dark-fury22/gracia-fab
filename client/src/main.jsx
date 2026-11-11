@@ -9,6 +9,22 @@ import { CartProvider } from "./context/CartContext.jsx";
 import { BeautyProfileProvider } from "./context/BeautyProfileContext.jsx";
 import { ToastProvider } from "./components/Toast";
 
+// Auto-refresh when a new Service Worker deployment is activated so mobile and
+// desktop browsers immediately display the latest version instead of serving stale cache.
+if (typeof window !== "undefined" && "serviceWorker" in navigator) {
+  navigator.serviceWorker.ready.then((reg) => {
+    reg.update().catch(() => {});
+  });
+
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (!refreshing) {
+      refreshing = true;
+      window.location.reload();
+    }
+  });
+}
+
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <HelmetProvider>
