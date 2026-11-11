@@ -26,6 +26,7 @@ export const MOTION_MAP = [
   { selector: ".ysl-new-item-card", from: "mix", stagger: 70 },
   { selector: ".ysl-new-spotlight-card", from: "right" },
   { selector: ".ysl-shopcat-col", from: "mix", stagger: 120 },
+  { selector: ".ysl-shopcat-card", from: "mix", stagger: 90 },
   { selector: ".product-card", from: "mix", stagger: 70 },
   { selector: ".promo-perk-item, .perk-item", from: "up", stagger: 80 },
   { selector: ".ysl-commitment-badge", from: "zoom", stagger: 100 },
@@ -86,7 +87,7 @@ export function startMotion(root = document) {
         }
       }
     },
-    { threshold: 0.12, rootMargin: "0px 0px -6% 0px" },
+    { threshold: 0.08, rootMargin: "0px 0px -40px 0px" },
   );
 
   // Track what *this* run observes. Checking only for an existing data-reveal
