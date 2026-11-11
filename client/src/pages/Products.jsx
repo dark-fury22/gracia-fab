@@ -106,9 +106,6 @@ function Products({ onCartOpen }) {
   useEffect(() => {
     const cat = searchParams.get("category");
     if (cat && !selectedCategories.includes(cat)) {
-      // Syncing from an external source (the URL) when it changes, not a
-      // value derivable at render time — the filter stays user-editable.
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedCategories([cat]);
       setCurrentPage(1);
     }
@@ -1017,6 +1014,11 @@ function Products({ onCartOpen }) {
                           alt={product.name}
                           loading="lazy"
                           className="list-card-img"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src =
+                              "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=500&auto=format&fit=crop&q=80";
+                          }}
                         />
                       </Link>
                       <div className="card-wishlist-wrap">
