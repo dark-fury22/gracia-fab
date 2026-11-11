@@ -2,17 +2,16 @@ import Order from "../models/Order.js";
 import Product from "../models/Product.js";
 import { sendWhatsApp, messages } from "../services/whatsappService.js";
 import { awardPoints } from "./loyaltyController.js";
-import fetch from "node-fetch";
 import {
   whatsappQueue,
   emailQueue,
-  pointsQueue,
   addToQueue,
 } from "../queues/index.js";
 import { emailTemplates } from "../services/emailService.js";
 import logger from "../utils/logger.js";
 import { DELIVERY_FEE } from "../config/shipping.js";
-import { markOrderPaid } from "../services/orderPayment.js";
+import { confirmOrderPayment } from "../services/orderPayment.js";
+import { getMonnifyConfig } from "../services/monnify.js";
 
 // @desc   Create new order
 // @route  POST /api/orders
@@ -147,149 +146,106 @@ export const createOrder = async (req, res) => {
   }
 };
 
-// @desc   Verify Paystack payment & mark order as paid
+// @desc   Start a Monnify payment for an order
+// @route  POST /api/orders/:id/pay/init
+// Generates the payment reference and saves it on the order *before* the
+// customer pays, then returns everything the Monnify web SDK needs. The amount
+// is the server's order total — never a client-side figure.
+export const initPayment = async (req, res) => {
+  try {
+    const monnify = getMonnifyConfig();
+    if (!monnify.isConfigured) {
+      logger.error("Monnify is not configured (MONNIFY_* env vars missing)");
+      return res.status(500).json({
+        message: "Payments are temporarily unavailable. Please try again later.",
+      });
+    }
+
+    const order = await Order.findById(req.params.id);
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+    if (order.user.toString() !== req.user._id.toString()) {
+      return res.status(401).json({ message: "Not authorized" });
+    }
+    if (order.isPaid) {
+      return res.status(400).json({ message: "Order already paid" });
+    }
+    if (order.status !== "pending") {
+      return res
+        .status(400)
+        .json({ message: "Order cannot be paid in current state" });
+    }
+
+    // A fresh reference per attempt (Monnify rejects reused references), tied
+    // to this order so a webhook for it can only ever settle this order.
+    order.paymentReference = `GF-${order._id}-${Date.now()}`;
+    await order.save();
+
+    res.json({
+      reference: order.paymentReference,
+      amount: order.totalPrice,
+      currency: "NGN",
+      customerName: order.deliveryAddress?.fullName || req.user.name,
+      customerEmail: req.user.email,
+      apiKey: monnify.apiKey,
+      contractCode: monnify.contractCode,
+      isTestMode: monnify.isTestMode,
+    });
+  } catch (error) {
+    logger.error({ err: error }, "initPayment error");
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc   Verify a Monnify payment with Monnify & mark the order as paid
 // @route  PUT /api/orders/:id/pay
 export const verifyPayment = async (req, res) => {
   const { reference } = req.body;
 
   try {
-    // Check secret key
-    if (!process.env.PAYSTACK_SECRET_KEY) {
+    if (!getMonnifyConfig().isConfigured) {
       return res.status(500).json({
-        message: "Paystack secret key missing",
+        message: "Payments are temporarily unavailable. Please try again later.",
       });
     }
 
-    // Find order first
     const order = await Order.findById(req.params.id);
-
     if (!order) {
-      return res.status(404).json({
-        message: "Order not found",
-      });
+      return res.status(404).json({ message: "Order not found" });
     }
-
-    // Ensure owner
     if (order.user.toString() !== req.user._id.toString()) {
-      return res.status(401).json({
-        message: "Not authorized",
-      });
+      return res.status(401).json({ message: "Not authorized" });
     }
-
-    // Prevent double payment
     if (order.isPaid) {
-      return res.status(400).json({
-        message: "Order already paid",
-      });
+      return res.status(400).json({ message: "Order already paid" });
     }
-
     if (order.status !== "pending") {
-      return res.status(400).json({
-        message: "Order cannot be paid in current state",
-      });
+      return res
+        .status(400)
+        .json({ message: "Order cannot be paid in current state" });
     }
 
-    // A Paystack reference is a one-time proof of payment for one
-    // transaction — without this check, a reference from an order a user
-    // already legitimately paid for could be replayed here to mark a
-    // *different*, unpaid order (of the same total) as paid for free.
-    const referenceInUse = await Order.findOne({
-      "paymentResult.reference": reference,
-      _id: { $ne: order._id },
+    // The client may echo back the reference it paid with; it must be the
+    // one we issued for this order.
+    if (reference && reference !== order.paymentReference) {
+      return res
+        .status(400)
+        .json({ message: "Payment reference does not match this order" });
+    }
+
+    const result = await confirmOrderPayment(order, {
+      expectedEmail: req.user.email,
     });
-    if (referenceInUse) {
-      return res.status(400).json({
-        message: "This payment reference has already been used",
-      });
+    if (!result.ok) {
+      return res.status(result.status).json({ message: result.message });
     }
 
-    // Verify payment with Paystack
-    const paystackRes = await fetch(
-      `https://api.paystack.co/transaction/verify/${encodeURIComponent(reference)}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
-          "Content-Type": "application/json",
-        },
-      },
-    );
-
-    const paystackData = await paystackRes.json();
-
-    logger.info(
-      { status: paystackData?.status, reference: paystackData?.data?.reference },
-      "Paystack verify response received",
-    );
-
-    // Check Paystack response
-    if (!paystackData.status) {
-      return res.status(400).json({
-        message: paystackData.message,
-      });
-    }
-
-    // Ensure transaction successful
-    if (paystackData.data.status !== "success") {
-      return res.status(400).json({
-        message: `Payment not successful (${paystackData.data.status})`,
-      });
-    }
-
-    // Verify amount
-    const paidAmount = paystackData.data.amount / 100;
-
-    if (Math.round(paidAmount) !== Math.round(order.totalPrice)) {
-      return res.status(400).json({
-        message: "Payment amount mismatch",
-      });
-    }
-
-    if (
-      paystackData.data.customer?.email &&
-      paystackData.data.customer.email !== req.user.email
-    ) {
-      return res.status(400).json({
-        message: "Payment email mismatch",
-      });
-    }
-
-    // Mark order paid and commit stock (atomic — safe against the webhook
-    // processing the same payment at the same moment).
-    const updatedOrder = await markOrderPaid(
-      { _id: order._id },
-      {
-        reference: paystackData.data.reference,
-        status: paystackData.data.status,
-        amount: paidAmount,
-        paidAt: paystackData.data.paid_at,
-      },
-    );
-
-    if (!updatedOrder) {
-      return res.status(400).json({
-        message: "Order already paid",
-      });
-    }
-
-    // Award loyalty points (₦1 spent = 0.01 points, minimum 1 point)
-    const pointsEarned = Math.max(1, Math.floor(order.totalPrice * 0.01));
-
-    await addToQueue(pointsQueue, "purchase-points", {
-      userId: order.user.toString(),
-      points: pointsEarned,
-      reason: `Purchase #${order._id.toString().slice(-8).toUpperCase()}`,
-    });
-
-    logger.info({ orderId: updatedOrder._id }, "Order marked as paid");
-
-    res.json(updatedOrder);
+    logger.info({ orderId: result.order._id }, "Order marked as paid");
+    res.json(result.order);
   } catch (error) {
     logger.error({ err: error }, "verifyPayment error");
-
-    res.status(500).json({
-      message: error.message,
-    });
+    res.status(500).json({ message: error.message });
   }
 };
 

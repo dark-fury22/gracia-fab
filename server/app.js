@@ -15,7 +15,9 @@ import searchRoutes from "./routes/searchRoutes.js";
 import { errorHandler, notFound } from "./middleware/errorMiddleware.js";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
-import crypto from "crypto";
+import Order from "./models/Order.js";
+import { isValidWebhookSignature } from "./services/monnify.js";
+import { confirmOrderPayment } from "./services/orderPayment.js";
 import loyaltyRoutes from "./routes/loyaltyRoutes.js";
 import skinAnalysisRoutes from "./routes/skinAnalysisRoutes.js";
 import trackingRoutes from "./routes/trackingRoutes.js";
@@ -123,63 +125,66 @@ app.use("/api/auth/resend-otp", authLimiter);
 app.use("/api/recommend", aiLimiter);
 app.use("/api/search", aiLimiter);
 
-// ── Paystack Webhook — receives payment confirmations directly from Paystack
-// Must be RAW body (before JSON parsing) for signature verification
+// ── Monnify Webhook — payment notifications straight from Monnify, so an order
+// still gets marked paid if the customer closes the tab before the checkout
+// page confirms it. Must be RAW body (before JSON parsing) for the signature.
+//
+// The payload is never trusted on its own: we only take the paymentReference
+// from it and re-query Monnify for the real status (Monnify's own guidance —
+// and necessary because sandbox webhooks aren't signed at all). In production
+// a valid `monnify-signature` is still required, to turn away junk early.
 app.post(
-  "/api/webhooks/paystack",
+  "/api/webhooks/monnify",
   express.raw({ type: "application/json" }),
   async (req, res) => {
-    const signature = req.headers["x-paystack-signature"];
-    const secret = process.env.PAYSTACK_SECRET_KEY;
+    const signature = req.headers["monnify-signature"];
 
-    // Step 1: Verify this actually came from Paystack
-    const hash = crypto
-      .createHmac("sha512", secret)
-      .update(req.body)
-      .digest("hex");
-
-    if (hash !== signature) {
-      logger.warn("Invalid Paystack webhook signature");
-      return res.status(400).json({ message: "Invalid signature" });
-    }
-
-    const event = JSON.parse(req.body);
-    logger.info({ event: event.event }, "Paystack webhook event received");
-
-    // Step 2: Handle the payment success event
-    if (event.event === "charge.success") {
-      try {
-        const reference = event.data.reference;
-        const amount = event.data.amount / 100; // Convert kobo to NGN
-
-        // Find order by reference, mark it paid and commit stock — atomic,
-        // so a race with the checkout verify call can't double-decrement.
-        const { markOrderPaid } = await import("./services/orderPayment.js");
-        const order = await markOrderPaid(
-          { "paymentResult.reference": reference },
-          {
-            reference,
-            status: "success",
-            amount,
-            channel: event.data.channel,
-            paidAt: event.data.paid_at,
-          },
-        );
-
-        if (order) {
-          logger.info({ orderId: order._id }, "Order marked as paid via webhook");
-        }
-      } catch (err) {
-        logger.error({ err }, "Webhook processing error");
+    if (signature || process.env.NODE_ENV === "production") {
+      if (!isValidWebhookSignature(req.body, signature)) {
+        logger.warn("Invalid Monnify webhook signature");
+        return res.status(400).json({ message: "Invalid signature" });
       }
     }
 
-    // Always respond quickly to Paystack
+    let event;
+    try {
+      event = JSON.parse(req.body);
+    } catch {
+      return res.status(400).json({ message: "Invalid JSON" });
+    }
+    logger.info({ eventType: event.eventType }, "Monnify webhook received");
+
+    if (event.eventType === "SUCCESSFUL_TRANSACTION") {
+      try {
+        const reference = event.eventData?.paymentReference;
+        const order = reference
+          ? await Order.findOne({ paymentReference: reference })
+          : null;
+
+        if (order && !order.isPaid) {
+          const result = await confirmOrderPayment(order);
+          if (result.ok) {
+            logger.info({ orderId: order._id }, "Order marked as paid via webhook");
+          } else {
+            logger.warn(
+              { orderId: order._id, reason: result.message },
+              "Webhook payment not confirmed",
+            );
+          }
+        }
+      } catch (err) {
+        // Non-2xx makes Monnify retry (every 5 min, up to 12 times) — what we
+        // want if e.g. their status API was briefly unreachable.
+        logger.error({ err }, "Webhook processing error");
+        return res.status(500).json({ message: "Processing error" });
+      }
+    }
+
     res.json({ received: true });
   },
 );
 
-// ── Global Body Parsers (after Paystack webhook, before routes that require JSON body)
+// ── Global Body Parsers (after the Monnify webhook, before routes that require JSON body)
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ limit: "10mb", extended: true }));
 app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));

@@ -3,7 +3,8 @@ import {
   createOrder,
   getMyOrders,
   getOrderById,
-  verifyPayment
+  verifyPayment,
+  initPayment
 } from '../controllers/orderController.js'
 import protect from '../middleware/authMiddleware.js'
 import validate from '../middleware/validate.js'
@@ -14,6 +15,7 @@ const router = express.Router()
 router.post('/', protect, validate(createOrderSchema), createOrder)
 router.get('/myorders', protect, getMyOrders)
 router.get('/:id', protect, getOrderById)
+router.post('/:id/pay/init', protect, initPayment)
 router.put('/:id/pay', protect, validate(verifyPaymentSchema), verifyPayment)
 
 export default router

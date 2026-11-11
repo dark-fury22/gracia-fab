@@ -22,8 +22,10 @@ export const createOrderSchema = z.object({
   deliveryPrice: z.number().nonnegative().optional(),
 });
 
+// The server verifies the reference it generated and stored on the order;
+// a reference sent by the client is optional and must match it if present.
 export const verifyPaymentSchema = z.object({
-  reference: z.string().min(1, "Payment reference is required"),
+  reference: z.string().min(1).optional(),
 });
 
 export const updateOrderStatusSchema = z.object({

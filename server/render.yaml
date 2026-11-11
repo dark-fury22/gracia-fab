@@ -29,5 +29,5 @@ services:
       - key: PORT
         value: 10000
       # Same as production: set in the Render dashboard, with staging-only
-      # values for MONGO_URI, JWT_SECRET, REDIS_URL, PAYSTACK_SECRET_KEY
-      # and FRONTEND_URL — see docs/DEPLOYMENT.md.
+      # values for MONGO_URI, JWT_SECRET, REDIS_URL, the MONNIFY_* sandbox
+      # keys and FRONTEND_URL — see docs/DEPLOYMENT.md.

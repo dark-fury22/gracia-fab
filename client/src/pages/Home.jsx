@@ -37,7 +37,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "How can I pay?",
-    a: "Checkout is secured by Paystack — you can pay by card, bank transfer, or USSD.",
+    a: "Checkout is secured by Monnify — you can pay by card, bank transfer, or USSD.",
   },
   {
     q: "Are your wigs genuine human hair?",
@@ -238,7 +238,7 @@ function Home({ onCartOpen }) {
             <span className="ribbon-item"><span className="ribbon-sparkle">✦</span> 100% SINGLE-DONOR RAW HAIR</span>
             <span className="ribbon-item"><span className="ribbon-sparkle">✦</span> ZERO WHITE CAST MELANIN SPF</span>
             <span className="ribbon-item"><span className="ribbon-sparkle">✦</span> FORMULATED FOR LAGOS CLIMATE</span>
-            <span className="ribbon-item"><span className="ribbon-sparkle">✦</span> PAYSTACK SECURED CHECKOUT</span>
+            <span className="ribbon-item"><span className="ribbon-sparkle">✦</span> MONNIFY SECURED CHECKOUT</span>
             <span className="ribbon-item"><span className="ribbon-sparkle">✦</span> FLAT ₦2,500 NATIONWIDE DELIVERY</span>
             <span className="ribbon-item"><span className="ribbon-sparkle">✦</span> AI UNDERTONE ACCURACY GUARANTEE</span>
           </div>
@@ -246,7 +246,7 @@ function Home({ onCartOpen }) {
             <span className="ribbon-item"><span className="ribbon-sparkle">✦</span> 100% SINGLE-DONOR RAW HAIR</span>
             <span className="ribbon-item"><span className="ribbon-sparkle">✦</span> ZERO WHITE CAST MELANIN SPF</span>
             <span className="ribbon-item"><span className="ribbon-sparkle">✦</span> FORMULATED FOR LAGOS CLIMATE</span>
-            <span className="ribbon-item"><span className="ribbon-sparkle">✦</span> PAYSTACK SECURED CHECKOUT</span>
+            <span className="ribbon-item"><span className="ribbon-sparkle">✦</span> MONNIFY SECURED CHECKOUT</span>
             <span className="ribbon-item"><span className="ribbon-sparkle">✦</span> FLAT ₦2,500 NATIONWIDE DELIVERY</span>
             <span className="ribbon-item"><span className="ribbon-sparkle">✦</span> AI UNDERTONE ACCURACY GUARANTEE</span>
           </div>

@@ -14,7 +14,7 @@ function Checkout({ onCartOpen }) {
   const navigate = useNavigate();
 
   // Once the order is saved, the server's totals are authoritative: it prices
-  // items from the database and sets the delivery fee, and Paystack must be
+  // items from the database and sets the delivery fee, and Monnify must be
   // charged exactly that amount or verification rejects it. Before then we
   // show an estimate — keep DELIVERY_ESTIMATE in sync with
   // server/config/shipping.js.
@@ -104,56 +104,67 @@ function Checkout({ onCartOpen }) {
     }
   };
 
-  // Step 2 — Launch Paystack popup manually
-  const handlePaystackPayment = () => {
-    const publicKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY;
-
-    if (!publicKey || !publicKey.startsWith("pk_")) {
-      setError("Paystack public key is missing. Check your .env file.");
+  // Step 2 — Ask the server to start a payment, then open the Monnify modal.
+  // The server issues the payment reference (saved on the order so its
+  // webhook can find it) and the amount (its own order total), plus the
+  // public Monnify API key and contract code — no payment keys live in the
+  // client build.
+  const handlePayment = async () => {
+    if (!window.MonnifySDK) {
+      setError(
+        "The payment window couldn't load. Check your connection and refresh the page.",
+      );
       return;
     }
 
-    const amountInKobo = Math.round(totalPrice * 100);
+    let session;
+    try {
+      setPayLoading(true);
+      setError("");
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        `${API_URL}/api/orders/${orderId}/pay/init`,
+        {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+      session = await response.json();
+      if (!response.ok) {
+        throw new Error(session.message || "Couldn't start payment");
+      }
+    } catch (err) {
+      setError(err.message);
+      setPayLoading(false);
+      return;
+    }
+    setPayLoading(false);
 
-    // ✅ Paystack requires a plain function — NOT async
-    const handler = window.PaystackPop.setup({
-      key: publicKey,
-      email: user.email,
-      amount: amountInKobo,
-      currency: "NGN",
-      // Date.now() only runs inside this click handler, never during
-      // render — Paystack requires a fresh, unique ref per payment attempt.
-      // eslint-disable-next-line react-hooks/purity
-      ref: `gf_${Date.now()}`,
-      metadata: {
-        custom_fields: [
-          {
-            display_name: "Customer Name",
-            variable_name: "customer_name",
-            value: formData.fullName,
-          },
-          {
-            display_name: "Phone",
-            variable_name: "phone",
-            value: formData.phone,
-          },
-        ],
+    let completed = false;
+    window.MonnifySDK.initialize({
+      amount: session.amount,
+      currency: session.currency,
+      reference: session.reference,
+      customerFullName: session.customerName,
+      customerEmail: session.customerEmail,
+      apiKey: session.apiKey,
+      contractCode: session.contractCode,
+      paymentDescription: `Gracia Fab order #${orderId.slice(-8).toUpperCase()}`,
+      isTestMode: session.isTestMode,
+      metadata: { phone: formData.phone },
+      onComplete: (response) => {
+        completed = true;
+        verifyPayment(response?.paymentReference || session.reference);
       },
-
-      // ✅ Plain function — no async/await here
-      callback: function (response) {
-        verifyPayment(response.reference);
-      },
-
-      onClose: function () {
-        setError("Payment was cancelled. You can try again.");
+      onClose: () => {
+        if (!completed) {
+          setError("Payment was cancelled. You can try again.");
+        }
       },
     });
-
-    handler.openIframe();
   };
 
-  // Step 3 — Verify payment on backend
+  // Step 3 — Verify payment on backend (the server re-checks with Monnify)
   const verifyPayment = async (reference) => {
     try {
       setPayLoading(true);
@@ -178,10 +189,20 @@ function Checkout({ onCartOpen }) {
       clearCart();
       navigate(`/order-confirmation/${orderId}`);
     } catch (err) {
-      setError(
-        `Payment received but verification failed. ` +
-          `Please contact support with reference: ${reference}`,
-      );
+      if (/PENDING/.test(err.message)) {
+        // Bank transfers can take a moment to land. Monnify's webhook will
+        // mark the order paid once it does, so don't alarm the customer.
+        setError(
+          `We're waiting for your bank to confirm the transfer. ` +
+            `Your order will update automatically — check My Orders shortly. ` +
+            `Reference: ${reference}`,
+        );
+      } else {
+        setError(
+          `We couldn't confirm your payment yet. If you were charged, ` +
+            `please contact support with reference: ${reference}`,
+        );
+      }
       console.error("Payment verification error:", err);
     } finally {
       setPayLoading(false);
@@ -360,14 +381,14 @@ function Checkout({ onCartOpen }) {
 
                   <button
                     className="btn-pay"
-                    onClick={handlePaystackPayment}
+                    onClick={handlePayment}
                     disabled={payLoading}
                   >
-                    {payLoading ? "Processing..." : "💳 Pay with Paystack"}
+                    {payLoading ? "Processing..." : "💳 Pay Now"}
                   </button>
 
                   <p className="payment-secure">
-                    🔒 Secured by Paystack · Cards · Bank Transfer · USSD
+                    🔒 Secured by Monnify · Card · Bank Transfer · USSD
                   </p>
 
                   <button

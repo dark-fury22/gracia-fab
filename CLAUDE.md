@@ -4,7 +4,7 @@ AI-powered beauty e-commerce store for the Nigerian market: skincare, haircare, 
 
 - `client/`: React 18 + Vite PWA, react-router-dom. Deployed on Vercel.
 - `server/`: Node + Express + MongoDB (Mongoose), BullMQ/Redis jobs. ES modules. Deployed on Render.
-- AI: Gemini first, Groq fallback. Payments: Paystack. Email: Resend over HTTPS (SMTP is blocked on Render). WhatsApp: Twilio.
+- AI: Gemini first, Groq fallback. Payments: Monnify (`server/services/monnify.js`). Email: Resend over HTTPS (SMTP is blocked on Render). WhatsApp: Twilio.
 - Deeper docs: `docs/ARCHITECTURE.md`, `docs/DEPLOYMENT.md`, `docs/WORKFLOW.md`, `docs/ROADMAP.md`, `CONTRIBUTING.md`.
 
 ## Commands
@@ -39,6 +39,8 @@ cd server && npm test
 - Product images must show the actual product. Use `/product-placeholder.svg` when there's no real photo; never use generic stock photos as stand-ins. Real photos so far are hosted on Cloudinary (`res.cloudinary.com/dyzkjerez/...`).
 
 ## Known gotchas
+
+- Payments are confirmed only by querying Monnify's API (`confirmOrderPayment` in `server/services/orderPayment.js`), never by trusting the browser or the webhook payload. Stock is committed and loyalty points awarded at payment, in `markOrderPaid`, not at order creation.
 
 - Admin image upload (`uploadImage` in `server/controllers/adminController.js`) writes to `server/public/uploads` on local disk. Render's filesystem is ephemeral, so those files disappear on redeploy or restart.
 - Keep the working copy outside OneDrive. OneDrive syncing corrupted an earlier `.git`. The canonical local clone is `C:\dev\gracia-fab`.

@@ -25,7 +25,7 @@ const KNOWLEDGE_BASE = [
     link: { text: "Shop Raw Wigs →", url: "/products?category=wig" },
   },
   {
-    keywords: ["delivery", "shipping", "lagos", "abuja", "nationwide", "timeline", "dispatch", "paystack"],
+    keywords: ["delivery", "shipping", "lagos", "abuja", "nationwide", "timeline", "dispatch", "monnify", "payment"],
     reply: "Orders within **Lagos** are fulfilled via VIP dispatch within **24 hours**. For Abuja, Port Harcourt, and nationwide delivery across Nigeria, parcels arrive in **2–3 business days**. All orders above ₦35,000 receive complimentary Maison packaging & gift.",
   },
   {

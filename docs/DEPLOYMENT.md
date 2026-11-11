@@ -12,7 +12,7 @@ the repo directly.
 | Client | `gracia-fab.vercel.app` | a branch-aliased Vercel URL (you choose the subdomain when you set it up) |
 | Database | production MongoDB database | separate `gracia-fab-staging` database |
 | Redis | production instance | separate instance |
-| Paystack | live keys | **test-mode** keys only |
+| Monnify | live keys (`api.monnify.com`) | **sandbox** keys only (`sandbox.monnify.com`) |
 
 Promoting a change to production is a normal merge: `staging` → `main`.
 
@@ -51,11 +51,13 @@ cluster instead — same idea, a second free-tier cluster.)
 Create a second free Redis database with your provider (e.g. a new Upstash
 database). Copy its connection string — that's your staging `REDIS_URL`.
 
-### 3. Paystack — test-mode keys
+### 3. Monnify — sandbox keys
 
-In the Paystack dashboard, switch to **Test Mode** (top-left toggle) and
-copy the test **Secret Key** (`sk_test_...`) and **Public Key**
-(`pk_test_...`). Never put live keys in staging.
+In the Monnify dashboard, switch to **Test Mode** and open **Developers**.
+Copy the sandbox **API Key** (`MK_TEST_...`), **Secret Key** and
+**Contract Code**. Never put live keys in staging. While you're there, set
+the webhook URL to `<staging Render URL>/api/webhooks/monnify` (and, for
+production, the live webhook URL to `<production Render URL>/api/webhooks/monnify`).
 
 ### 4. Generate a staging `JWT_SECRET`
 
@@ -86,7 +88,7 @@ that service → Environment):
 | `MONGO_URI` | from step 1 |
 | `REDIS_URL` | from step 2 |
 | `JWT_SECRET` | from step 4 |
-| `PAYSTACK_SECRET_KEY` | test secret key from step 3 |
+| `MONNIFY_API_KEY`, `MONNIFY_SECRET_KEY`, `MONNIFY_CONTRACT_CODE` | sandbox values from step 3 (`MONNIFY_BASE_URL` can stay unset — non-production defaults to sandbox) |
 | `FRONTEND_URL` | the staging Vercel URL from step 6 (circular — come back and set this after step 6) |
 | everything else in [server/.env.example](../server/.env.example) | can start as a **copy of production's** value (Gemini/Groq keys, email, Twilio) — split these later if you want staging AI/email usage tracked separately |
 
@@ -105,7 +107,6 @@ fine since there's currently only one active non-production branch):
 | Key | Staging value |
 |---|---|
 | `VITE_API_URL` | the staging Render URL from step 5 |
-| `VITE_PAYSTACK_PUBLIC_KEY` | test public key from step 3 |
 | `VITE_GOOGLE_CLIENT_ID` | can reuse production's |
 
 Go back to step 5 and set the server's `FRONTEND_URL` to this staging
