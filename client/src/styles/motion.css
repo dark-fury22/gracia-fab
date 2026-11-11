@@ -1,0 +1,139 @@
+/* ── Springy motion system ──────────────────────────────────────────────
+   Paired with src/utils/motion.js, which tags elements with data-reveal and
+   adds .is-revealed when they scroll into view.
+
+   Entrances are keyframe animations with `backwards` fill: they never hold
+   values after finishing, so they don't fight the hover transforms that
+   components already define. Hover/press bounce uses the individual `scale`
+   property for the same reason. Rules are prefixed with .motion-ready (set on
+   <html> by startMotion) so they outrank page stylesheets loaded later. */
+
+:root {
+  /* Fallback overshoot curve for browsers without linear() easing. */
+  --spring-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --spring-soft: cubic-bezier(0.22, 1.2, 0.36, 1);
+  --reveal-distance: 56px;
+  --reveal-duration: 950ms;
+}
+
+@supports (transition-timing-function: linear(0, 1)) {
+  :root {
+    /* A real spring: overshoots ~15%, settles with a small second bounce. */
+    --spring-bounce: linear(
+      0, 0.009, 0.035 2.1%, 0.141, 0.281 6.7%, 0.723 12.9%, 0.938 16.7%,
+      1.017, 1.077, 1.121, 1.149 24.3%, 1.159, 1.163, 1.161, 1.154 29.9%,
+      1.129 32.8%, 1.051 39.6%, 1.017 43.1%, 0.991, 0.977 51%, 0.974 53.8%,
+      0.975 57.1%, 0.997 69.8%, 1.003 76.9%, 1
+    );
+  }
+}
+
+/* ── Entrances ── */
+.motion-ready [data-reveal]:not(.is-revealed) {
+  opacity: 0;
+}
+
+.motion-ready [data-reveal].is-revealed {
+  animation-duration: var(--reveal-duration);
+  animation-timing-function: var(--spring-bounce);
+  animation-delay: var(--reveal-delay, 0ms);
+  animation-fill-mode: backwards;
+}
+
+.motion-ready [data-reveal="up"].is-revealed { animation-name: gf-in-up; }
+.motion-ready [data-reveal="down"].is-revealed { animation-name: gf-in-down; }
+.motion-ready [data-reveal="left"].is-revealed { animation-name: gf-in-left; }
+.motion-ready [data-reveal="right"].is-revealed { animation-name: gf-in-right; }
+.motion-ready [data-reveal="zoom"].is-revealed { animation-name: gf-in-zoom; }
+
+@keyframes gf-in-up {
+  0% { opacity: 0; translate: 0 var(--reveal-distance); }
+  25% { opacity: 1; }
+  100% { opacity: 1; translate: 0 0; }
+}
+@keyframes gf-in-down {
+  0% { opacity: 0; translate: 0 calc(var(--reveal-distance) * -1); }
+  25% { opacity: 1; }
+  100% { opacity: 1; translate: 0 0; }
+}
+@keyframes gf-in-left {
+  0% { opacity: 0; translate: calc(var(--reveal-distance) * -1) 0; }
+  25% { opacity: 1; }
+  100% { opacity: 1; translate: 0 0; }
+}
+@keyframes gf-in-right {
+  0% { opacity: 0; translate: var(--reveal-distance) 0; }
+  25% { opacity: 1; }
+  100% { opacity: 1; translate: 0 0; }
+}
+@keyframes gf-in-zoom {
+  0% { opacity: 0; scale: 0.8; }
+  25% { opacity: 1; }
+  100% { opacity: 1; scale: 1; }
+}
+
+/* ── Bouncy hover on cards ── */
+.motion-ready .glow-product-card,
+.motion-ready .glow-product-list-card,
+.motion-ready .product-card,
+.motion-ready .ysl-triad-card,
+.motion-ready .ysl-promo-card,
+.motion-ready .ysl-shopcat-col,
+.motion-ready .craft-lab-card,
+.motion-ready .craft-finish-card,
+.motion-ready .stat-card {
+  transition:
+    transform 650ms var(--spring-bounce),
+    scale 650ms var(--spring-bounce),
+    box-shadow 400ms ease,
+    border-color 300ms ease,
+    background-color 300ms ease;
+}
+
+.motion-ready .glow-product-card:hover,
+.motion-ready .product-card:hover,
+.motion-ready .ysl-triad-card:hover,
+.motion-ready .ysl-promo-card:hover,
+.motion-ready .ysl-shopcat-col:hover,
+.motion-ready .craft-lab-card:hover,
+.motion-ready .craft-finish-card:hover,
+.motion-ready .stat-card:hover {
+  scale: 1.03;
+}
+
+/* ── Squishy buttons ── */
+.motion-ready button:not(:disabled),
+.motion-ready .btn,
+.motion-ready [role="button"] {
+  transition-property: background-color, color, border-color, box-shadow, opacity, transform, scale;
+  transition-duration: 200ms, 200ms, 200ms, 200ms, 200ms, 250ms, 500ms;
+  transition-timing-function: ease, ease, ease, ease, ease, var(--spring-bounce), var(--spring-bounce);
+}
+
+.motion-ready button:not(:disabled):active,
+.motion-ready .btn:active,
+.motion-ready [role="button"]:active {
+  scale: 0.93;
+  transition-duration: 200ms, 200ms, 200ms, 200ms, 200ms, 250ms, 80ms;
+}
+
+/* ── Drawers and the mobile filter sidebar spring open ── */
+.motion-ready .drawer,
+.motion-ready .cart-drawer,
+.motion-ready .glow-filter-sidebar {
+  transition-timing-function: var(--spring-soft) !important;
+}
+
+/* ── Reduced motion: no movement, content simply appears. (startMotion also
+   skips tagging entirely in this case; this is a second line of defence.) */
+@media (prefers-reduced-motion: reduce) {
+  .motion-ready [data-reveal],
+  .motion-ready [data-reveal].is-revealed {
+    opacity: 1 !important;
+    animation: none !important;
+  }
+  .motion-ready *:hover,
+  .motion-ready *:active {
+    scale: none !important;
+  }
+}

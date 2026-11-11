@@ -1,4 +1,4 @@
-import { useState, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -39,6 +39,8 @@ import SkinAnalysis from "./pages/SkinAnalysis";
 import RoutineGenerator from "./pages/RoutineGenerator";
 import Compare from "./pages/Compare";
 import AiConciergeChat from "./components/AiConciergeChat";
+import { startMotion } from "./utils/motion";
+import "./styles/motion.css";
 
 // Wrapper pages
 function SkinToneDetectorPage({ onCartOpen }) {
@@ -94,6 +96,9 @@ function PublicOnlyRoute({ children }) {
 
 function App() {
   const [cartOpen, setCartOpen] = useState(false);
+
+  // Springy scroll-in / hover animations site-wide (see utils/motion.js).
+  useEffect(() => startMotion(), []);
   const openCart = () => setCartOpen(true);
   const closeCart = () => setCartOpen(false);
 
