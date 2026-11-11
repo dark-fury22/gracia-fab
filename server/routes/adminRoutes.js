@@ -7,7 +7,8 @@ import {
   updateProduct,
   deleteProduct,
   getAllUsers,
-  uploadImage
+  uploadImage,
+  bulkUpdateStock
 } from '../controllers/adminController.js'
 import { updateOrderStatus } from '../controllers/orderController.js'
 import protect from '../middleware/authMiddleware.js'
@@ -17,6 +18,7 @@ import {
   createProductSchema,
   updateProductSchema,
   uploadImageSchema,
+  bulkStockSchema,
 } from '../validators/adminValidators.js'
 import { updateOrderStatusSchema } from '../validators/orderValidators.js'
 
@@ -31,6 +33,8 @@ router.put('/orders/:id', validate(updateOrderStatusSchema), updateOrderStatus)
 router.get('/products', getAllProducts)
 router.post('/products', validate(createProductSchema), createProduct)
 router.post('/upload', validate(uploadImageSchema), uploadImage)
+// Must come before /products/:id so "stock" isn't read as a product id.
+router.put('/products/stock', validate(bulkStockSchema), bulkUpdateStock)
 router.put('/products/:id', validate(updateProductSchema), updateProduct)
 router.delete('/products/:id', deleteProduct)
 router.get('/users', getAllUsers)

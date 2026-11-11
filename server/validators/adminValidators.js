@@ -15,6 +15,22 @@ export const createProductSchema = z.object({
 
 export const updateProductSchema = createProductSchema.partial();
 
+// Inventory tab: inline edits and CSV uploads both send this.
+export const bulkStockSchema = z.object({
+  updates: z
+    .array(
+      z.object({
+        id: z.string().regex(/^[a-f0-9]{24}$/i, "Invalid product id"),
+        stock: z.coerce
+          .number()
+          .int("Stock must be a whole number")
+          .nonnegative("Stock cannot be negative"),
+      }),
+    )
+    .min(1, "No stock changes to save")
+    .max(1000),
+});
+
 // SVG is deliberately excluded: it can embed <script>, which would let an
 // uploaded "product image" execute as stored XSS when someone opens the
 // file's URL directly.

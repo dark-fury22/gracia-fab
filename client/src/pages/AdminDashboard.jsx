@@ -3,12 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import InventoryPanel from "../components/InventoryPanel";
 import "../styles/Admin.css";
 import API_URL from "../config";
 
 const tabs = [
   { id: "overview", label: "📊 Overview" },
   { id: "products", label: "🛍️ Products" },
+  { id: "inventory", label: "📋 Inventory" },
   { id: "orders", label: "📦 Orders" },
   { id: "users", label: "👥 Users" },
   { id: "messages", label: "💌 Messages" },
@@ -409,6 +411,9 @@ function AdminDashboard() {
             </button>
           ))}
         </div>
+
+        {/* ── INVENTORY ── */}
+        {activeTab === "inventory" && <InventoryPanel />}
 
         {/* ── OVERVIEW ── */}
         {activeTab === "overview" && (

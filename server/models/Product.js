@@ -73,16 +73,20 @@ const productSchema = new mongoose.Schema(
       type: String,
     },
 
-    // Stock management
+    // Stock management. Defaults to 0: a product nobody has counted is
+    // treated as out of stock rather than given an invented quantity.
+    // Counts are entered from the admin dashboard's Inventory tab.
     stock: {
       type: Number,
-      default: 50,
+      default: 0,
       min: 0,
     },
 
+    // Kept in step with `stock` by the pre-save hook below (and by the bulk
+    // stock update), so restocking a sold-out product makes it buyable again.
     isInStock: {
       type: Boolean,
-      default: true,
+      default: false,
     },
 
     reviews: [reviewSchema],
@@ -109,5 +113,12 @@ productSchema.index({ category: 1 });
 productSchema.index({ tags: 1 });
 productSchema.index({ name: "text", description: "text" });
 productSchema.index({ isFeatured: 1 });
+
+productSchema.pre("save", function syncIsInStock(next) {
+  if (this.isNew || this.isModified("stock")) {
+    this.isInStock = this.stock > 0;
+  }
+  next();
+});
 
 export default mongoose.model("Product", productSchema);

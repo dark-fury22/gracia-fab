@@ -135,6 +135,35 @@ product.image = image ?? product.image
   }
 }
 
+// @desc   Set stock counts for many products at once (Inventory tab: inline
+//         edits and CSV uploads)
+// @route  PUT /api/admin/products/stock
+export const bulkUpdateStock = async (req, res) => {
+  try {
+    const { updates } = req.body
+
+    // bulkWrite skips the save hook, so set isInStock alongside stock here.
+    const result = await Product.bulkWrite(
+      updates.map(({ id, stock }) => ({
+        updateOne: {
+          filter: { _id: id },
+          update: { $set: { stock, isInStock: stock > 0 } },
+        },
+      })),
+    )
+
+    // Report ids that didn't match a product (e.g. a stale CSV row).
+    const ids = updates.map((u) => u.id)
+    const found = await Product.find({ _id: { $in: ids } }).distinct('_id')
+    const foundSet = new Set(found.map(String))
+    const notFound = ids.filter((id) => !foundSet.has(id))
+
+    res.json({ updated: result.matchedCount, notFound })
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+}
+
 // @desc   Delete product
 // @route  DELETE /api/admin/products/:id
 export const deleteProduct = async (req, res) => {
