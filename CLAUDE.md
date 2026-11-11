@@ -2,6 +2,8 @@
 
 AI-powered beauty e-commerce store for the Nigerian market: skincare, haircare, wigs, bridal. Prices are in Naira (NGN).
 
+**Several AI assistants work on this repo at once.** Before editing anything, `git pull --rebase` and read `docs/WORKING_NOW.md`. Claim your task there before you start, and remove your row when you finish.
+
 - `client/`: React 18 + Vite PWA, react-router-dom. Deployed on Vercel.
 - `server/`: Node + Express + MongoDB (Mongoose), BullMQ/Redis jobs. ES modules. Deployed on Render.
 - AI: Gemini first, Groq fallback. Payments: Monnify (`server/services/monnify.js`). Email: Resend over HTTPS (SMTP is blocked on Render). WhatsApp: Twilio.
