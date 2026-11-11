@@ -41,12 +41,6 @@ import Compare from "./pages/Compare";
 import AiConciergeChat from "./components/AiConciergeChat";
 import { startMotion } from "./utils/motion";
 import "./styles/motion.css";
-import { useScrollReveal } from "./hooks/useScrollReveal";
-
-function ScrollRevealManager() {
-  useScrollReveal();
-  return null;
-}
 
 // Wrapper pages
 function SkinToneDetectorPage({ onCartOpen }) {
@@ -110,7 +104,6 @@ function App() {
 
   return (
     <Router>
-      <ScrollRevealManager />
       <CartDrawer isOpen={cartOpen} onClose={closeCart} />
       <ErrorBoundary>
         <Routes>
