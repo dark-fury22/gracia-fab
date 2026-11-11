@@ -106,6 +106,9 @@ function Products({ onCartOpen }) {
   useEffect(() => {
     const cat = searchParams.get("category");
     if (cat && !selectedCategories.includes(cat)) {
+      // Syncing from an external source (the URL) when it changes, not a
+      // value derivable at render time — the filter stays user-editable.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedCategories([cat]);
       setCurrentPage(1);
     }

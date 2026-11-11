@@ -925,6 +925,9 @@ function ReviewSection({ productId, productName }) {
   };
 
   useEffect(() => {
+    // Fetch-orchestration effect: fetchReviews only sets state after its
+    // request resolves; the rule can't see past the async call boundary.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchReviews();
   }, [productId]);
 

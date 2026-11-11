@@ -74,7 +74,10 @@ function Login() {
         <h1 className="auth-heading">Sign in</h1>
         <p className="auth-subheading">Sign in or create an account</p>
 
-        {/* Demo Credentials Quick-Fill (Dev/Local environment) */}
+        {/* Demo Credentials Quick-Fill — local dev only. These accounts exist
+            only in the in-memory DB that server/dev-demo.mjs seeds; Vite strips
+            this block from production builds. */}
+        {import.meta.env.DEV && (
         <div className="auth-demo-box">
           <div className="auth-demo-header">
             <span className="auth-demo-sparkle">✦</span>
@@ -111,6 +114,7 @@ function Login() {
             </button>
           </div>
         </div>
+        )}
 
         <form className="auth-form" onSubmit={handleSubmit}>
           {error && <div className="auth-error">⚠️ {error}</div>}
