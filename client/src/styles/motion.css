@@ -19,12 +19,10 @@
 @supports (transition-timing-function: linear(0, 1)) {
   :root {
     /* A real spring: overshoots ~15%, settles with a small second bounce. */
-    --spring-bounce: linear(
-      0, 0.009, 0.035 2.1%, 0.141, 0.281 6.7%, 0.723 12.9%, 0.938 16.7%,
-      1.017, 1.077, 1.121, 1.149 24.3%, 1.159, 1.163, 1.161, 1.154 29.9%,
-      1.129 32.8%, 1.051 39.6%, 1.017 43.1%, 0.991, 0.977 51%, 0.974 53.8%,
-      0.975 57.1%, 0.997 69.8%, 1.003 76.9%, 1
-    );
+    --spring-bounce: linear(0, 0.009, 0.035 2.1%, 0.141, 0.281 6.7%, 0.723 12.9%, 0.938 16.7%,
+        1.017, 1.077, 1.121, 1.149 24.3%, 1.159, 1.163, 1.161, 1.154 29.9%,
+        1.129 32.8%, 1.051 39.6%, 1.017 43.1%, 0.991, 0.977 51%, 0.974 53.8%,
+        0.975 57.1%, 0.997 69.8%, 1.003 76.9%, 1);
   }
 }
 
@@ -40,36 +38,104 @@
   animation-fill-mode: backwards;
 }
 
-.motion-ready [data-reveal="up"].is-revealed { animation-name: gf-in-up; }
-.motion-ready [data-reveal="down"].is-revealed { animation-name: gf-in-down; }
-.motion-ready [data-reveal="left"].is-revealed { animation-name: gf-in-left; }
-.motion-ready [data-reveal="right"].is-revealed { animation-name: gf-in-right; }
-.motion-ready [data-reveal="zoom"].is-revealed { animation-name: gf-in-zoom; }
+.motion-ready [data-reveal="up"].is-revealed {
+  animation-name: gf-in-up;
+}
+
+.motion-ready [data-reveal="down"].is-revealed {
+  animation-name: gf-in-down;
+}
+
+.motion-ready [data-reveal="left"].is-revealed {
+  animation-name: gf-in-left;
+}
+
+.motion-ready [data-reveal="right"].is-revealed {
+  animation-name: gf-in-right;
+}
+
+.motion-ready [data-reveal="zoom"].is-revealed {
+  animation-name: gf-in-zoom;
+}
 
 @keyframes gf-in-up {
-  0% { opacity: 0; translate: 0 var(--reveal-distance); }
-  25% { opacity: 1; }
-  100% { opacity: 1; translate: 0 0; }
+  0% {
+    opacity: 0;
+    translate: 0 var(--reveal-distance);
+  }
+
+  25% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 1;
+    translate: 0 0;
+  }
 }
+
 @keyframes gf-in-down {
-  0% { opacity: 0; translate: 0 calc(var(--reveal-distance) * -1); }
-  25% { opacity: 1; }
-  100% { opacity: 1; translate: 0 0; }
+  0% {
+    opacity: 0;
+    translate: 0 calc(var(--reveal-distance) * -1);
+  }
+
+  25% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 1;
+    translate: 0 0;
+  }
 }
+
 @keyframes gf-in-left {
-  0% { opacity: 0; translate: calc(var(--reveal-distance) * -1) 0; }
-  25% { opacity: 1; }
-  100% { opacity: 1; translate: 0 0; }
+  0% {
+    opacity: 0;
+    translate: calc(var(--reveal-distance) * -1) 0;
+  }
+
+  25% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 1;
+    translate: 0 0;
+  }
 }
+
 @keyframes gf-in-right {
-  0% { opacity: 0; translate: var(--reveal-distance) 0; }
-  25% { opacity: 1; }
-  100% { opacity: 1; translate: 0 0; }
+  0% {
+    opacity: 0;
+    translate: var(--reveal-distance) 0;
+  }
+
+  25% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 1;
+    translate: 0 0;
+  }
 }
+
 @keyframes gf-in-zoom {
-  0% { opacity: 0; scale: 0.8; }
-  25% { opacity: 1; }
-  100% { opacity: 1; scale: 1; }
+  0% {
+    opacity: 0;
+    scale: 0.8;
+  }
+
+  25% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 1;
+    scale: 1;
+  }
 }
 
 /* ── Bouncy hover on cards ── */
@@ -128,21 +194,23 @@
 /* ── Drawers and the mobile filter sidebar spring open ── */
 .motion-ready .drawer,
 .motion-ready .cart-drawer,
-.motion-ready .glow-filter-sidebar,
-.motion-ready .ysl-mobile-drawer {
-  transition-timing-function: var(--spring-soft) !important;
-}
+  .motion-ready .glow-filter-sidebar,
+  .motion-ready .ysl-mobile-drawer {
+    transition-timing-function: var(--spring-soft) !important;
+  }
 
-/* ── Reduced motion: no movement, content simply appears. (startMotion also
+  /* ── Reduced motion: no movement, content simply appears. (startMotion also
    skips tagging entirely in this case; this is a second line of defence.) */
-@media (prefers-reduced-motion: reduce) {
-  .motion-ready [data-reveal],
-  .motion-ready [data-reveal].is-revealed {
-    opacity: 1 !important;
-    animation: none !important;
+  @media (prefers-reduced-motion: reduce) {
+
+    .motion-ready [data-reveal],
+    .motion-ready [data-reveal].is-revealed {
+      opacity: 1 !important;
+      animation: none !important;
+    }
+
+    .motion-ready *:hover,
+    .motion-ready *:active {
+      scale: none !important;
+    }
   }
-  .motion-ready *:hover,
-  .motion-ready *:active {
-    scale: none !important;
-  }
-}

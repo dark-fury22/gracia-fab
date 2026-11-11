@@ -352,17 +352,17 @@ function Products({ onCartOpen }) {
     <div className="glow-catalog-page" ref={catalogTopRef}>
       {/* ── 1. Editorial Header Banner ── */}
       <section className="glow-catalog-hero">
-        <div className="glow-catalog-hero-inner">
-          <nav className="glow-catalog-breadcrumb" aria-label="Breadcrumb">
-            <Link to="/">Home</Link>
-            <span className="crumb-sep">/</span>
-            <span>Products</span>
-          </nav>
-          <h1 className="glow-catalog-hero-title">Discover Our Beauty Collection</h1>
-          <p className="glow-catalog-hero-desc">
-            Curated clinical skincare, 100% single-donor raw human hair wigs, and bespoke bridal beauty formulated for Nigerian complexions and climate.
-          </p>
-        </div>
+          <div className="glow-catalog-hero-inner" data-reveal="up">
+            <nav className="glow-catalog-breadcrumb" aria-label="Breadcrumb">
+              <Link to="/">Home</Link>
+              <span className="crumb-sep">/</span>
+              <span>Products</span>
+            </nav>
+            <h1 className="glow-catalog-hero-title">Discover Our Beauty Collection</h1>
+            <p className="glow-catalog-hero-desc">
+              Curated clinical skincare, 100% single-donor raw human hair wigs, and bespoke bridal beauty formulated for Nigerian complexions and climate.
+            </p>
+          </div>
       </section>
 
       {/* ── 2. Two-Column Catalog Layout (Sidebar Filter Rail + Main Catalog) ── */}
@@ -900,294 +900,294 @@ function Products({ onCartOpen }) {
             </div>
           ) : viewMode === "grid" ? (
             /* ── GRID MODE (4-Column Layout) ── */
-            <div className="glow-products-grid">
-              {paginatedProducts.map((product) => {
-                const outOfStock = product.isInStock === false || product.stock === 0;
-                const discount = product.originalPrice && product.originalPrice > product.price
-                  ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
-                  : product.discountPercent || null;
+              <div className="glow-products-grid reveal-stagger" data-reveal="stagger">
+                {paginatedProducts.map((product) => {
+                  const outOfStock = product.isInStock === false || product.stock === 0;
+                  const discount = product.originalPrice && product.originalPrice > product.price
+                    ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+                    : product.discountPercent || null;
 
-                return (
-                  <article key={product._id} className="glow-product-card">
-                    <div className="card-media-wrap">
-                      <Link to={`/products/${product._id}`} className="card-img-link">
-                        <img
-                          src={product.image}
-                          alt={product.name}
-                          loading="lazy"
-                          className="card-img"
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src =
-                              "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=500&auto=format&fit=crop&q=80";
-                          }}
-                        />
-                      </Link>
+                  return (
+                    <article key={product._id} className="glow-product-card">
+                      <div className="card-media-wrap">
+                        <Link to={`/products/${product._id}`} className="card-img-link">
+                          <img
+                            src={product.image}
+                            alt={product.name}
+                            loading="lazy"
+                            className="card-img"
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src =
+                                "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=500&auto=format&fit=crop&q=80";
+                            }}
+                          />
+                        </Link>
 
-                      {/* Badges */}
-                      <div className="card-badges-wrap">
-                        {outOfStock ? (
-                          <span className="card-badge badge-sold-out">Sold Out</span>
-                        ) : discount ? (
-                          <span className="card-badge badge-discount">-{discount}%</span>
-                        ) : product.isFeatured ? (
-                          <span className="card-badge badge-featured">Featured</span>
-                        ) : null}
+                        {/* Badges */}
+                        <div className="card-badges-wrap">
+                          {outOfStock ? (
+                            <span className="card-badge badge-sold-out">Sold Out</span>
+                          ) : discount ? (
+                            <span className="card-badge badge-discount">-{discount}%</span>
+                          ) : product.isFeatured ? (
+                            <span className="card-badge badge-featured">Featured</span>
+                          ) : null}
+                        </div>
+
+                        {/* Wishlist Button */}
+                        <div className="card-wishlist-wrap">
+                          <WishlistButton productId={product._id} />
+                        </div>
+
+                        {/* Hover Overlay Action Bar */}
+                        {!outOfStock && (
+                          <div className="card-hover-actions">
+                            <button
+                              type="button"
+                              className="card-quick-add-btn"
+                              onClick={(e) => handleAddToCart(e, product)}
+                              aria-label={`Add ${product.name} to bag`}
+                            >
+                              <span>+ ADD TO BAG</span>
+                              <span className="bag-icon">🛍️</span>
+                            </button>
+                          </div>
+                        )}
                       </div>
 
-                      {/* Wishlist Button */}
-                      <div className="card-wishlist-wrap">
-                        <WishlistButton productId={product._id} />
-                      </div>
+                      <div className="card-details">
+                        {product.brand && (
+                          <span className="card-brand">{product.brand}</span>
+                        )}
 
-                      {/* Hover Overlay Action Bar */}
-                      {!outOfStock && (
-                        <div className="card-hover-actions">
+                        <Link to={`/products/${product._id}`} className="card-title-link">
+                          <h3 className="card-title">{product.name}</h3>
+                        </Link>
+
+                        {/* Rating Row */}
+                        <div className="card-rating-row">
+                          <span className="card-stars-gold">
+                            {"★".repeat(Math.round(product.rating || 5))}
+                          </span>
+                          <span className="card-rating-val">{product.rating || "4.8"}</span>
+                          <span className="card-reviews-count">
+                            ({product.numReviews || product.reviewsCount || 16})
+                          </span>
+                        </div>
+
+                        {/* Price Row */}
+                        <div className="card-price-row">
+                          <span className="card-current-price">
+                            {formatPrice(product.price)}
+                          </span>
+                          {product.originalPrice && product.originalPrice > product.price && (
+                            <span className="card-strikethrough-price">
+                              {formatPrice(product.originalPrice)}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Touch-Friendly Direct Add Button for Mobile */}
+                        <button
+                          type="button"
+                          className="card-touch-add-btn"
+                          disabled={outOfStock}
+                          onClick={(e) => handleAddToCart(e, product)}
+                        >
+                          {outOfStock ? "Sold Out" : "+ Add to Bag"}
+                        </button>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+              ) : (
+              /* ── LIST MODE (Horizontal Detailed Rows) ── */
+                <div className="glow-products-list reveal-stagger" data-reveal="stagger">
+                  {paginatedProducts.map((product) => {
+                    const outOfStock = product.isInStock === false || product.stock === 0;
+
+                    return (
+                      <article key={product._id} className="glow-product-list-card">
+                        <div className="list-card-media">
+                          <Link to={`/products/${product._id}`}>
+                            <img
+                              src={product.image}
+                              alt={product.name}
+                              loading="lazy"
+                              className="list-card-img"
+                              onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.src =
+                                  "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=500&auto=format&fit=crop&q=80";
+                              }}
+                            />
+                          </Link>
+                          <div className="card-wishlist-wrap">
+                            <WishlistButton productId={product._id} />
+                          </div>
+                        </div>
+
+                        <div className="list-card-center">
+                          {product.brand && (
+                            <span className="card-brand">{product.brand}</span>
+                          )}
+                          <Link to={`/products/${product._id}`} className="card-title-link">
+                            <h3 className="list-card-title">{product.name}</h3>
+                          </Link>
+                          <p className="list-card-desc">{product.description}</p>
+
+                          <div className="card-rating-row">
+                            <span className="card-stars-gold">
+                              {"★".repeat(Math.round(product.rating || 5))}
+                            </span>
+                            <span className="card-rating-val">{product.rating || "4.8"}</span>
+                            <span className="card-reviews-count">
+                              ({product.numReviews || product.reviewsCount || 16} reviews)
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="list-card-right">
+                          <div className="card-price-row">
+                            <span className="card-current-price">
+                              {formatPrice(product.price)}
+                            </span>
+                            {product.originalPrice && product.originalPrice > product.price && (
+                              <span className="card-strikethrough-price">
+                                {formatPrice(product.originalPrice)}
+                              </span>
+                            )}
+                          </div>
+
+                          <span className={`list-stock-status ${outOfStock ? "out" : "in"}`}>
+                            {outOfStock ? "• Out of Stock" : "• In Stock · Lagos Dispatch"}
+                          </span>
+
                           <button
                             type="button"
-                            className="card-quick-add-btn"
+                            className="list-add-btn"
+                            disabled={outOfStock}
                             onClick={(e) => handleAddToCart(e, product)}
-                            aria-label={`Add ${product.name} to bag`}
                           >
-                            <span>+ ADD TO BAG</span>
-                            <span className="bag-icon">🛍️</span>
+                            {outOfStock ? "Sold Out" : "Add to Bag 🛍️"}
                           </button>
                         </div>
-                      )}
-                    </div>
-
-                    <div className="card-details">
-                      {product.brand && (
-                        <span className="card-brand">{product.brand}</span>
-                      )}
-
-                      <Link to={`/products/${product._id}`} className="card-title-link">
-                        <h3 className="card-title">{product.name}</h3>
-                      </Link>
-
-                      {/* Rating Row */}
-                      <div className="card-rating-row">
-                        <span className="card-stars-gold">
-                          {"★".repeat(Math.round(product.rating || 5))}
-                        </span>
-                        <span className="card-rating-val">{product.rating || "4.8"}</span>
-                        <span className="card-reviews-count">
-                          ({product.numReviews || product.reviewsCount || 16})
-                        </span>
-                      </div>
-
-                      {/* Price Row */}
-                      <div className="card-price-row">
-                        <span className="card-current-price">
-                          {formatPrice(product.price)}
-                        </span>
-                        {product.originalPrice && product.originalPrice > product.price && (
-                          <span className="card-strikethrough-price">
-                            {formatPrice(product.originalPrice)}
-                          </span>
-                        )}
-                      </div>
-
-                      {/* Touch-Friendly Direct Add Button for Mobile */}
-                      <button
-                        type="button"
-                        className="card-touch-add-btn"
-                        disabled={outOfStock}
-                        onClick={(e) => handleAddToCart(e, product)}
-                      >
-                        {outOfStock ? "Sold Out" : "+ Add to Bag"}
-                      </button>
-                    </div>
-                  </article>
-                );
-              })}
-            </div>
-          ) : (
-            /* ── LIST MODE (Horizontal Detailed Rows) ── */
-            <div className="glow-products-list">
-              {paginatedProducts.map((product) => {
-                const outOfStock = product.isInStock === false || product.stock === 0;
-
-                return (
-                  <article key={product._id} className="glow-product-list-card">
-                    <div className="list-card-media">
-                      <Link to={`/products/${product._id}`}>
-                        <img
-                          src={product.image}
-                          alt={product.name}
-                          loading="lazy"
-                          className="list-card-img"
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src =
-                              "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=500&auto=format&fit=crop&q=80";
-                          }}
-                        />
-                      </Link>
-                      <div className="card-wishlist-wrap">
-                        <WishlistButton productId={product._id} />
-                      </div>
-                    </div>
-
-                    <div className="list-card-center">
-                      {product.brand && (
-                        <span className="card-brand">{product.brand}</span>
-                      )}
-                      <Link to={`/products/${product._id}`} className="card-title-link">
-                        <h3 className="list-card-title">{product.name}</h3>
-                      </Link>
-                      <p className="list-card-desc">{product.description}</p>
-
-                      <div className="card-rating-row">
-                        <span className="card-stars-gold">
-                          {"★".repeat(Math.round(product.rating || 5))}
-                        </span>
-                        <span className="card-rating-val">{product.rating || "4.8"}</span>
-                        <span className="card-reviews-count">
-                          ({product.numReviews || product.reviewsCount || 16} reviews)
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="list-card-right">
-                      <div className="card-price-row">
-                        <span className="card-current-price">
-                          {formatPrice(product.price)}
-                        </span>
-                        {product.originalPrice && product.originalPrice > product.price && (
-                          <span className="card-strikethrough-price">
-                            {formatPrice(product.originalPrice)}
-                          </span>
-                        )}
-                      </div>
-
-                      <span className={`list-stock-status ${outOfStock ? "out" : "in"}`}>
-                        {outOfStock ? "• Out of Stock" : "• In Stock · Lagos Dispatch"}
-                      </span>
-
-                      <button
-                        type="button"
-                        className="list-add-btn"
-                        disabled={outOfStock}
-                        onClick={(e) => handleAddToCart(e, product)}
-                      >
-                        {outOfStock ? "Sold Out" : "Add to Bag 🛍️"}
-                      </button>
-                    </div>
-                  </article>
-                );
-              })}
-            </div>
-          )}
-
-          {/* ── 3. Numbered Pagination Bar ── */}
-          {totalPages > 1 && (
-            <nav className="glow-pagination" aria-label="Catalog pagination">
-              <button
-                type="button"
-                className="pagination-arrow-btn"
-                disabled={currentPage === 1}
-                onClick={() => handlePageChange(currentPage - 1)}
-                aria-label="Previous page"
-              >
-                ‹ Prev
-              </button>
-
-              <div className="pagination-pages-group">
-                {Array.from({ length: totalPages }, (_, idx) => idx + 1).map((pageNum) => (
-                  <button
-                    key={pageNum}
-                    type="button"
-                    className={`pagination-number-btn ${currentPage === pageNum ? "active" : ""}`}
-                    onClick={() => handlePageChange(pageNum)}
-                    aria-label={`Page ${pageNum}`}
-                    aria-current={currentPage === pageNum ? "page" : undefined}
-                  >
-                    {pageNum}
-                  </button>
-                ))}
-              </div>
-
-              <button
-                type="button"
-                className="pagination-arrow-btn"
-                disabled={currentPage === totalPages}
-                onClick={() => handlePageChange(currentPage + 1)}
-                aria-label="Next page"
-              >
-                Next ›
-              </button>
-            </nav>
-          )}
-
-          {/* ── 4. Standalone Pre-Footer Newsletter Card (Matching Screen 2 & 3) ── */}
-          <section className="glow-catalog-newsletter" aria-label="Catalog newsletter sign up">
-            <div className="newsletter-card-inner">
-              <span className="newsletter-sparkle" aria-hidden="true">✦</span>
-              <h3 className="newsletter-heading">
-                Subscribe to our newsletter and be the first to know about new arrivals, exclusive offers, and beauty tips.
-              </h3>
-
-              {newsletterStatus === "success" ? (
-                <div className="newsletter-success-box">
-                  <span>✓ You&rsquo;re subscribed! Check your inbox for your welcome privilege code.</span>
+                      </article>
+                    );
+                  })}
                 </div>
-              ) : (
-                <form onSubmit={handleNewsletterSubmit} className="newsletter-form-row">
-                  <input
-                    type="email"
-                    required
-                    placeholder="Enter your email address..."
-                    value={newsletterEmail}
-                    onChange={(e) => setNewsletterEmail(e.target.value)}
-                    className="newsletter-input"
-                    aria-label="Email address for beauty newsletter"
-                  />
-                  <button
-                    type="submit"
-                    className="newsletter-submit-btn"
-                    disabled={newsletterStatus === "submitting"}
-                  >
-                    {newsletterStatus === "submitting" ? "SUBSCRIBING..." : "SUBSCRIBE"}
-                  </button>
-                </form>
-              )}
+          )}
+
+                {/* ── 3. Numbered Pagination Bar ── */}
+                {totalPages > 1 && (
+                  <nav className="glow-pagination" aria-label="Catalog pagination">
+                    <button
+                      type="button"
+                      className="pagination-arrow-btn"
+                      disabled={currentPage === 1}
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      aria-label="Previous page"
+                    >
+                      ‹ Prev
+                    </button>
+
+                    <div className="pagination-pages-group">
+                      {Array.from({ length: totalPages }, (_, idx) => idx + 1).map((pageNum) => (
+                        <button
+                          key={pageNum}
+                          type="button"
+                          className={`pagination-number-btn ${currentPage === pageNum ? "active" : ""}`}
+                          onClick={() => handlePageChange(pageNum)}
+                          aria-label={`Page ${pageNum}`}
+                          aria-current={currentPage === pageNum ? "page" : undefined}
+                        >
+                          {pageNum}
+                        </button>
+                      ))}
+                    </div>
+
+                    <button
+                      type="button"
+                      className="pagination-arrow-btn"
+                      disabled={currentPage === totalPages}
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      aria-label="Next page"
+                    >
+                      Next ›
+                    </button>
+                  </nav>
+                )}
+
+                {/* ── 4. Standalone Pre-Footer Newsletter Card (Matching Screen 2 & 3) ── */}
+                <section className="glow-catalog-newsletter" aria-label="Catalog newsletter sign up">
+                  <div className="newsletter-card-inner">
+                    <span className="newsletter-sparkle" aria-hidden="true">✦</span>
+                    <h3 className="newsletter-heading">
+                      Subscribe to our newsletter and be the first to know about new arrivals, exclusive offers, and beauty tips.
+                    </h3>
+
+                    {newsletterStatus === "success" ? (
+                      <div className="newsletter-success-box">
+                        <span>✓ You&rsquo;re subscribed! Check your inbox for your welcome privilege code.</span>
+                      </div>
+                    ) : (
+                      <form onSubmit={handleNewsletterSubmit} className="newsletter-form-row">
+                        <input
+                          type="email"
+                          required
+                          placeholder="Enter your email address..."
+                          value={newsletterEmail}
+                          onChange={(e) => setNewsletterEmail(e.target.value)}
+                          className="newsletter-input"
+                          aria-label="Email address for beauty newsletter"
+                        />
+                        <button
+                          type="submit"
+                          className="newsletter-submit-btn"
+                          disabled={newsletterStatus === "submitting"}
+                        >
+                          {newsletterStatus === "submitting" ? "SUBSCRIBING..." : "SUBSCRIBE"}
+                        </button>
+                      </form>
+                    )}
+                  </div>
+                </section>
+              </main>
             </div>
-          </section>
-        </main>
-      </div>
 
       {/* ── SmartSearch AI Modal (Preserved) ── */}
-      {showSmartSearch && (
-        <div
-          className="maison-smart-modal-overlay"
-          onClick={() => setShowSmartSearch(false)}
-        >
-          <div
-            className="maison-smart-modal"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              className="maison-smart-modal-close"
+          {showSmartSearch && (
+            <div
+              className="maison-smart-modal-overlay"
               onClick={() => setShowSmartSearch(false)}
-              aria-label="Close AI search"
             >
-              ✕
-            </button>
-            <SmartSearch
-              onClose={() => setShowSmartSearch(false)}
-              onResults={(results, query) => {
-                setSmartResults(results);
-                setSmartQuery(query);
-                setIsSmartMode(true);
-                setShowSmartSearch(false);
-              }}
-            />
-          </div>
-        </div>
-      )}
-    </div>
-  );
+              <div
+                className="maison-smart-modal"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  className="maison-smart-modal-close"
+                  onClick={() => setShowSmartSearch(false)}
+                  aria-label="Close AI search"
+                >
+                  ✕
+                </button>
+                <SmartSearch
+                  onClose={() => setShowSmartSearch(false)}
+                  onResults={(results, query) => {
+                    setSmartResults(results);
+                    setSmartQuery(query);
+                    setIsSmartMode(true);
+                    setShowSmartSearch(false);
+                  }}
+                />
+              </div>
+            </div>
+          )}
+      </div>
+      );
 }
 
-export default Products;
+      export default Products;

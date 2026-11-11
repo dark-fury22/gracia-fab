@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { HelmetProvider } from "react-helmet-async";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import "./index.css";
+import "./styles/interactive-bouncy.css";
 import App from "./App.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
 import { CartProvider } from "./context/CartContext.jsx";
@@ -13,7 +14,7 @@ import { ToastProvider } from "./components/Toast";
 // desktop browsers immediately display the latest version instead of serving stale cache.
 if (typeof window !== "undefined" && "serviceWorker" in navigator) {
   navigator.serviceWorker.ready.then((reg) => {
-    reg.update().catch(() => {});
+    reg.update().catch(() => { });
   });
 
   let refreshing = false;

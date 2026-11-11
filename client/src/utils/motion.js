@@ -71,10 +71,10 @@ function siblingIndex(el, selector) {
 
 export function startMotion(root = document) {
   if (typeof window === "undefined" || !("IntersectionObserver" in window)) {
-    return () => {};
+    return () => { };
   }
   if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
-    return () => {};
+    return () => { };
   }
 
   const reveal = new IntersectionObserver(

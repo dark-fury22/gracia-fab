@@ -332,660 +332,660 @@ export default function ProductDetail({ onCartOpen }) {
         {/* ── Main Showcase Grid (Gallery + Buy Box) ── */}
         <section className="pdp-hero-grid">
           {/* Left Gallery Column */}
-          <div className="pdp-gallery-col">
-            <div className="pdp-thumbnails-strip">
-              {gallery.map((imgUrl, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  className={`pdp-thumbnail-btn ${activeImageIndex === idx ? "active" : ""}`}
-                  onClick={() => setActiveImageIndex(idx)}
-                  aria-label={`View photo angle ${idx + 1}`}
-                >
-                  <img src={imgUrl} alt={`${product.name} angle ${idx + 1}`} />
-                </button>
-              ))}
-            </div>
-
-            <div className="pdp-main-stage">
-              <div className="pdp-main-image-wrapper">
-                <img
-                  src={activeImage}
-                  alt={product.name}
-                  className="pdp-main-image"
-                />
-                <span className="pdp-badge-authentic">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <path d="M20 6L9 17l-5-5" />
-                  </svg>
-                  100% Authentic Maison Guarantee
-                </span>
-                {discountPercent && (
-                  <span className="pdp-badge-discount">-{discountPercent}% OFF</span>
-                )}
-                {gallery.length > 1 && (
-                  <>
-                    <button
-                      type="button"
-                      className="pdp-nav-arrow prev"
-                      aria-label="Previous image"
-                      onClick={() => setActiveImageIndex((prev) => (prev > 0 ? prev - 1 : gallery.length - 1))}
-                    >
-                      ‹
-                    </button>
-                    <button
-                      type="button"
-                      className="pdp-nav-arrow next"
-                      aria-label="Next image"
-                      onClick={() => setActiveImageIndex((prev) => (prev < gallery.length - 1 ? prev + 1 : 0))}
-                    >
-                      ›
-                    </button>
-                  </>
-                )}
-              </div>
-
-              {/* Social Share Strip */}
-              <div className="pdp-share-strip">
-                <span className="pdp-share-label">Share:</span>
-                <div className="pdp-share-links">
-                  <a
-                    href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`Check out ${product.name} on Gracia Fab: ${window.location.href}`)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="pdp-share-btn"
-                  >
-                    💬 WhatsApp
-                  </a>
-                  <a
-                    href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Elevate your glow with ${product.name} on Gracia Fab: ${window.location.href}`)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="pdp-share-btn"
-                  >
-                    𝕏 Twitter
-                  </a>
+            <div className="pdp-gallery-col" data-reveal="left">
+              <div className="pdp-thumbnails-strip">
+                {gallery.map((imgUrl, idx) => (
                   <button
+                    key={idx}
                     type="button"
-                    onClick={handleCopyProductLink}
-                    className="pdp-share-btn"
+                    className={`pdp-thumbnail-btn ${activeImageIndex === idx ? "active" : ""}`}
+                    onClick={() => setActiveImageIndex(idx)}
+                    aria-label={`View photo angle ${idx + 1}`}
                   >
-                    🔗 Copy Link
+                    <img src={imgUrl} alt={`${product.name} angle ${idx + 1}`} />
                   </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Buy Box Column */}
-          <div className="pdp-buybox-col">
-            <span className="pdp-brand-eyebrow">
-              {product.brand || "Gracia Fab Signature"}
-            </span>
-            <h1 className="pdp-product-title">{product.name}</h1>
-
-            <div className="pdp-rating-sold-row">
-              <span className="pdp-rating-stars">
-                {"★".repeat(Math.round(product.rating || 5))}
-                {"☆".repeat(5 - Math.round(product.rating || 5))}
-              </span>
-              <span className="pdp-rating-score">
-                {(product.rating || 4.8).toFixed(1)}/5
-              </span>
-              <button
-                type="button"
-                className="pdp-reviews-count-link"
-                onClick={() => {
-                  const revEl = document.getElementById("reviews-section");
-                  if (revEl) revEl.scrollIntoView({ behavior: "smooth" });
-                }}
-              >
-                ({product.numReviews || 24} Reviews)
-              </button>
-              <span className="pdp-sold-badge">128+ Sold</span>
-            </div>
-
-            {/* Price Box */}
-            <div className="pdp-price-block">
-              <span className="pdp-current-price">{formatNaira(product.price)}</span>
-              {originalPrice > product.price && (
-                <span className="pdp-original-price">{formatNaira(originalPrice)}</span>
-              )}
-              {discountPercent && (
-                <span className="pdp-save-pill">Save {discountPercent}%</span>
-              )}
-            </div>
-
-            <p className="pdp-short-desc">{product.description}</p>
-
-            {/* Product Options / Specifications */}
-            <div className="pdp-options-section">
-              <div className="pdp-option-row">
-                <span className="pdp-option-label">Size:</span>
-                <div className="pdp-option-chips">
-                  {["30 ml", "50 ml"].map((size) => (
-                    <button
-                      key={size}
-                      type="button"
-                      className={`pdp-option-chip ${selectedSize === size ? "active" : ""}`}
-                      onClick={() => setSelectedSize(size)}
-                    >
-                      {size}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {product.category === "makeup" && (
-                <div className="pdp-option-row">
-                  <span className="pdp-option-label">Finish:</span>
-                  <div className="pdp-option-chips">
-                    {["Natural Satin", "Velvet Matte", "Dewy Glow"].map((variant) => (
-                      <button
-                        key={variant}
-                        type="button"
-                        className={`pdp-option-chip ${selectedVariant === variant ? "active" : ""}`}
-                        onClick={() => setSelectedVariant(variant)}
-                      >
-                        {variant}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              <div className="pdp-option-row">
-                <span className="pdp-option-label">Stock:</span>
-                <span className={`pdp-stock-status ${outOfStock ? "out-of-stock" : "in-stock"}`}>
-                  <span className="pdp-stock-pulse" />
-                  {outOfStock ? "Out of Stock" : "In Stock (Only 14 left in Lagos Hub)"}
-                </span>
-              </div>
-            </div>
-
-            {/* Quantity Stepper & Dual CTAs */}
-            <div className="pdp-purchase-actions">
-              <div className="pdp-qty-row">
-                <div className="pdp-stepper">
-                  <button
-                    type="button"
-                    className="pdp-stepper-btn"
-                    onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                    disabled={quantity <= 1 || outOfStock}
-                    aria-label="Decrease quantity"
-                  >
-                    −
-                  </button>
-                  <span className="pdp-stepper-val">{quantity}</span>
-                  <button
-                    type="button"
-                    className="pdp-stepper-btn"
-                    onClick={() => setQuantity((q) => q + 1)}
-                    disabled={outOfStock}
-                    aria-label="Increase quantity"
-                  >
-                    +
-                  </button>
-                </div>
-                <span style={{ fontSize: "0.82rem", color: "var(--text-muted)" }}>
-                  Quantity
-                </span>
-              </div>
-
-              <div className="pdp-cta-group">
-                <button
-                  type="button"
-                  className="pdp-btn-buy-now"
-                  onClick={handleBuyNow}
-                  disabled={outOfStock}
-                >
-                  ⚡ Buy Now
-                </button>
-                <button
-                  type="button"
-                  className="pdp-btn-add-bag"
-                  onClick={handleAddToCart}
-                  disabled={outOfStock}
-                >
-                  {added ? "✅ Added!" : "+ Add to Bag"}
-                </button>
-              </div>
-
-              <div className="pdp-subactions-row">
-                <button
-                  type="button"
-                  className="pdp-subaction-btn"
-                  onClick={handleToggleWishlist}
-                >
-                  {isWishlisted ? "❤️ Saved in Wishlist" : "🤍 Add to Wishlist"}
-                </button>
-                <Link
-                  to={`/compare?items=${product._id}`}
-                  className="pdp-subaction-btn"
-                >
-                  ⇄ Compare Formulation
-                </Link>
-              </div>
-            </div>
-
-            {/* Voucher Promo Cards Strip (Screens 1–4) */}
-            <div className="pdp-vouchers-strip">
-              <div className="pdp-vouchers-title">
-                <span>🎟️ Available Vouchers For You</span>
-              </div>
-              <div className="pdp-vouchers-grid">
-                {AVAILABLE_VOUCHERS.map((voucher) => (
-                  <div
-                    key={voucher.code}
-                    className="pdp-voucher-card"
-                    onClick={() => handleCopyCode(voucher.code)}
-                    title="Click to copy coupon code"
-                  >
-                    <span className="pdp-voucher-discount">{voucher.discount}</span>
-                    <span className="pdp-voucher-condition">{voucher.condition}</span>
-                    <span className="pdp-voucher-code">
-                      {copiedVoucher === voucher.code ? "COPIED! ✅" : voucher.code}
-                      <span style={{ fontSize: "0.7rem", opacity: 0.7 }}>📋</span>
-                    </span>
-                  </div>
                 ))}
               </div>
-            </div>
 
-            {/* Shipping & Delivery Perks Card */}
-            <div className="pdp-perks-card">
-              <div className="pdp-perk-item">
-                <span className="pdp-perk-icon">🚚</span>
-                <div className="pdp-perk-text">
-                  <strong>Free Express Delivery</strong>
-                  <span>Complimentary for orders over ₦35,000 (Lagos 24h, Abuja 48h)</span>
-                </div>
-              </div>
-              <div className="pdp-perk-item">
-                <span className="pdp-perk-icon">🛡️</span>
-                <div className="pdp-perk-text">
-                  <strong>7-Day Authentic Return Policy</strong>
-                  <span>Hassle-free replacement for unopened luxury beauty seals</span>
-                </div>
-              </div>
-              <div className="pdp-perk-item">
-                <span className="pdp-perk-icon">✨</span>
-                <div className="pdp-perk-text">
-                  <strong>Melanin Barrier Approved</strong>
-                  <span>Formulated and tested for tropical climates and high humidity</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ── Tabbed Specifications Section ── */}
-        <section className="pdp-tabs-section">
-          <div className="pdp-tabs-header">
-            <button
-              type="button"
-              className={`pdp-tab-btn ${activeTab === "desc" ? "active" : ""}`}
-              onClick={() => setActiveTab("desc")}
-            >
-              Description
-            </button>
-            <button
-              type="button"
-              className={`pdp-tab-btn ${activeTab === "ingredients" ? "active" : ""}`}
-              onClick={() => setActiveTab("ingredients")}
-            >
-              Active Ingredients
-            </button>
-            <button
-              type="button"
-              className={`pdp-tab-btn ${activeTab === "howTo" ? "active" : ""}`}
-              onClick={() => setActiveTab("howTo")}
-            >
-              How to Use
-            </button>
-            <button
-              type="button"
-              className={`pdp-tab-btn ${activeTab === "routine" ? "active" : ""}`}
-              onClick={() => setActiveTab("routine")}
-            >
-              Routine Fit
-            </button>
-          </div>
-
-          <div className="pdp-tab-content">
-            {activeTab === "desc" && (
-              <div className="pdp-tab-pane">
-                <h3>About {product.name}</h3>
-                <p>{product.description}</p>
-                <p>
-                  Every drop has been curated to maintain the protective acid mantle of African and melanin-rich skin.
-                  Our clean formulation standard avoids pore-clogging mineral oils and drying synthetic agents,
-                  ensuring your natural barrier stays resilient under the West African sun.
-                </p>
-                {product.tags && product.tags.length > 0 && (
-                  <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginTop: "1rem" }}>
-                    {product.tags.map((tag, i) => (
-                      <span
-                        key={i}
-                        style={{
-                          background: "#FCF8F2",
-                          border: "1px solid rgba(212,175,55,0.25)",
-                          padding: "0.3rem 0.75rem",
-                          borderRadius: "999px",
-                          fontSize: "0.78rem",
-                          fontWeight: 600,
-                          color: "var(--color-primary, #7A2432)",
-                        }}
+              <div className="pdp-main-stage">
+                <div className="pdp-main-image-wrapper">
+                  <img
+                    src={activeImage}
+                    alt={product.name}
+                    className="pdp-main-image"
+                  />
+                  <span className="pdp-badge-authentic">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <path d="M20 6L9 17l-5-5" />
+                    </svg>
+                    100% Authentic Maison Guarantee
+                  </span>
+                  {discountPercent && (
+                    <span className="pdp-badge-discount">-{discountPercent}% OFF</span>
+                  )}
+                  {gallery.length > 1 && (
+                    <>
+                      <button
+                        type="button"
+                        className="pdp-nav-arrow prev"
+                        aria-label="Previous image"
+                        onClick={() => setActiveImageIndex((prev) => (prev > 0 ? prev - 1 : gallery.length - 1))}
                       >
-                        #{tag}
-                      </span>
+                        ‹
+                      </button>
+                      <button
+                        type="button"
+                        className="pdp-nav-arrow next"
+                        aria-label="Next image"
+                        onClick={() => setActiveImageIndex((prev) => (prev < gallery.length - 1 ? prev + 1 : 0))}
+                      >
+                        ›
+                      </button>
+                    </>
+                  )}
+                </div>
+
+                {/* Social Share Strip */}
+                <div className="pdp-share-strip">
+                  <span className="pdp-share-label">Share:</span>
+                  <div className="pdp-share-links">
+                    <a
+                      href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`Check out ${product.name} on Gracia Fab: ${window.location.href}`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="pdp-share-btn"
+                    >
+                      💬 WhatsApp
+                    </a>
+                    <a
+                      href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Elevate your glow with ${product.name} on Gracia Fab: ${window.location.href}`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="pdp-share-btn"
+                    >
+                      𝕏 Twitter
+                    </a>
+                    <button
+                      type="button"
+                      onClick={handleCopyProductLink}
+                      className="pdp-share-btn"
+                    >
+                      🔗 Copy Link
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Buy Box Column */}
+              <div className="pdp-buybox-col" data-reveal="right">
+                <span className="pdp-brand-eyebrow">
+                  {product.brand || "Gracia Fab Signature"}
+                </span>
+                <h1 className="pdp-product-title">{product.name}</h1>
+
+                <div className="pdp-rating-sold-row">
+                  <span className="pdp-rating-stars">
+                    {"★".repeat(Math.round(product.rating || 5))}
+                    {"☆".repeat(5 - Math.round(product.rating || 5))}
+                  </span>
+                  <span className="pdp-rating-score">
+                    {(product.rating || 4.8).toFixed(1)}/5
+                  </span>
+                  <button
+                    type="button"
+                    className="pdp-reviews-count-link"
+                    onClick={() => {
+                      const revEl = document.getElementById("reviews-section");
+                      if (revEl) revEl.scrollIntoView({ behavior: "smooth" });
+                    }}
+                  >
+                    ({product.numReviews || 24} Reviews)
+                  </button>
+                  <span className="pdp-sold-badge">128+ Sold</span>
+                </div>
+
+                {/* Price Box */}
+                <div className="pdp-price-block">
+                  <span className="pdp-current-price">{formatNaira(product.price)}</span>
+                  {originalPrice > product.price && (
+                    <span className="pdp-original-price">{formatNaira(originalPrice)}</span>
+                  )}
+                  {discountPercent && (
+                    <span className="pdp-save-pill">Save {discountPercent}%</span>
+                  )}
+                </div>
+
+                <p className="pdp-short-desc">{product.description}</p>
+
+                {/* Product Options / Specifications */}
+                <div className="pdp-options-section">
+                  <div className="pdp-option-row">
+                    <span className="pdp-option-label">Size:</span>
+                    <div className="pdp-option-chips">
+                      {["30 ml", "50 ml"].map((size) => (
+                        <button
+                          key={size}
+                          type="button"
+                          className={`pdp-option-chip ${selectedSize === size ? "active" : ""}`}
+                          onClick={() => setSelectedSize(size)}
+                        >
+                          {size}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {product.category === "makeup" && (
+                    <div className="pdp-option-row">
+                      <span className="pdp-option-label">Finish:</span>
+                      <div className="pdp-option-chips">
+                        {["Natural Satin", "Velvet Matte", "Dewy Glow"].map((variant) => (
+                          <button
+                            key={variant}
+                            type="button"
+                            className={`pdp-option-chip ${selectedVariant === variant ? "active" : ""}`}
+                            onClick={() => setSelectedVariant(variant)}
+                          >
+                            {variant}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="pdp-option-row">
+                    <span className="pdp-option-label">Stock:</span>
+                    <span className={`pdp-stock-status ${outOfStock ? "out-of-stock" : "in-stock"}`}>
+                      <span className="pdp-stock-pulse" />
+                      {outOfStock ? "Out of Stock" : "In Stock (Only 14 left in Lagos Hub)"}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Quantity Stepper & Dual CTAs */}
+                <div className="pdp-purchase-actions">
+                  <div className="pdp-qty-row">
+                    <div className="pdp-stepper">
+                      <button
+                        type="button"
+                        className="pdp-stepper-btn"
+                        onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                        disabled={quantity <= 1 || outOfStock}
+                        aria-label="Decrease quantity"
+                      >
+                        −
+                      </button>
+                      <span className="pdp-stepper-val">{quantity}</span>
+                      <button
+                        type="button"
+                        className="pdp-stepper-btn"
+                        onClick={() => setQuantity((q) => q + 1)}
+                        disabled={outOfStock}
+                        aria-label="Increase quantity"
+                      >
+                        +
+                      </button>
+                    </div>
+                    <span style={{ fontSize: "0.82rem", color: "var(--text-muted)" }}>
+                      Quantity
+                    </span>
+                  </div>
+
+                  <div className="pdp-cta-group">
+                    <button
+                      type="button"
+                      className="pdp-btn-buy-now"
+                      onClick={handleBuyNow}
+                      disabled={outOfStock}
+                    >
+                      ⚡ Buy Now
+                    </button>
+                    <button
+                      type="button"
+                      className="pdp-btn-add-bag"
+                      onClick={handleAddToCart}
+                      disabled={outOfStock}
+                    >
+                      {added ? "✅ Added!" : "+ Add to Bag"}
+                    </button>
+                  </div>
+
+                  <div className="pdp-subactions-row">
+                    <button
+                      type="button"
+                      className="pdp-subaction-btn"
+                      onClick={handleToggleWishlist}
+                    >
+                      {isWishlisted ? "❤️ Saved in Wishlist" : "🤍 Add to Wishlist"}
+                    </button>
+                    <Link
+                      to={`/compare?items=${product._id}`}
+                      className="pdp-subaction-btn"
+                    >
+                      ⇄ Compare Formulation
+                    </Link>
+                  </div>
+                </div>
+
+                {/* Voucher Promo Cards Strip (Screens 1–4) */}
+                <div className="pdp-vouchers-strip">
+                  <div className="pdp-vouchers-title">
+                    <span>🎟️ Available Vouchers For You</span>
+                  </div>
+                  <div className="pdp-vouchers-grid">
+                    {AVAILABLE_VOUCHERS.map((voucher) => (
+                      <div
+                        key={voucher.code}
+                        className="pdp-voucher-card"
+                        onClick={() => handleCopyCode(voucher.code)}
+                        title="Click to copy coupon code"
+                      >
+                        <span className="pdp-voucher-discount">{voucher.discount}</span>
+                        <span className="pdp-voucher-condition">{voucher.condition}</span>
+                        <span className="pdp-voucher-code">
+                          {copiedVoucher === voucher.code ? "COPIED! ✅" : voucher.code}
+                          <span style={{ fontSize: "0.7rem", opacity: 0.7 }}>📋</span>
+                        </span>
+                      </div>
                     ))}
+                  </div>
+                </div>
+
+                {/* Shipping & Delivery Perks Card */}
+                <div className="pdp-perks-card">
+                  <div className="pdp-perk-item">
+                    <span className="pdp-perk-icon">🚚</span>
+                    <div className="pdp-perk-text">
+                      <strong>Free Express Delivery</strong>
+                      <span>Complimentary for orders over ₦35,000 (Lagos 24h, Abuja 48h)</span>
+                    </div>
+                  </div>
+                  <div className="pdp-perk-item">
+                    <span className="pdp-perk-icon">🛡️</span>
+                    <div className="pdp-perk-text">
+                      <strong>7-Day Authentic Return Policy</strong>
+                      <span>Hassle-free replacement for unopened luxury beauty seals</span>
+                    </div>
+                  </div>
+                  <div className="pdp-perk-item">
+                    <span className="pdp-perk-icon">✨</span>
+                    <div className="pdp-perk-text">
+                      <strong>Melanin Barrier Approved</strong>
+                      <span>Formulated and tested for tropical climates and high humidity</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* ── Tabbed Specifications Section ── */}
+            <section className="pdp-tabs-section">
+              <div className="pdp-tabs-header">
+                <button
+                  type="button"
+                  className={`pdp-tab-btn ${activeTab === "desc" ? "active" : ""}`}
+                  onClick={() => setActiveTab("desc")}
+                >
+                  Description
+                </button>
+                <button
+                  type="button"
+                  className={`pdp-tab-btn ${activeTab === "ingredients" ? "active" : ""}`}
+                  onClick={() => setActiveTab("ingredients")}
+                >
+                  Active Ingredients
+                </button>
+                <button
+                  type="button"
+                  className={`pdp-tab-btn ${activeTab === "howTo" ? "active" : ""}`}
+                  onClick={() => setActiveTab("howTo")}
+                >
+                  How to Use
+                </button>
+                <button
+                  type="button"
+                  className={`pdp-tab-btn ${activeTab === "routine" ? "active" : ""}`}
+                  onClick={() => setActiveTab("routine")}
+                >
+                  Routine Fit
+                </button>
+              </div>
+
+              <div className="pdp-tab-content">
+                {activeTab === "desc" && (
+                  <div className="pdp-tab-pane">
+                    <h3>About {product.name}</h3>
+                    <p>{product.description}</p>
+                    <p>
+                      Every drop has been curated to maintain the protective acid mantle of African and melanin-rich skin.
+                      Our clean formulation standard avoids pore-clogging mineral oils and drying synthetic agents,
+                      ensuring your natural barrier stays resilient under the West African sun.
+                    </p>
+                    {product.tags && product.tags.length > 0 && (
+                      <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginTop: "1rem" }}>
+                        {product.tags.map((tag, i) => (
+                          <span
+                            key={i}
+                            style={{
+                              background: "#FCF8F2",
+                              border: "1px solid rgba(212,175,55,0.25)",
+                              padding: "0.3rem 0.75rem",
+                              borderRadius: "999px",
+                              fontSize: "0.78rem",
+                              fontWeight: 600,
+                              color: "var(--color-primary, #7A2432)",
+                            }}
+                          >
+                            #{tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {activeTab === "ingredients" && (
+                  <div className="pdp-tab-pane">
+                    <h3>Potent Active Ingredients</h3>
+                    <p>
+                      We prioritize clinically proven actives with high biocompatibility.
+                      Free from parabens, harsh sulfates, phthalates, and synthetic dyes.
+                    </p>
+                    <div className="pdp-actives-grid">
+                      {activeIngredients.map((item, i) => (
+                        <div key={i} className="pdp-active-item">
+                          <strong>{item.name}</strong>
+                          <span>{item.role}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === "howTo" && (
+                  <div className="pdp-tab-pane">
+                    <h3>How to Apply</h3>
+                    <p>For maximum efficacy and rapid skin absorption, follow this ritual:</p>
+                    <div className="pdp-routine-steps">
+                      <div className="pdp-routine-step">
+                        <span className="pdp-routine-step-num">Step 01</span>
+                        <span className="pdp-routine-step-desc">
+                          Cleanse your face thoroughly with lukewarm water and pat dry with a clean cotton towel.
+                        </span>
+                      </div>
+                      <div className="pdp-routine-step">
+                        <span className="pdp-routine-step-num">Step 02</span>
+                        <span className="pdp-routine-step-desc">
+                          Dispense 2 to 3 drops or a dime-sized amount onto clean palms or directly onto targeted areas.
+                        </span>
+                      </div>
+                      <div className="pdp-routine-step">
+                        <span className="pdp-routine-step-num">Step 03</span>
+                        <span className="pdp-routine-step-desc">
+                          Gently press and glide in upward circular motions across your face, neck, and décolletage.
+                        </span>
+                      </div>
+                      <div className="pdp-routine-step">
+                        <span className="pdp-routine-step-num">Step 04</span>
+                        <span className="pdp-routine-step-desc">
+                          Allow 60 seconds to absorb before applying your daily moisturizer and broad-spectrum SPF.
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === "routine" && (
+                  <div className="pdp-tab-pane">
+                    <h3>Ideal Routine Placement</h3>
+                    <p>
+                      Layer products from thinnest consistency to thickest to guarantee deep dermal delivery:
+                    </p>
+                    <div className="pdp-routine-steps">
+                      <div className="pdp-routine-step">
+                        <span className="pdp-routine-step-num">Cleanse</span>
+                        <span className="pdp-routine-step-desc">Gentle Hydrating Cleanser (AM & PM)</span>
+                      </div>
+                      <div className="pdp-routine-step">
+                        <span className="pdp-routine-step-num">Tone</span>
+                        <span className="pdp-routine-step-desc">Balancing Rosewater Mist or Exfoliating Toner</span>
+                      </div>
+                      <div className="pdp-routine-step" style={{ borderLeftColor: "var(--color-primary, #7A2432)", background: "#FFF6F7" }}>
+                        <span className="pdp-routine-step-num" style={{ color: "var(--color-primary, #7A2432)" }}>★ Current</span>
+                        <span className="pdp-routine-step-desc" style={{ fontWeight: 600 }}>
+                          {product.name} — Targeted Active Care
+                        </span>
+                      </div>
+                      <div className="pdp-routine-step">
+                        <span className="pdp-routine-step-num">Seal</span>
+                        <span className="pdp-routine-step-desc">Moisturizing Cream + SPF 50 Shield (AM)</span>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
-            )}
+            </section>
 
-            {activeTab === "ingredients" && (
-              <div className="pdp-tab-pane">
-                <h3>Potent Active Ingredients</h3>
-                <p>
-                  We prioritize clinically proven actives with high biocompatibility.
-                  Free from parabens, harsh sulfates, phthalates, and synthetic dyes.
-                </p>
-                <div className="pdp-actives-grid">
-                  {activeIngredients.map((item, i) => (
-                    <div key={i} className="pdp-active-item">
-                      <strong>{item.name}</strong>
-                      <span>{item.role}</span>
+            {/* ── Customer Reviews Hub (Screens 1–4) ── */}
+            <section className="pdp-reviews-section" id="reviews-section">
+              <ReviewSection productId={id} productName={product.name} />
+            </section>
+
+            {/* ── Related Products Carousel / Grid ── */}
+            {relatedProducts.length > 0 && (
+              <section className="pdp-related-section">
+                  <div className="pdp-related-header" data-reveal="up">
+                    <h2 className="pdp-related-title">Related Products</h2>
+                    <p className="pdp-related-sub">Curated formulas that pair seamlessly with your routine</p>
+                  </div>
+                    <div className="pdp-related-grid reveal-stagger" data-reveal="stagger">
+                      {relatedProducts.map((item) => (
+                        <div key={item._id} className="pdp-related-card">
+                          <div className="pdp-related-media">
+                            <img src={item.image} alt={item.name} loading="lazy" />
+                            <button
+                              type="button"
+                              className="pdp-related-quick-add"
+                              onClick={() => {
+                                addToCart(item);
+                                if (toast?.addToast) toast.addToast(`Added "${item.name}" to bag! 🛍️`, "cart");
+                                if (onCartOpen) onCartOpen();
+                              }}
+                            >
+                              + Add to Bag
+                            </button>
+                          </div>
+                          <div className="pdp-related-body">
+                            <span className="pdp-related-brand">{item.brand || "Gracia Fab"}</span>
+                            <Link to={`/products/${item._id}`} className="pdp-related-name">
+                              {item.name}
+                            </Link>
+                            <div className="pdp-related-stars">
+                              {"★".repeat(Math.round(item.rating || 5))}
+                              <span style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginLeft: "4px" }}>
+                                ({item.numReviews || 12})
+                              </span>
+                            </div>
+                            <span className="pdp-related-price">{formatNaira(item.price)}</span>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {activeTab === "howTo" && (
-              <div className="pdp-tab-pane">
-                <h3>How to Apply</h3>
-                <p>For maximum efficacy and rapid skin absorption, follow this ritual:</p>
-                <div className="pdp-routine-steps">
-                  <div className="pdp-routine-step">
-                    <span className="pdp-routine-step-num">Step 01</span>
-                    <span className="pdp-routine-step-desc">
-                      Cleanse your face thoroughly with lukewarm water and pat dry with a clean cotton towel.
-                    </span>
-                  </div>
-                  <div className="pdp-routine-step">
-                    <span className="pdp-routine-step-num">Step 02</span>
-                    <span className="pdp-routine-step-desc">
-                      Dispense 2 to 3 drops or a dime-sized amount onto clean palms or directly onto targeted areas.
-                    </span>
-                  </div>
-                  <div className="pdp-routine-step">
-                    <span className="pdp-routine-step-num">Step 03</span>
-                    <span className="pdp-routine-step-desc">
-                      Gently press and glide in upward circular motions across your face, neck, and décolletage.
-                    </span>
-                  </div>
-                  <div className="pdp-routine-step">
-                    <span className="pdp-routine-step-num">Step 04</span>
-                    <span className="pdp-routine-step-desc">
-                      Allow 60 seconds to absorb before applying your daily moisturizer and broad-spectrum SPF.
-                    </span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {activeTab === "routine" && (
-              <div className="pdp-tab-pane">
-                <h3>Ideal Routine Placement</h3>
-                <p>
-                  Layer products from thinnest consistency to thickest to guarantee deep dermal delivery:
-                </p>
-                <div className="pdp-routine-steps">
-                  <div className="pdp-routine-step">
-                    <span className="pdp-routine-step-num">Cleanse</span>
-                    <span className="pdp-routine-step-desc">Gentle Hydrating Cleanser (AM & PM)</span>
-                  </div>
-                  <div className="pdp-routine-step">
-                    <span className="pdp-routine-step-num">Tone</span>
-                    <span className="pdp-routine-step-desc">Balancing Rosewater Mist or Exfoliating Toner</span>
-                  </div>
-                  <div className="pdp-routine-step" style={{ borderLeftColor: "var(--color-primary, #7A2432)", background: "#FFF6F7" }}>
-                    <span className="pdp-routine-step-num" style={{ color: "var(--color-primary, #7A2432)" }}>★ Current</span>
-                    <span className="pdp-routine-step-desc" style={{ fontWeight: 600 }}>
-                      {product.name} — Targeted Active Care
-                    </span>
-                  </div>
-                  <div className="pdp-routine-step">
-                    <span className="pdp-routine-step-num">Seal</span>
-                    <span className="pdp-routine-step-desc">Moisturizing Cream + SPF 50 Shield (AM)</span>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        </section>
-
-        {/* ── Customer Reviews Hub (Screens 1–4) ── */}
-        <section className="pdp-reviews-section" id="reviews-section">
-          <ReviewSection productId={id} productName={product.name} />
-        </section>
-
-        {/* ── Related Products Carousel / Grid ── */}
-        {relatedProducts.length > 0 && (
-          <section className="pdp-related-section">
-            <div className="pdp-related-header">
-              <h2 className="pdp-related-title">Related Products</h2>
-              <p className="pdp-related-sub">Curated formulas that pair seamlessly with your routine</p>
-            </div>
-            <div className="pdp-related-grid">
-              {relatedProducts.map((item) => (
-                <div key={item._id} className="pdp-related-card">
-                  <div className="pdp-related-media">
-                    <img src={item.image} alt={item.name} loading="lazy" />
-                    <button
-                      type="button"
-                      className="pdp-related-quick-add"
-                      onClick={() => {
-                        addToCart(item);
-                        if (toast?.addToast) toast.addToast(`Added "${item.name}" to bag! 🛍️`, "cart");
-                        if (onCartOpen) onCartOpen();
-                      }}
-                    >
-                      + Add to Bag
-                    </button>
-                  </div>
-                  <div className="pdp-related-body">
-                    <span className="pdp-related-brand">{item.brand || "Gracia Fab"}</span>
-                    <Link to={`/products/${item._id}`} className="pdp-related-name">
-                      {item.name}
-                    </Link>
-                    <div className="pdp-related-stars">
-                      {"★".repeat(Math.round(item.rating || 5))}
-                      <span style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginLeft: "4px" }}>
-                        ({item.numReviews || 12})
-                      </span>
-                    </div>
-                    <span className="pdp-related-price">{formatNaira(item.price)}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
+                  </section>
         )}
 
-        {/* ── Pre-Footer Standalone Newsletter Card ── */}
-        <section className="pdp-newsletter-card">
-          <span className="pdp-newsletter-sparkle top-left">✦</span>
-          <span className="pdp-newsletter-sparkle bottom-right">✦</span>
-          <h2 className="pdp-newsletter-title">
-            Subscribe to our newsletter and be the first to know about new arrivals, exclusive offers, and beauty tips.
-          </h2>
-          <p className="pdp-newsletter-sub">
-            Join over 12,000 African beauty enthusiasts receiving weekly editorial skincare guides.
-          </p>
-          <form
-            className="pdp-newsletter-form"
-            onSubmit={(e) => {
-              e.preventDefault();
-              const emailInput = e.currentTarget.elements.newsletterEmail;
-              if (emailInput && emailInput.value) {
-                if (toast?.addToast) toast.addToast("Thank you for subscribing to Gracia Fab! 💌", "success");
-                emailInput.value = "";
-              }
-            }}
-          >
-            <input
-              type="email"
-              name="newsletterEmail"
-              className="pdp-newsletter-input"
-              placeholder="Enter your email address..."
-              required
-            />
-            <button type="submit" className="pdp-newsletter-btn">
-              Subscribe
-            </button>
-          </form>
-        </section>
-      </div>
+                  {/* ── Pre-Footer Standalone Newsletter Card ── */}
+                  <section className="pdp-newsletter-card">
+                    <span className="pdp-newsletter-sparkle top-left">✦</span>
+                    <span className="pdp-newsletter-sparkle bottom-right">✦</span>
+                    <h2 className="pdp-newsletter-title">
+                      Subscribe to our newsletter and be the first to know about new arrivals, exclusive offers, and beauty tips.
+                    </h2>
+                    <p className="pdp-newsletter-sub">
+                      Join over 12,000 African beauty enthusiasts receiving weekly editorial skincare guides.
+                    </p>
+                    <form
+                      className="pdp-newsletter-form"
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        const emailInput = e.currentTarget.elements.newsletterEmail;
+                        if (emailInput && emailInput.value) {
+                          if (toast?.addToast) toast.addToast("Thank you for subscribing to Gracia Fab! 💌", "success");
+                          emailInput.value = "";
+                        }
+                      }}
+                    >
+                      <input
+                        type="email"
+                        name="newsletterEmail"
+                        className="pdp-newsletter-input"
+                        placeholder="Enter your email address..."
+                        required
+                      />
+                      <button type="submit" className="pdp-newsletter-btn">
+                        Subscribe
+                      </button>
+                    </form>
+                  </section>
+                </div>
 
-      <Footer />
-    </div>
-  );
+                <Footer />
+              </div>
+            );
 }
 
-// ── Curated fallback reviews matching the rich GLOWIFY design ──
-const INITIAL_REVIEWS_SEED = [
-  {
-    _id: "seed-1",
-    name: "Amara Okonkwo",
-    rating: 5,
-    verified: true,
-    skinType: "Oily / Combination",
-    date: "14 Oct 2025",
-    comment:
-      "This serum completely cleared my stubborn post-acne dark marks after three weeks! The texture absorbs instantly without leaving that greasy film in Lagos humidity. Holy grail!",
-    helpful: 18,
+            // ── Curated fallback reviews matching the rich GLOWIFY design ──
+            const INITIAL_REVIEWS_SEED = [
+            {
+              _id: "seed-1",
+            name: "Amara Okonkwo",
+            rating: 5,
+            verified: true,
+            skinType: "Oily / Combination",
+            date: "14 Oct 2025",
+            comment:
+            "This serum completely cleared my stubborn post-acne dark marks after three weeks! The texture absorbs instantly without leaving that greasy film in Lagos humidity. Holy grail!",
+            helpful: 18,
   },
-  {
-    _id: "seed-2",
-    name: "Tolu Adeleke",
-    rating: 5,
-    verified: true,
-    skinType: "Dry / Sensitive",
-    date: "02 Nov 2025",
-    comment:
-      "Gives that authentic glass-skin glow without feeling heavy. I layer it right under my daily sunscreen and my skin stays radiant all day long.",
-    helpful: 12,
+            {
+              _id: "seed-2",
+            name: "Tolu Adeleke",
+            rating: 5,
+            verified: true,
+            skinType: "Dry / Sensitive",
+            date: "02 Nov 2025",
+            comment:
+            "Gives that authentic glass-skin glow without feeling heavy. I layer it right under my daily sunscreen and my skin stays radiant all day long.",
+            helpful: 12,
   },
-  {
-    _id: "seed-3",
-    name: "Zainab Bello",
-    rating: 4,
-    verified: true,
-    skinType: "Combination",
-    date: "28 Oct 2025",
-    comment:
-      "Extremely gentle on sensitive melanin skin. Zero breakouts and my hyperpigmentation around my cheeks has visibly faded.",
-    helpful: 7,
+            {
+              _id: "seed-3",
+            name: "Zainab Bello",
+            rating: 4,
+            verified: true,
+            skinType: "Combination",
+            date: "28 Oct 2025",
+            comment:
+            "Extremely gentle on sensitive melanin skin. Zero breakouts and my hyperpigmentation around my cheeks has visibly faded.",
+            helpful: 7,
   },
-];
+            ];
 
-// ── Complete Customer Reviews Component (Matching GLOWIFY Reviews Hub) ──
-function ReviewSection({ productId, productName }) {
-  const { user } = useAuth();
-  const toast = useToast();
-  const [reviews, setReviews] = useState([]);
-  const [filter, setFilter] = useState("all");
-  const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ rating: 5, comment: "", skinType: "" });
-  const [submitting, setSubmitting] = useState(false);
-  const [helpfulVotes, setHelpfulVotes] = useState({});
+            // ── Complete Customer Reviews Component (Matching GLOWIFY Reviews Hub) ──
+            function ReviewSection({productId, productName}) {
+  const {user} = useAuth();
+            const toast = useToast();
+            const [reviews, setReviews] = useState([]);
+            const [filter, setFilter] = useState("all");
+            const [showForm, setShowForm] = useState(false);
+            const [form, setForm] = useState({rating: 5, comment: "", skinType: "" });
+            const [submitting, setSubmitting] = useState(false);
+            const [helpfulVotes, setHelpfulVotes] = useState({ });
 
   // Fetch reviews from backend
   const fetchReviews = async () => {
     try {
       const res = await fetch(`${API_URL}/api/reviews/${productId}`);
-      if (res.ok) {
+            if (res.ok) {
         const data = await res.json();
-        const serverReviews = Array.isArray(data) ? data : [];
+            const serverReviews = Array.isArray(data) ? data : [];
         // Combine server reviews with seed reviews if server has none yet
         if (serverReviews.length > 0) {
-          setReviews(serverReviews);
+              setReviews(serverReviews);
         } else {
-          setReviews(INITIAL_REVIEWS_SEED);
+              setReviews(INITIAL_REVIEWS_SEED);
         }
       } else {
-        setReviews(INITIAL_REVIEWS_SEED);
+              setReviews(INITIAL_REVIEWS_SEED);
       }
     } catch {
-      setReviews(INITIAL_REVIEWS_SEED);
+              setReviews(INITIAL_REVIEWS_SEED);
     }
   };
 
   useEffect(() => {
-    // Fetch-orchestration effect: fetchReviews only sets state after its
-    // request resolves; the rule can't see past the async call boundary.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    fetchReviews();
+              // Fetch-orchestration effect: fetchReviews only sets state after its
+              // request resolves; the rule can't see past the async call boundary.
+              // eslint-disable-next-line react-hooks/set-state-in-effect
+              fetchReviews();
   }, [productId]);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!user) {
+              e.preventDefault();
+            if (!user) {
       if (toast?.addToast) toast.addToast("Please log in to submit a review", "error");
-      return;
+            return;
     }
-    try {
-      setSubmitting(true);
-      const token = localStorage.getItem("token");
-      const res = await fetch(`${API_URL}/api/reviews/${productId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+            try {
+              setSubmitting(true);
+            const token = localStorage.getItem("token");
+            const res = await fetch(`${API_URL}/api/reviews/${productId}`, {
+              method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(form),
+            body: JSON.stringify(form),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Failed to submit review");
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.message || "Failed to submit review");
 
-      if (toast?.addToast) toast.addToast("Review published successfully! ✨", "success");
-      setForm({ rating: 5, comment: "", skinType: "" });
-      setShowForm(false);
-      fetchReviews();
+            if (toast?.addToast) toast.addToast("Review published successfully! ✨", "success");
+            setForm({rating: 5, comment: "", skinType: "" });
+            setShowForm(false);
+            fetchReviews();
     } catch (err) {
       if (toast?.addToast) toast.addToast(err.message || "Review submission failed", "error");
     } finally {
-      setSubmitting(false);
+              setSubmitting(false);
     }
   };
 
   const handleHelpfulClick = (reviewId) => {
-    setHelpfulVotes((prev) => ({
-      ...prev,
-      [reviewId]: (prev[reviewId] || 0) + 1,
-    }));
-    if (toast?.addToast) toast.addToast("Thank you for your feedback!", "info");
+              setHelpfulVotes((prev) => ({
+                ...prev,
+                [reviewId]: (prev[reviewId] || 0) + 1,
+              }));
+            if (toast?.addToast) toast.addToast("Thank you for your feedback!", "info");
   };
 
-  // Calculate review score & star breakdown
-  const avgScore = reviews.length
+            // Calculate review score & star breakdown
+            const avgScore = reviews.length
     ? (reviews.reduce((acc, r) => acc + (r.rating || 5), 0) / reviews.length).toFixed(1)
-    : "4.8";
+            : "4.8";
 
   const starBreakdown = useMemo(() => {
     const total = reviews.length || 1;
-    const counts = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+            const counts = {5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
     reviews.forEach((r) => {
       const star = Math.min(5, Math.max(1, Math.round(r.rating || 5)));
-      counts[star] = (counts[star] || 0) + 1;
+            counts[star] = (counts[star] || 0) + 1;
     });
     return [5, 4, 3, 2, 1].map((s) => ({
-      star: s,
-      count: counts[s] || 0,
-      pct: Math.round(((counts[s] || 0) / total) * 100),
+              star: s,
+            count: counts[s] || 0,
+            pct: Math.round(((counts[s] || 0) / total) * 100),
     }));
   }, [reviews]);
 
@@ -993,206 +993,206 @@ function ReviewSection({ productId, productName }) {
   const filteredReviews = useMemo(() => {
     if (filter === "5star") return reviews.filter((r) => Math.round(r.rating) === 5);
     if (filter === "verified") return reviews.filter((r) => r.verified !== false);
-    return reviews;
+            return reviews;
   }, [reviews, filter]);
 
-  return (
-    <>
-      <div className="pdp-reviews-header">
-        <h2 className="pdp-reviews-title">Customer Reviews</h2>
-        {!showForm && (
-          <button
-            type="button"
-            className="pdp-btn-write-review"
-            onClick={() => {
-              if (!user) {
-                if (toast?.addToast) toast.addToast("Please log in to write a review", "info");
-              } else {
-                setShowForm(true);
-              }
-            }}
-          >
-            Write a Review ✍️
-          </button>
-        )}
-      </div>
-
-      {/* Review Breakdown Dashboard (GLOWIFY Screen 1, 2, 3, 4) */}
-      <div className="pdp-review-dashboard">
-        <div className="pdp-score-card">
-          <div className="pdp-big-score">{avgScore}</div>
-          <div style={{ color: "#E5A93C", fontSize: "1.2rem", letterSpacing: "2px" }}>
-            {"★".repeat(Math.round(Number(avgScore)))}
-            {"☆".repeat(5 - Math.round(Number(avgScore)))}
-          </div>
-          <div className="pdp-score-sub">Based on {reviews.length} reviews</div>
-        </div>
-
-        <div className="pdp-breakdown-bars">
-          {starBreakdown.map((b) => (
-            <div key={b.star} className="pdp-bar-row">
-              <span className="pdp-bar-label">{b.star} Stars</span>
-              <div className="pdp-bar-track">
-                <div className="pdp-bar-fill" style={{ width: `${b.pct}%` }} />
+            return (
+            <>
+              <div className="pdp-reviews-header">
+                <h2 className="pdp-reviews-title">Customer Reviews</h2>
+                {!showForm && (
+                  <button
+                    type="button"
+                    className="pdp-btn-write-review"
+                    onClick={() => {
+                      if (!user) {
+                        if (toast?.addToast) toast.addToast("Please log in to write a review", "info");
+                      } else {
+                        setShowForm(true);
+                      }
+                    }}
+                  >
+                    Write a Review ✍️
+                  </button>
+                )}
               </div>
-              <span className="pdp-bar-pct">{b.pct}%</span>
-            </div>
-          ))}
-        </div>
-      </div>
 
-      {/* Filter Tabs */}
-      <div className="pdp-review-filters">
-        <button
-          type="button"
-          className={`pdp-review-filter-btn ${filter === "all" ? "active" : ""}`}
-          onClick={() => setFilter("all")}
-        >
-          All Reviews ({reviews.length})
-        </button>
-        <button
-          type="button"
-          className={`pdp-review-filter-btn ${filter === "5star" ? "active" : ""}`}
-          onClick={() => setFilter("5star")}
-        >
-          5 Stars Only
-        </button>
-        <button
-          type="button"
-          className={`pdp-review-filter-btn ${filter === "verified" ? "active" : ""}`}
-          onClick={() => setFilter("verified")}
-        >
-          Verified Buyers
-        </button>
-      </div>
-
-      {/* Expandable Review Form */}
-      {showForm && (
-        <form className="pdp-review-form-card" onSubmit={handleSubmit}>
-          <h4>Write an Editorial Review for {productName}</h4>
-          <div className="pdp-form-row">
-            <label>Rating:</label>
-            <div className="pdp-star-picker-btns">
-              {[1, 2, 3, 4, 5].map((s) => (
-                <button
-                  key={s}
-                  type="button"
-                  className="pdp-star-pick-btn"
-                  onClick={() => setForm({ ...form, rating: s })}
-                >
-                  {s <= form.rating ? "★" : "☆"}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="pdp-form-row">
-            <label>Skin Type (Optional):</label>
-            <select
-              value={form.skinType}
-              onChange={(e) => setForm({ ...form, skinType: e.target.value })}
-            >
-              <option value="">Select your skin type</option>
-              <option value="Oily">Oily</option>
-              <option value="Dry">Dry</option>
-              <option value="Combination">Combination</option>
-              <option value="Sensitive">Sensitive</option>
-              <option value="Normal">Normal</option>
-            </select>
-          </div>
-
-          <div className="pdp-form-row">
-            <label>Your Review:</label>
-            <textarea
-              rows={4}
-              value={form.comment}
-              onChange={(e) => setForm({ ...form, comment: e.target.value })}
-              placeholder="Describe texture, absorption, how it feels on your skin..."
-              required
-            />
-          </div>
-
-          <div style={{ display: "flex", gap: "0.75rem" }}>
-            <button
-              type="submit"
-              className="pdp-btn-write-review"
-              disabled={submitting}
-            >
-              {submitting ? "Publishing…" : "Publish Review"}
-            </button>
-            <button
-              type="button"
-              className="pdp-btn-back"
-              onClick={() => setShowForm(false)}
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
-      )}
-
-      {/* Reviews List */}
-      <div className="pdp-reviews-list">
-        {filteredReviews.map((rev) => {
-          const initials = (rev.name || "A")
-            .split(" ")
-            .map((n) => n[0])
-            .join("")
-            .slice(0, 2)
-            .toUpperCase();
-
-          const currentHelpful = (rev.helpful || 0) + (helpfulVotes[rev._id] || 0);
-
-          return (
-            <div key={rev._id} className="pdp-review-item">
-              <div className="pdp-reviewer-row">
-                <div className="pdp-reviewer-avatar">{initials}</div>
-                <div className="pdp-reviewer-meta">
-                  <strong>{rev.name}</strong>
-                  <div className="pdp-reviewer-tags">
-                    {rev.verified !== false && (
-                      <span className="pdp-tag-verified">✓ Verified Buyer</span>
-                    )}
-                    {rev.skinType && (
-                      <span className="pdp-tag-skin">{rev.skinType}</span>
-                    )}
+              {/* Review Breakdown Dashboard (GLOWIFY Screen 1, 2, 3, 4) */}
+              <div className="pdp-review-dashboard">
+                <div className="pdp-score-card">
+                  <div className="pdp-big-score">{avgScore}</div>
+                  <div style={{ color: "#E5A93C", fontSize: "1.2rem", letterSpacing: "2px" }}>
+                    {"★".repeat(Math.round(Number(avgScore)))}
+                    {"☆".repeat(5 - Math.round(Number(avgScore)))}
                   </div>
+                  <div className="pdp-score-sub">Based on {reviews.length} reviews</div>
                 </div>
-                <span className="pdp-review-date">
-                  {rev.date || (rev.createdAt ? new Date(rev.createdAt).toLocaleDateString("en-NG", { month: "short", day: "numeric", year: "numeric" }) : "Recent")}
-                </span>
+
+                <div className="pdp-breakdown-bars">
+                  {starBreakdown.map((b) => (
+                    <div key={b.star} className="pdp-bar-row">
+                      <span className="pdp-bar-label">{b.star} Stars</span>
+                      <div className="pdp-bar-track">
+                        <div className="pdp-bar-fill" style={{ width: `${b.pct}%` }} />
+                      </div>
+                      <span className="pdp-bar-pct">{b.pct}%</span>
+                    </div>
+                  ))}
+                </div>
               </div>
 
-              <div style={{ color: "#E5A93C", fontSize: "0.95rem" }}>
-                {"★".repeat(Math.round(rev.rating || 5))}
-                {"☆".repeat(5 - Math.round(rev.rating || 5))}
-              </div>
-
-              <p className="pdp-review-body">{rev.comment}</p>
-
-              <div className="pdp-review-footer">
+              {/* Filter Tabs */}
+              <div className="pdp-review-filters">
                 <button
                   type="button"
-                  className="pdp-vote-helpful-btn"
-                  onClick={() => handleHelpfulClick(rev._id)}
+                  className={`pdp-review-filter-btn ${filter === "all" ? "active" : ""}`}
+                  onClick={() => setFilter("all")}
                 >
-                  👍 Helpful ({currentHelpful})
+                  All Reviews ({reviews.length})
                 </button>
-                <span>•</span>
                 <button
                   type="button"
-                  className="pdp-vote-helpful-btn"
-                  onClick={() => {
-                    if (toast?.addToast) toast.addToast("Review reported for moderation", "info");
-                  }}
+                  className={`pdp-review-filter-btn ${filter === "5star" ? "active" : ""}`}
+                  onClick={() => setFilter("5star")}
                 >
-                  Report
+                  5 Stars Only
+                </button>
+                <button
+                  type="button"
+                  className={`pdp-review-filter-btn ${filter === "verified" ? "active" : ""}`}
+                  onClick={() => setFilter("verified")}
+                >
+                  Verified Buyers
                 </button>
               </div>
-            </div>
-          );
-        })}
-      </div>
-    </>
-  );
+
+              {/* Expandable Review Form */}
+              {showForm && (
+                <form className="pdp-review-form-card" onSubmit={handleSubmit}>
+                  <h4>Write an Editorial Review for {productName}</h4>
+                  <div className="pdp-form-row">
+                    <label>Rating:</label>
+                    <div className="pdp-star-picker-btns">
+                      {[1, 2, 3, 4, 5].map((s) => (
+                        <button
+                          key={s}
+                          type="button"
+                          className="pdp-star-pick-btn"
+                          onClick={() => setForm({ ...form, rating: s })}
+                        >
+                          {s <= form.rating ? "★" : "☆"}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="pdp-form-row">
+                    <label>Skin Type (Optional):</label>
+                    <select
+                      value={form.skinType}
+                      onChange={(e) => setForm({ ...form, skinType: e.target.value })}
+                    >
+                      <option value="">Select your skin type</option>
+                      <option value="Oily">Oily</option>
+                      <option value="Dry">Dry</option>
+                      <option value="Combination">Combination</option>
+                      <option value="Sensitive">Sensitive</option>
+                      <option value="Normal">Normal</option>
+                    </select>
+                  </div>
+
+                  <div className="pdp-form-row">
+                    <label>Your Review:</label>
+                    <textarea
+                      rows={4}
+                      value={form.comment}
+                      onChange={(e) => setForm({ ...form, comment: e.target.value })}
+                      placeholder="Describe texture, absorption, how it feels on your skin..."
+                      required
+                    />
+                  </div>
+
+                  <div style={{ display: "flex", gap: "0.75rem" }}>
+                    <button
+                      type="submit"
+                      className="pdp-btn-write-review"
+                      disabled={submitting}
+                    >
+                      {submitting ? "Publishing…" : "Publish Review"}
+                    </button>
+                    <button
+                      type="button"
+                      className="pdp-btn-back"
+                      onClick={() => setShowForm(false)}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              )}
+
+              {/* Reviews List */}
+              <div className="pdp-reviews-list">
+                {filteredReviews.map((rev) => {
+                  const initials = (rev.name || "A")
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")
+                    .slice(0, 2)
+                    .toUpperCase();
+
+                  const currentHelpful = (rev.helpful || 0) + (helpfulVotes[rev._id] || 0);
+
+                  return (
+                    <div key={rev._id} className="pdp-review-item">
+                      <div className="pdp-reviewer-row">
+                        <div className="pdp-reviewer-avatar">{initials}</div>
+                        <div className="pdp-reviewer-meta">
+                          <strong>{rev.name}</strong>
+                          <div className="pdp-reviewer-tags">
+                            {rev.verified !== false && (
+                              <span className="pdp-tag-verified">✓ Verified Buyer</span>
+                            )}
+                            {rev.skinType && (
+                              <span className="pdp-tag-skin">{rev.skinType}</span>
+                            )}
+                          </div>
+                        </div>
+                        <span className="pdp-review-date">
+                          {rev.date || (rev.createdAt ? new Date(rev.createdAt).toLocaleDateString("en-NG", { month: "short", day: "numeric", year: "numeric" }) : "Recent")}
+                        </span>
+                      </div>
+
+                      <div style={{ color: "#E5A93C", fontSize: "0.95rem" }}>
+                        {"★".repeat(Math.round(rev.rating || 5))}
+                        {"☆".repeat(5 - Math.round(rev.rating || 5))}
+                      </div>
+
+                      <p className="pdp-review-body">{rev.comment}</p>
+
+                      <div className="pdp-review-footer">
+                        <button
+                          type="button"
+                          className="pdp-vote-helpful-btn"
+                          onClick={() => handleHelpfulClick(rev._id)}
+                        >
+                          👍 Helpful ({currentHelpful})
+                        </button>
+                        <span>•</span>
+                        <button
+                          type="button"
+                          className="pdp-vote-helpful-btn"
+                          onClick={() => {
+                            if (toast?.addToast) toast.addToast("Review reported for moderation", "info");
+                          }}
+                        >
+                          Report
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+            );
 }
