@@ -17,7 +17,9 @@ export const createOrderSchema = z.object({
     city: z.string().trim().min(1, "City is required"),
     state: z.string().trim().min(1, "State is required"),
   }),
-  deliveryPrice: z.number().nonnegative("Delivery price cannot be negative"),
+  // Accepted for backwards compatibility but ignored — the server sets the
+  // delivery fee (see config/shipping.js).
+  deliveryPrice: z.number().nonnegative().optional(),
 });
 
 export const verifyPaymentSchema = z.object({

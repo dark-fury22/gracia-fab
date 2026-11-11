@@ -79,7 +79,7 @@ async function setupOrder() {
       deliveryPrice: 2500,
     });
 
-  return { token, order: orderRes.body, email };
+  return { token, order: orderRes.body, email, product };
 }
 
 function mockPaystackSuccess({ amount, email }) {
@@ -159,5 +159,50 @@ describe("PUT /api/orders/:id/pay", () => {
 
     expect(second.status).toBe(400);
     expect(second.body.message).toMatch(/already paid/i);
+  });
+
+  it("commits stock only once payment is confirmed", async () => {
+    const { token, order, email, product } = await setupOrder();
+    expect((await Product.findById(product._id)).stock).toBe(10);
+
+    mockPaystackSuccess({ amount: order.totalPrice * 100, email });
+    const res = await request(app)
+      .put(`/api/orders/${order._id}/pay`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({ reference: "ref_123" });
+
+    expect(res.status).toBe(200);
+    expect((await Product.findById(product._id)).stock).toBe(9);
+  });
+
+  it("does not touch stock when payment fails", async () => {
+    const { token, order, email, product } = await setupOrder();
+    mockPaystackSuccess({ amount: 100, email }); // amount mismatch
+
+    await request(app)
+      .put(`/api/orders/${order._id}/pay`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({ reference: "ref_123" });
+
+    expect((await Product.findById(product._id)).stock).toBe(10);
+  });
+
+  it("keeps a paid order paid and flags it when stock ran out mid-payment", async () => {
+    const { token, order, email, product } = await setupOrder();
+    // Someone else bought the last units while this customer was paying.
+    await Product.updateOne({ _id: product._id }, { stock: 0 });
+
+    mockPaystackSuccess({ amount: order.totalPrice * 100, email });
+    const res = await request(app)
+      .put(`/api/orders/${order._id}/pay`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({ reference: "ref_123" });
+
+    expect(res.status).toBe(200);
+    expect(res.body.isPaid).toBe(true);
+    expect((await Product.findById(product._id)).stock).toBe(0);
+
+    const saved = await Order.findById(order._id);
+    expect(saved.statusHistory.at(-1).note).toMatch(/out of stock/i);
   });
 });

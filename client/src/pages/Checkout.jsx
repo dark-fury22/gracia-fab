@@ -13,8 +13,16 @@ function Checkout({ onCartOpen }) {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const deliveryPrice = 2500;
-  const totalPrice = cartTotal + deliveryPrice;
+  // Once the order is saved, the server's totals are authoritative: it prices
+  // items from the database and sets the delivery fee, and Paystack must be
+  // charged exactly that amount or verification rejects it. Before then we
+  // show an estimate — keep DELIVERY_ESTIMATE in sync with
+  // server/config/shipping.js.
+  const DELIVERY_ESTIMATE = 2500;
+  const [serverTotals, setServerTotals] = useState(null);
+  const subtotal = serverTotals?.itemsPrice ?? cartTotal;
+  const deliveryPrice = serverTotals?.deliveryPrice ?? DELIVERY_ESTIMATE;
+  const totalPrice = serverTotals?.totalPrice ?? cartTotal + deliveryPrice;
 
   const [formData, setFormData] = useState({
     fullName: user?.name || "",
@@ -67,9 +75,6 @@ function Checkout({ onCartOpen }) {
           product: item._id,
         })),
         deliveryAddress: formData,
-        itemsPrice: cartTotal,
-        deliveryPrice,
-        totalPrice,
       };
 
       const response = await fetch(`${API_URL}/api/orders`, {
@@ -86,6 +91,11 @@ function Checkout({ onCartOpen }) {
         throw new Error(data.message || "Failed to create order");
 
       setOrderId(data._id);
+      setServerTotals({
+        itemsPrice: data.itemsPrice,
+        deliveryPrice: data.deliveryPrice,
+        totalPrice: data.totalPrice,
+      });
       setOrderReady(true);
     } catch (err) {
       setError(err.message);
@@ -401,7 +411,7 @@ function Checkout({ onCartOpen }) {
             <div className="checkout-totals">
               <div className="total-row">
                 <span>Subtotal</span>
-                <span>{formatPrice(cartTotal)}</span>
+                <span>{formatPrice(subtotal)}</span>
               </div>
               <div className="total-row">
                 <span>Delivery</span>

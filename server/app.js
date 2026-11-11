@@ -152,24 +152,21 @@ app.post(
         const reference = event.data.reference;
         const amount = event.data.amount / 100; // Convert kobo to NGN
 
-        // Find order by reference
-        const Order = (await import("./models/Order.js")).default;
-        const order = await Order.findOne({
-          "paymentResult.reference": reference,
-        });
-
-        if (order && !order.isPaid) {
-          order.isPaid = true;
-          order.paidAt = new Date();
-          order.status = "processing";
-          order.paymentResult = {
+        // Find order by reference, mark it paid and commit stock — atomic,
+        // so a race with the checkout verify call can't double-decrement.
+        const { markOrderPaid } = await import("./services/orderPayment.js");
+        const order = await markOrderPaid(
+          { "paymentResult.reference": reference },
+          {
             reference,
             status: "success",
             amount,
             channel: event.data.channel,
             paidAt: event.data.paid_at,
-          };
-          await order.save();
+          },
+        );
+
+        if (order) {
           logger.info({ orderId: order._id }, "Order marked as paid via webhook");
         }
       } catch (err) {

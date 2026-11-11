@@ -11,12 +11,17 @@ import {
 } from "../queues/index.js";
 import { emailTemplates } from "../services/emailService.js";
 import logger from "../utils/logger.js";
+import { DELIVERY_FEE } from "../config/shipping.js";
+import { markOrderPaid } from "../services/orderPayment.js";
 
 // @desc   Create new order
 // @route  POST /api/orders
 export const createOrder = async (req, res) => {
   try {
-    const { orderItems, deliveryAddress, deliveryPrice } = req.body;
+    // deliveryPrice from the client is deliberately ignored — the server sets
+    // the fee, otherwise a tampered request could skip it entirely.
+    const { orderItems, deliveryAddress } = req.body;
+    const deliveryPrice = DELIVERY_FEE;
 
     // Recalculate prices from database
     let itemsPrice = 0;
@@ -98,33 +103,9 @@ export const createOrder = async (req, res) => {
       isPaid: false,
     });
 
-    // ── REDUCE STOCK
-    for (const item of validatedItems) {
-      const updated = await Product.findOneAndUpdate(
-        {
-          _id: item.product,
-          stock: { $gte: item.quantity },
-        },
-        {
-          $inc: { stock: -item.quantity },
-        },
-        { new: true },
-      );
-
-      if (!updated) {
-        throw new Error("Stock update failed");
-      }
-    }
-
-    // ── OPTIONAL: AUTO UPDATE isInStock
-    for (const item of validatedItems) {
-      const updatedProduct = await Product.findById(item.product);
-
-      if (updatedProduct.stock <= 0) {
-        updatedProduct.isInStock = false;
-        await updatedProduct.save();
-      }
-    }
+    // Stock is only checked here, not decremented — it's committed once
+    // payment is confirmed (see services/orderPayment.js), so unpaid orders
+    // never hold inventory.
 
     // Notify the customer — email always fires (every account has one);
     // WhatsApp only fires when a delivery phone was actually given.
@@ -273,21 +254,23 @@ export const verifyPayment = async (req, res) => {
       });
     }
 
-    // Mark order paid
-    order.isPaid = true;
+    // Mark order paid and commit stock (atomic — safe against the webhook
+    // processing the same payment at the same moment).
+    const updatedOrder = await markOrderPaid(
+      { _id: order._id },
+      {
+        reference: paystackData.data.reference,
+        status: paystackData.data.status,
+        amount: paidAmount,
+        paidAt: paystackData.data.paid_at,
+      },
+    );
 
-    order.paidAt = Date.now();
-
-    order.status = "processing";
-
-    order.paymentResult = {
-      reference: paystackData.data.reference,
-      status: paystackData.data.status,
-      amount: paidAmount,
-      paidAt: paystackData.data.paid_at,
-    };
-
-    const updatedOrder = await order.save();
+    if (!updatedOrder) {
+      return res.status(400).json({
+        message: "Order already paid",
+      });
+    }
 
     // Award loyalty points (₦1 spent = 0.01 points, minimum 1 point)
     const pointsEarned = Math.max(1, Math.floor(order.totalPrice * 0.01));

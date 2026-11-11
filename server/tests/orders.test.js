@@ -63,7 +63,7 @@ describe("POST /api/orders", () => {
     expect(res.status).toBe(401);
   });
 
-  it("recalculates prices from the database and reduces stock", async () => {
+  it("recalculates prices from the database without reserving stock", async () => {
     const { token } = await registerUser();
     // Client sends a bogus price — server must ignore it and use the DB price.
     const product = await createProduct({ price: 5000, stock: 10 });
@@ -81,8 +81,30 @@ describe("POST /api/orders", () => {
     expect(res.body.itemsPrice).toBe(10000);
     expect(res.body.totalPrice).toBe(12500);
 
+    // Stock is committed at payment, not at order creation — an unpaid
+    // order must not hold inventory.
     const updatedProduct = await Product.findById(product._id);
-    expect(updatedProduct.stock).toBe(8);
+    expect(updatedProduct.stock).toBe(10);
+  });
+
+  it("sets the delivery fee server-side, ignoring a tampered client value", async () => {
+    const { token } = await registerUser();
+    const product = await createProduct({ price: 5000, stock: 10 });
+
+    for (const tampered of [0, 1, undefined]) {
+      const res = await request(app)
+        .post("/api/orders")
+        .set("Authorization", `Bearer ${token}`)
+        .send({
+          orderItems: [{ product: product._id, quantity: 1 }],
+          deliveryAddress,
+          ...(tampered === undefined ? {} : { deliveryPrice: tampered }),
+        });
+
+      expect(res.status).toBe(201);
+      expect(res.body.deliveryPrice).toBe(2500);
+      expect(res.body.totalPrice).toBe(7500);
+    }
   });
 
   it("rejects an order that exceeds available stock", async () => {
