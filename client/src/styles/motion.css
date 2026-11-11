@@ -78,6 +78,10 @@
 .motion-ready .product-card,
 .motion-ready .ysl-triad-card,
 .motion-ready .ysl-promo-card,
+.motion-ready .ysl-new-item-card,
+.motion-ready .ysl-new-spotlight-card,
+.motion-ready .ysl-undertone-card,
+.motion-ready .pdp-related-card,
 .motion-ready .ysl-shopcat-col,
 .motion-ready .craft-lab-card,
 .motion-ready .craft-finish-card,
@@ -94,6 +98,10 @@
 .motion-ready .product-card:hover,
 .motion-ready .ysl-triad-card:hover,
 .motion-ready .ysl-promo-card:hover,
+.motion-ready .ysl-new-item-card:hover,
+.motion-ready .ysl-new-spotlight-card:hover,
+.motion-ready .ysl-undertone-card:hover,
+.motion-ready .pdp-related-card:hover,
 .motion-ready .ysl-shopcat-col:hover,
 .motion-ready .craft-lab-card:hover,
 .motion-ready .craft-finish-card:hover,
@@ -120,7 +128,8 @@
 /* ── Drawers and the mobile filter sidebar spring open ── */
 .motion-ready .drawer,
 .motion-ready .cart-drawer,
-.motion-ready .glow-filter-sidebar {
+.motion-ready .glow-filter-sidebar,
+.motion-ready .ysl-mobile-drawer {
   transition-timing-function: var(--spring-soft) !important;
 }
 

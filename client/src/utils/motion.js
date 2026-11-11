@@ -23,10 +23,13 @@ export const MOTION_MAP = [
   // ── Home
   { selector: ".ysl-triad-card", from: "mix", stagger: 110 },
   { selector: ".ysl-promo-card", from: "mix", stagger: 110 },
+  { selector: ".ysl-new-item-card", from: "mix", stagger: 70 },
+  { selector: ".ysl-new-spotlight-card", from: "right" },
   { selector: ".ysl-shopcat-col", from: "mix", stagger: 120 },
   { selector: ".product-card", from: "mix", stagger: 70 },
   { selector: ".promo-perk-item, .perk-item", from: "up", stagger: 80 },
   { selector: ".ysl-commitment-badge", from: "zoom", stagger: 100 },
+  { selector: ".ysl-undertone-card", from: "mix", stagger: 80 },
   { selector: ".ysl-undertone-showcase-section, .ysl-comparator-showcase-section", from: "up" },
   { selector: ".ysl-faq-section", from: "up" },
 
@@ -35,6 +38,7 @@ export const MOTION_MAP = [
   { selector: ".pdp-buybox-col", from: "right" },
   { selector: ".pdp-perk-item", from: "up", stagger: 80 },
   { selector: ".pdp-tabs-section, .pdp-reviews-section, .pdp-related-section", from: "up" },
+  { selector: ".pdp-related-card", from: "mix", stagger: 80 },
   { selector: ".pdp-routine-step", from: "mix", stagger: 70 },
 
   // ── About / Compare / Advisor
