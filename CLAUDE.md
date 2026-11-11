@@ -41,6 +41,6 @@ cd server && npm test
 ## Known gotchas
 
 - Payments are confirmed only by querying Monnify's API (`confirmOrderPayment` in `server/services/orderPayment.js`), never by trusting the browser or the webhook payload. Stock is committed and loyalty points awarded at payment, in `markOrderPaid`, not at order creation.
-
-- Admin image upload (`uploadImage` in `server/controllers/adminController.js`) writes to `server/public/uploads` on local disk. Render's filesystem is ephemeral, so those files disappear on redeploy or restart.
+- Admin image uploads go to Cloudinary (`server/services/imageStorage.js`). Never write uploads to local disk in production: Render's filesystem is wiped on every deploy. Without `CLOUDINARY_URL` the server refuses uploads in production and uses local disk only in development.
+- Stock defaults to 0 (out of stock) until counted; counts are entered in the admin Inventory tab or by CSV upload there.
 - Keep the working copy outside OneDrive. OneDrive syncing corrupted an earlier `.git`. The canonical local clone is `C:\dev\gracia-fab`.

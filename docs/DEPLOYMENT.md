@@ -89,6 +89,7 @@ that service → Environment):
 | `REDIS_URL` | from step 2 |
 | `JWT_SECRET` | from step 4 |
 | `MONNIFY_API_KEY`, `MONNIFY_SECRET_KEY`, `MONNIFY_CONTRACT_CODE` | sandbox values from step 3 (`MONNIFY_BASE_URL` can stay unset — non-production defaults to sandbox) |
+| `CLOUDINARY_URL` | can reuse production's (uploads land in the `gracia-fab/products` folder either way) |
 | `FRONTEND_URL` | the staging Vercel URL from step 6 (circular — come back and set this after step 6) |
 | everything else in [server/.env.example](../server/.env.example) | can start as a **copy of production's** value (Gemini/Groq keys, email, Twilio) — split these later if you want staging AI/email usage tracked separately |
 

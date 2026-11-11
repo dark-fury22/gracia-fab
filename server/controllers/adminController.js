@@ -1,10 +1,11 @@
 import User from '../models/User.js'
 import Product from '../models/Product.js'
 import Order from '../models/Order.js'
-import fs from 'fs'
-import path from 'path'
-import { fileURLToPath } from 'url'
 import logger from '../utils/logger.js'
+import {
+  storeProductImage,
+  ImageStorageNotConfiguredError,
+} from '../services/imageStorage.js'
 import { ALLOWED_UPLOAD_MIME_TYPES } from '../validators/adminValidators.js'
 
 const MIME_TO_EXTENSION = {
@@ -206,29 +207,24 @@ export const uploadImage = async (req, res) => {
       return res.status(400).json({ message: 'Unsupported image type' })
     }
 
-    // Create unique filename
-    const filename = `img-${Date.now()}-${Math.round(Math.random() * 1e9)}.${extension}`
-    const __filename = fileURLToPath(import.meta.url)
-    const __dirname = path.dirname(__filename)
-    const uploadPath = path.join(__dirname, '../public/uploads', filename)
+    // Cloudinary in production (Render's disk is wiped on every deploy);
+    // local disk only in development. See services/imageStorage.js.
+    const { url, storage } = await storeProductImage({
+      imageBase64,
+      mimeType,
+      extension,
+      req,
+    })
 
-    // Ensure uploads folder exists
-    fs.mkdirSync(path.dirname(uploadPath), { recursive: true })
+    logger.info({ url, storage }, 'Image uploaded')
 
-    // Decode base64 and write
-    const buffer = Buffer.from(imageBase64, 'base64')
-    fs.writeFileSync(uploadPath, buffer)
-
-    // Construct dynamic absolute URL
-    const host = req.get('host')
-    const protocol = req.protocol
-    const imageUrl = `${protocol}://${host}/uploads/${filename}`
-
-    logger.info({ uploadPath, imageUrl }, 'Image uploaded')
-
-    res.status(201).json({ success: true, url: imageUrl })
+    res.status(201).json({ success: true, url })
   } catch (error) {
+    if (error instanceof ImageStorageNotConfiguredError) {
+      logger.error('Image upload refused: Cloudinary is not configured')
+      return res.status(503).json({ message: error.message })
+    }
     logger.error({ err: error }, 'uploadImage error')
-    res.status(500).json({ message: error.message })
+    res.status(500).json({ message: 'Image upload failed. Please try again.' })
   }
 }
