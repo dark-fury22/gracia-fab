@@ -26,7 +26,7 @@ const statusColors = {
 };
 
 function AdminDashboard() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("overview");
   const [stats, setStats] = useState(null);
@@ -61,69 +61,79 @@ function AdminDashboard() {
     Authorization: `Bearer ${localStorage.getItem("token")}`,
   }), []);
 
+  const [adminError, setAdminError] = useState("");
+
+  // GETs an admin endpoint. On failure the API returns { message } instead of
+  // the expected list; storing that and then calling .map() on it crashed the
+  // whole page to a blank screen. So: an expired session goes back to login,
+  // other errors show a banner, and callers only store data on success.
+  const loadAdminData = useCallback(async (path) => {
+    const res = await fetch(`${API_URL}${path}`, { headers: getHeaders() });
+    const data = await res.json().catch(() => null);
+    if (res.status === 401) {
+      logout();
+      navigate("/login");
+      return null;
+    }
+    if (!res.ok) {
+      setAdminError(data?.message || "Couldn't load this section. Please try again.");
+      return null;
+    }
+    setAdminError("");
+    return data;
+  }, [getHeaders, logout, navigate]);
+
   const fetchStats = useCallback(async () => {
     try {
       await Promise.resolve();
       setLoading(true);
-      const res = await fetch(`${API_URL}/api/admin/stats`, {
-        headers: getHeaders(),
-      });
-      const data = await res.json();
-      setStats(data);
+      const data = await loadAdminData("/api/admin/stats");
+      if (data && typeof data === "object") setStats(data);
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
     }
-  }, [getHeaders]);
+  }, [loadAdminData]);
 
   const fetchProducts = useCallback(async () => {
     try {
       await Promise.resolve();
       setLoading(true);
-      const res = await fetch(`${API_URL}/api/admin/products`, {
-        headers: getHeaders(),
-      });
-      const data = await res.json();
-      setProducts(data);
+      const data = await loadAdminData("/api/admin/products");
+      if (Array.isArray(data)) setProducts(data);
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
     }
-  }, [getHeaders]);
+  }, [loadAdminData]);
 
   const fetchOrders = useCallback(async () => {
     try {
       await Promise.resolve();
       setLoading(true);
-      const res = await fetch(`${API_URL}/api/admin/orders`, {
-        headers: getHeaders(),
-      });
-      const data = await res.json();
-      setOrders(data);
+      const data = await loadAdminData("/api/admin/orders");
+      if (Array.isArray(data)) setOrders(data);
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
     }
-  }, [getHeaders]);
+  }, [loadAdminData]);
 
   const fetchUsers = useCallback(async () => {
     try {
       await Promise.resolve();
       setLoading(true);
-      const res = await fetch(`${API_URL}/api/admin/users`, {
-        headers: getHeaders(),
-      });
-      const data = await res.json();
-      setUsers(data);
+      const data = await loadAdminData("/api/admin/users");
+      if (Array.isArray(data)) setUsers(data);
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
     }
-  }, [getHeaders]);
+  }, [loadAdminData]);
 
   const fetchMessages = useCallback(async () => {
     try {
@@ -411,6 +421,12 @@ function AdminDashboard() {
             </button>
           ))}
         </div>
+
+        {adminError && (
+          <div className="admin-error" role="alert" style={{ margin: "16px 0" }}>
+            ⚠️ {adminError}
+          </div>
+        )}
 
         {/* ── INVENTORY ── */}
         {activeTab === "inventory" && <InventoryPanel />}

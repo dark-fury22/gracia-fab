@@ -1,4 +1,4 @@
-import { useState, Suspense, lazy } from "react";
+import { useState, Suspense } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -24,7 +24,11 @@ import Dashboard from "./pages/Dashboard";
 import Wishlist from "./pages/Wishlist";
 // Lazy-loaded: only admins ever visit this route, so its ~1,100-line
 // bundle shouldn't ship in every visitor's initial page load.
-const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
+// lazyWithReload: recovers when a stale cached app asks for a code file that
+// a newer deploy has replaced (that left /admin blank).
+const AdminDashboard = lazyWithReload(() => import("./pages/AdminDashboard"));
+import lazyWithReload from "./utils/lazyWithReload";
+import ErrorBoundary from "./components/ErrorBoundary";
 import BackToTop from "./components/BackToTop";
 import InstallPrompt from "./components/InstallPrompt";
 import BeautyLanding from "./pages/BeautyLanding";
@@ -96,6 +100,7 @@ function App() {
   return (
     <Router>
       <CartDrawer isOpen={cartOpen} onClose={closeCart} />
+      <ErrorBoundary>
       <Routes>
         {/* ── Public only (redirect to home if logged in) ── */}
         <Route
@@ -193,7 +198,7 @@ function App() {
           path="/admin"
           element={
             <AdminRoute>
-              <Suspense fallback={null}>
+              <Suspense fallback={<p className="admin-loading" style={{ padding: "48px 16px", textAlign: "center" }}>Loading admin dashboard…</p>}>
                 <AdminDashboard />
               </Suspense>
             </AdminRoute>
@@ -222,6 +227,7 @@ function App() {
         {/* ── Catch all ── */}
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
+      </ErrorBoundary>
       <BackToTop />
       <InstallPrompt />
       <AiConciergeChat onCartOpen={openCart} />
