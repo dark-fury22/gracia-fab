@@ -59,7 +59,7 @@ function renderProductDetail(props = {}) {
 describe("ProductDetail (GLOWIFY Inspired Architecture)", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
-    global.fetch = vi.fn((url) => {
+    globalThis.fetch = vi.fn((url) => {
       if (url.includes("/api/products/prod-101")) {
         return Promise.resolve({
           ok: true,

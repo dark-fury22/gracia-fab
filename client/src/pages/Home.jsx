@@ -7,7 +7,6 @@ import LiveCameraToneDetector from "../components/LiveCameraToneDetector";
 import { useCart } from "../hooks/useCart";
 import { useToast } from "../hooks/useToast";
 import { AFRICAN_UNDERTONES } from "../utils/africanUndertones";
-import API_URL from "../config";
 import "../styles/YslHome.css";
 
 
